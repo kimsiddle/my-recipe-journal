@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
 import { Recipe, RecipeFormData, RecipeNote, RecipePhoto, CookLogEntry } from '@/types/recipe';
 import margheritaImg from '@/assets/margherita-pizza.jpg';
 import curryImg from '@/assets/thai-green-curry.jpg';
