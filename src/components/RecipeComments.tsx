@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,14 +10,15 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { Send, MessageSquare, X } from 'lucide-react';
+import { Send, MessageSquare, X, ImagePlus } from 'lucide-react';
 import { toast } from 'sonner';
-import { useAuth } from '@/context/AuthContext';
+import { compressImage } from '@/lib/imageUtils';
 
 interface Comment {
   id: string;
   author_name: string;
   text: string;
+  photo_url?: string;
   created_at: string;
 }
 
@@ -30,8 +31,10 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [name, setName] = useState('');
   const [text, setText] = useState('');
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const fetchComments = useCallback(async () => {
     const { data } = await supabase
@@ -44,6 +47,23 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
 
   useEffect(() => { fetchComments(); }, [fetchComments]);
 
+  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      try {
+        const compressed = await compressImage(reader.result as string, 800, 0.6);
+        setPhotoPreview(compressed);
+      } catch {
+        setPhotoPreview(reader.result as string);
+      }
+    };
+    reader.readAsDataURL(file);
+    // Reset input so the same file can be re-selected
+    e.target.value = '';
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !text.trim()) return;
@@ -52,10 +72,12 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
       recipe_id: recipeId,
       author_name: name.trim(),
       text: text.trim(),
-    });
+      photo_url: photoPreview || null,
+    } as any);
     setSubmitting(false);
     if (error) { toast.error('Failed to post comment'); return; }
     setText('');
+    setPhotoPreview(null);
     toast.success('Comment posted!');
     fetchComments();
   };
@@ -77,6 +99,14 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
         <span className="text-sm text-muted-foreground">({comments.length})</span>
       </div>
 
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
       <form onSubmit={handleSubmit} className="mb-4 bg-card border rounded-lg p-3 space-y-3">
         <Input
           placeholder="Your name"
@@ -91,7 +121,28 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
           rows={3}
           required
         />
-        <div className="flex justify-end">
+        {photoPreview && (
+          <div className="relative inline-block">
+            <img src={photoPreview} alt="Attachment preview" className="h-20 w-20 rounded-md object-cover border" />
+            <button
+              type="button"
+              onClick={() => setPhotoPreview(null)}
+              className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground rounded-full p-0.5"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </div>
+        )}
+        <div className="flex justify-end gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => fileRef.current?.click()}
+          >
+            <ImagePlus className="h-3.5 w-3.5 mr-1" />
+            Photo
+          </Button>
           <Button size="sm" type="submit" disabled={submitting || !name.trim() || !text.trim()}>
             <Send className="h-3.5 w-3.5 mr-1" />
             Post
@@ -105,6 +156,14 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
             <div key={c.id} className="group relative bg-card border rounded-lg p-4 transition-shadow hover:shadow-sm">
               <p className="text-sm font-medium">{c.author_name}</p>
               <p className="text-sm leading-relaxed mt-1 pr-6">{c.text}</p>
+              {c.photo_url && (
+                <img
+                  src={c.photo_url}
+                  alt="Comment attachment"
+                  className="mt-2 rounded-md max-h-48 object-cover cursor-pointer border"
+                  onClick={() => window.open(c.photo_url, '_blank')}
+                />
+              )}
               <p className="text-xs text-muted-foreground mt-2">{formatDate(c.created_at)}</p>
               {isOwner && (
                 <button
