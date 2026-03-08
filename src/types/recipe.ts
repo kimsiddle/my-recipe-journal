@@ -59,7 +59,7 @@ export interface Recipe {
   title: string;
   description: string;
   imageUrl: string | null;
-  ingredients: string[];
+  ingredients: Ingredient[];
   instructions: string;
   rating: number;
   difficulty: DifficultyLevel;
