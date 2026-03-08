@@ -119,8 +119,11 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
     } as any).select().single();
 
     if (error) { console.error('Error adding recipe:', error); return; }
-    await fetchRecipes();
-  }, [fetchRecipes, user]);
+    if (row) {
+      const newRecipe = mapDbToRecipe(row, [], []);
+      setRecipes(prev => [newRecipe, ...prev]);
+    }
+  }, [user]);
 
   const updateRecipe = useCallback(async (id: string, data: RecipeFormData) => {
     const { error } = await supabase.from('recipes').update({
@@ -145,14 +148,32 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
     } as any).eq('id', id);
 
     if (error) { console.error('Error updating recipe:', error); return; }
-    await fetchRecipes();
-  }, [fetchRecipes]);
+    setRecipes(prev => prev.map(r => r.id === id ? {
+      ...r,
+      title: data.title,
+      description: data.description,
+      imageUrl: data.imageUrl,
+      ingredients: data.ingredients,
+      instructions: data.instructions,
+      rating: data.rating,
+      difficulty: data.difficulty,
+      cookTime: data.cookTime,
+      source: data.source,
+      mealCategory: data.mealCategory,
+      proteinTags: data.proteinTags,
+      occasionTags: data.occasionTags,
+      lastCookedAt: data.lastCookedAt,
+      servings: data.servings,
+      notesText: data.notesText || '',
+      updatedAt: new Date().toISOString(),
+    } : r));
+  }, []);
 
   const deleteRecipe = useCallback(async (id: string) => {
     const { error } = await supabase.from('recipes').delete().eq('id', id);
     if (error) { console.error('Error deleting recipe:', error); return; }
-    await fetchRecipes();
-  }, [fetchRecipes]);
+    setRecipes(prev => prev.filter(r => r.id !== id));
+  }, []);
 
   const getRecipe = useCallback((id: string) => {
     return recipes.find(r => r.id === id);
@@ -160,32 +181,45 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
 
 
   const addPhoto = useCallback(async (recipeId: string, url: string) => {
-    const { error } = await supabase.from('recipe_photos').insert({ recipe_id: recipeId, url });
+    const { data: photo, error } = await supabase.from('recipe_photos').insert({ recipe_id: recipeId, url }).select().single();
     if (error) { console.error('Error adding photo:', error); return; }
     await supabase.from('recipes').update({ updated_at: new Date().toISOString() }).eq('id', recipeId);
-    await fetchRecipes();
-  }, [fetchRecipes]);
+    if (photo) {
+      setRecipes(prev => prev.map(r => r.id === recipeId ? {
+        ...r,
+        photos: [...r.photos, { id: photo.id, url: photo.url, createdAt: photo.created_at }],
+        updatedAt: new Date().toISOString(),
+      } : r));
+    }
+  }, []);
 
   const deletePhoto = useCallback(async (recipeId: string, photoId: string) => {
     const { error } = await supabase.from('recipe_photos').delete().eq('id', photoId);
     if (error) { console.error('Error deleting photo:', error); return; }
-    await fetchRecipes();
-  }, [fetchRecipes]);
+    setRecipes(prev => prev.map(r => r.id === recipeId ? {
+      ...r,
+      photos: r.photos.filter(p => p.id !== photoId),
+    } : r));
+  }, []);
 
   const addCookLog = useCallback(async (recipeId: string, entry: Omit<CookLogEntry, 'id'>) => {
-    const { error } = await supabase.from('cook_log_entries').insert({
+    const { data: logRow, error } = await supabase.from('cook_log_entries').insert({
       recipe_id: recipeId,
       cooked_at: entry.cookedAt,
       rating: entry.rating ?? null,
       comment: entry.comment ?? null,
       photo_urls: entry.photoUrls || [],
-    });
+    }).select().single();
     if (error) { console.error('Error adding cook log:', error); return; }
 
     // Add photos to gallery
+    let newPhotos: { id: string; url: string; createdAt: string }[] = [];
     if (entry.photoUrls?.length) {
       const photoInserts = entry.photoUrls.map(url => ({ recipe_id: recipeId, url }));
-      await supabase.from('recipe_photos').insert(photoInserts);
+      const { data: insertedPhotos } = await supabase.from('recipe_photos').insert(photoInserts).select();
+      if (insertedPhotos) {
+        newPhotos = insertedPhotos.map(p => ({ id: p.id, url: p.url, createdAt: p.created_at }));
+      }
     }
 
     // Update last_cooked_at and rating on recipe
@@ -193,15 +227,31 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
     const updateData: any = { updated_at: new Date().toISOString() };
     if (entry.rating != null) updateData.rating = entry.rating;
 
-    // Recalculate last_cooked_at
     const allDates = [...(recipe?.cookLog.map(c => c.cookedAt) || []), entry.cookedAt];
     updateData.last_cooked_at = allDates.reduce((latest, d) =>
       !latest || new Date(d) > new Date(latest) ? d : latest, null as string | null
     );
 
     await supabase.from('recipes').update(updateData).eq('id', recipeId);
-    await fetchRecipes();
-  }, [fetchRecipes, recipes]);
+
+    if (logRow) {
+      const newEntry: CookLogEntry = {
+        id: logRow.id,
+        cookedAt: logRow.cooked_at,
+        rating: logRow.rating ?? undefined,
+        comment: logRow.comment ?? undefined,
+        photoUrls: logRow.photo_urls?.length ? logRow.photo_urls : undefined,
+      };
+      setRecipes(prev => prev.map(r => r.id === recipeId ? {
+        ...r,
+        cookLog: [...r.cookLog, newEntry],
+        photos: [...r.photos, ...newPhotos],
+        rating: entry.rating != null ? entry.rating : r.rating,
+        lastCookedAt: updateData.last_cooked_at,
+        updatedAt: new Date().toISOString(),
+      } : r));
+    }
+  }, [recipes]);
 
   const deleteCookLog = useCallback(async (recipeId: string, logId: string) => {
     const { error } = await supabase.from('cook_log_entries').delete().eq('id', logId);
@@ -211,9 +261,14 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
     const { data: remaining } = await supabase.from('cook_log_entries').select('cooked_at').eq('recipe_id', recipeId).order('cooked_at', { ascending: false }).limit(1);
     const lastCooked = remaining?.[0]?.cooked_at || null;
     await supabase.from('recipes').update({ last_cooked_at: lastCooked, updated_at: new Date().toISOString() }).eq('id', recipeId);
-    await fetchRecipes();
-  }, [fetchRecipes]);
 
+    setRecipes(prev => prev.map(r => r.id === recipeId ? {
+      ...r,
+      cookLog: r.cookLog.filter(c => c.id !== logId),
+      lastCookedAt: lastCooked,
+      updatedAt: new Date().toISOString(),
+    } : r));
+  }, []);
   return (
     <RecipeContext.Provider value={{ recipes, allIngredients, loading, addRecipe, updateRecipe, deleteRecipe, getRecipe, addPhoto, deletePhoto, addCookLog, deleteCookLog }}>
       {children}
