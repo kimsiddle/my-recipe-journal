@@ -66,7 +66,7 @@ const Index = () => {
     const recipe = getRecipe(view.id);
     if (!recipe) { setView({ type: 'list' }); return null; }
     return (
-      <div className="min-h-screen bg-background px-4 py-8">
+      <div className="px-4 py-8">
         <RecipeDetail
           recipe={recipe}
           onBack={() => setView({ type: 'list' })}
@@ -104,7 +104,7 @@ const Index = () => {
       ? { title: editing.title, description: editing.description, imageUrl: editing.imageUrl, ingredients: editing.ingredients, instructions: editing.instructions, rating: editing.rating, difficulty: editing.difficulty, cookTime: editing.cookTime, notes: editing.notes, source: editing.source, mealCategory: editing.mealCategory, proteinTags: editing.proteinTags }
       : undefined;
     return (
-      <div className="min-h-screen bg-background px-4 py-8">
+      <div className="px-4 py-8">
         <div className="max-w-lg mx-auto">
           <h1 className="text-2xl font-display mb-6">{editing ? 'Edit Recipe' : 'New Recipe'}</h1>
           <RecipeForm
@@ -119,23 +119,16 @@ const Index = () => {
 
   // List view
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <CookingPot className="h-6 w-6 text-accent" />
-            <h1 className="text-xl font-display">My Recipes</h1>
-          </div>
-          <Button size="sm" onClick={() => setView({ type: 'form' })}>
-            <Plus className="h-4 w-4 mr-1" />
-            Add Recipe
-          </Button>
-        </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto px-4 py-6">
-        {/* Search */}
+    <div className="flex-1">
+      {/* Sub-header */}
+      <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+        <h2 className="text-xl font-display">My Recipes</h2>
+        <Button size="sm" onClick={() => setView({ type: 'form' })}>
+          <Plus className="h-4 w-4 mr-1" />
+          Add Recipe
+        </Button>
+      </div>
+        <main className="max-w-5xl mx-auto px-4 pb-6">
         <div className="relative mb-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
