@@ -220,6 +220,19 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={!!deletePhotoId} onOpenChange={(open) => !open && setDeletePhotoId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Remove photo from comment?</DialogTitle>
+            <DialogDescription>The photo will be permanently removed but the comment will remain.</DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 justify-end">
+            <Button variant="outline" onClick={() => setDeletePhotoId(null)}>Cancel</Button>
+            <Button variant="destructive" onClick={handleConfirmDeletePhoto}>Remove Photo</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
