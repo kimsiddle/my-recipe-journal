@@ -76,19 +76,27 @@ export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDe
         <StarRating rating={recipe.rating} />
         {recipe.source && (
           <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <BookOpen className="h-4 w-4 shrink-0" />
-            {recipe.source.url ? (
-              <a
-                href={recipe.source.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-accent transition-colors flex items-center gap-1 underline underline-offset-2"
-              >
-                {recipe.source.name}
-                <ExternalLink className="h-3 w-3" />
-              </a>
+            {recipe.source.type === 'book' ? (
+              <>
+                <BookOpen className="h-4 w-4 shrink-0" />
+                <span>{recipe.source.name}</span>
+              </>
             ) : (
-              <span>{recipe.source.name}</span>
+              <>
+                <ExternalLink className="h-4 w-4 shrink-0" />
+                {recipe.source.url ? (
+                  <a
+                    href={recipe.source.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-accent transition-colors underline underline-offset-2"
+                  >
+                    {recipe.source.name}
+                  </a>
+                ) : (
+                  <span>{recipe.source.name}</span>
+                )}
+              </>
             )}
           </div>
         )}

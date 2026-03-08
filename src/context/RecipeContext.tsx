@@ -31,7 +31,7 @@ const SAMPLE_RECIPES: Recipe[] = [
     ingredients: ['chicken thighs', 'coconut milk', 'green curry paste', 'bamboo shoots', 'Thai basil', 'fish sauce', 'sugar', 'bell pepper', 'jasmine rice'],
     instructions: '1. Cook curry paste in oil until fragrant.\n2. Add chicken, cook until sealed.\n3. Pour in coconut milk.\n4. Add vegetables and simmer 15 min.\n5. Season with fish sauce and sugar.\n6. Serve over jasmine rice with Thai basil.',
     rating: 4,
-    source: { name: 'Hot Thai Kitchen' },
+    source: { type: 'book', name: 'Hot Thai Kitchen' },
     notes: [
       { id: 'n3', text: 'Use 2 cans coconut milk for a richer sauce.', createdAt: '2026-01-25T20:00:00Z' },
       { id: 'n4', text: 'Add eggplant next time — it soaks up the curry beautifully.', createdAt: '2026-03-01T19:00:00Z' },

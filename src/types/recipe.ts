@@ -4,7 +4,10 @@ export interface RecipeNote {
   createdAt: string;
 }
 
+export type SourceType = 'book' | 'website';
+
 export interface RecipeSource {
+  type: SourceType;
   name: string;
   url?: string;
 }
