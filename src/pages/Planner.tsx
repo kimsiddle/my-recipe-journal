@@ -352,7 +352,7 @@ function ShoppingListItems({ items, checked, onToggle }: { items: { ingredient: 
       {items.map(item => (
         <button
           key={item.ingredient}
-          onClick={() => toggle(item.ingredient)}
+          onClick={() => onToggle(item.ingredient)}
           className="w-full flex items-center gap-3 p-2 rounded-md hover:bg-muted/50 transition-colors text-left"
         >
           <div className={`h-5 w-5 rounded border flex items-center justify-center shrink-0 transition-colors ${

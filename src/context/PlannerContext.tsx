@@ -110,7 +110,7 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
   }, [plan]);
 
   return (
-    <PlannerContext.Provider value={{ plan, assignRecipe, assignCustomMeal, removeRecipe, clearWeek, getEntry, getRecipeId, getPlannedRecipeIds }}>
+    <PlannerContext.Provider value={{ plan, assignRecipe, assignCustomMeal, removeRecipe, clearWeek, getEntry, getRecipeId, getPlannedRecipeIds, checkedIngredients, toggleIngredient, clearCheckedIngredients }}>
       {children}
     </PlannerContext.Provider>
   );
