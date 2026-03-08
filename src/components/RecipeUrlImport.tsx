@@ -31,7 +31,7 @@ export function RecipeUrlImport({ onExtracted, onBack }: RecipeUrlImportProps) {
         setError(
           "We couldn't fully read this page. You can still review and complete the recipe manually."
         );
-        if (data?.title || data?.ingredients?.length) {
+        onExtracted({
           onExtracted({
             title: data.title || '',
             ingredients: (data.ingredients || []).map((i: any) => ({
