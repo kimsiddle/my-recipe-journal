@@ -101,7 +101,7 @@ const Index = () => {
   if (view.type === 'form') {
     const editing = view.editId ? getRecipe(view.editId) : undefined;
     const initialData = editing
-      ? { title: editing.title, description: editing.description, imageUrl: editing.imageUrl, ingredients: editing.ingredients, instructions: editing.instructions, rating: editing.rating, notes: editing.notes, source: editing.source, mealCategory: editing.mealCategory, proteinTags: editing.proteinTags }
+      ? { title: editing.title, description: editing.description, imageUrl: editing.imageUrl, ingredients: editing.ingredients, instructions: editing.instructions, rating: editing.rating, difficulty: editing.difficulty, cookTime: editing.cookTime, notes: editing.notes, source: editing.source, mealCategory: editing.mealCategory, proteinTags: editing.proteinTags }
       : undefined;
     return (
       <div className="min-h-screen bg-background px-4 py-8">

@@ -1,10 +1,10 @@
 import { useState, useRef } from 'react';
-import { RecipeFormData, MEAL_CATEGORIES, PROTEIN_TAGS, MealCategory, ProteinTag, SourceType } from '@/types/recipe';
+import { RecipeFormData, MEAL_CATEGORIES, PROTEIN_TAGS, DIFFICULTY_LEVELS, MealCategory, ProteinTag, SourceType } from '@/types/recipe';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { StarRating } from '@/components/StarRating';
+import { RatingScale } from '@/components/RatingScale';
 import { X, Plus, Camera } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
@@ -21,6 +21,8 @@ const emptyForm: RecipeFormData = {
   ingredients: [],
   instructions: '',
   rating: 0,
+  difficulty: 'Medium',
+  cookTime: '',
   notes: [],
   source: null,
   mealCategory: 'Dinner',
@@ -195,8 +197,36 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
 
       {/* Rating */}
       <div>
-        <Label className="font-body font-medium text-sm mb-1.5 block">Rating</Label>
-        <StarRating rating={form.rating} onChange={val => set('rating', val)} />
+        <Label className="font-body font-medium text-sm mb-1.5 block">Rating (1-10)</Label>
+        <RatingScale rating={form.rating} onChange={val => set('rating', val)} />
+      </div>
+
+      {/* Difficulty */}
+      <div>
+        <Label className="font-body font-medium text-sm mb-1.5 block">Difficulty</Label>
+        <div className="flex gap-1.5">
+          {DIFFICULTY_LEVELS.map(level => (
+            <button key={level} type="button" onClick={() => set('difficulty', level)}>
+              <Badge
+                variant={form.difficulty === level ? 'default' : 'secondary'}
+                className="font-body font-normal cursor-pointer"
+              >
+                {level}
+              </Badge>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Cook Time */}
+      <div>
+        <Label htmlFor="cookTime" className="font-body font-medium text-sm mb-1.5 block">Cook Time</Label>
+        <Input
+          id="cookTime"
+          value={form.cookTime}
+          onChange={e => set('cookTime', e.target.value)}
+          placeholder="e.g. 30 min, 1 hour"
+        />
       </div>
 
       {/* Source */}
