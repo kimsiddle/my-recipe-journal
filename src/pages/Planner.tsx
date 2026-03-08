@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { formatIngredient } from '@/types/recipe';
 import { format, startOfWeek, addDays, addWeeks, subWeeks } from 'date-fns';
 import { usePlanner } from '@/context/PlannerContext';
 import { useRecipes } from '@/context/RecipeContext';
