@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { RecipeFormData } from '@/types/recipe';
+import { RecipeFormData, MEAL_CATEGORIES, PROTEIN_TAGS, MealCategory, ProteinTag } from '@/types/recipe';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,8 @@ const emptyForm: RecipeFormData = {
   rating: 0,
   notes: [],
   source: null,
+  mealCategory: 'Dinner',
+  proteinTags: [],
 };
 
 export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
@@ -92,6 +94,51 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
           placeholder="What did you make?"
           required
         />
+      </div>
+
+      {/* Meal Category */}
+      <div>
+        <Label className="font-body font-medium text-sm mb-1.5 block">Meal</Label>
+        <div className="flex flex-wrap gap-1.5">
+          {MEAL_CATEGORIES.map(cat => (
+            <button key={cat} type="button" onClick={() => set('mealCategory', cat)}>
+              <Badge
+                variant={form.mealCategory === cat ? 'default' : 'secondary'}
+                className="font-body font-normal cursor-pointer"
+              >
+                {cat}
+              </Badge>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Protein / Type Tags */}
+      <div>
+        <Label className="font-body font-medium text-sm mb-1.5 block">Type</Label>
+        <div className="flex flex-wrap gap-1.5">
+          {PROTEIN_TAGS.map(tag => {
+            const selected = form.proteinTags.includes(tag);
+            return (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => set('proteinTags', selected
+                  ? form.proteinTags.filter(t => t !== tag)
+                  : [...form.proteinTags, tag]
+                )}
+              >
+                <Badge
+                  variant={selected ? 'default' : 'secondary'}
+                  className="font-body font-normal cursor-pointer"
+                >
+                  {tag}
+                  {selected && <X className="h-3 w-3 ml-1" />}
+                </Badge>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Description */}

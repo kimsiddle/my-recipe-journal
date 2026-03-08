@@ -18,6 +18,8 @@ const SAMPLE_RECIPES: Recipe[] = [
       { id: 'n1', text: 'Added a pinch of red pepper flakes for heat.', createdAt: '2026-02-15T12:00:00Z' },
       { id: 'n2', text: 'Next time try with burrata instead of mozzarella.', createdAt: '2026-02-20T18:30:00Z' },
     ],
+    mealCategory: 'Dinner',
+    proteinTags: ['Vegetables'],
     createdAt: '2026-02-15',
     updatedAt: '2026-02-15',
   },
@@ -34,6 +36,8 @@ const SAMPLE_RECIPES: Recipe[] = [
       { id: 'n3', text: 'Use 2 cans coconut milk for a richer sauce.', createdAt: '2026-01-25T20:00:00Z' },
       { id: 'n4', text: 'Add eggplant next time — it soaks up the curry beautifully.', createdAt: '2026-03-01T19:00:00Z' },
     ],
+    mealCategory: 'Dinner',
+    proteinTags: ['Poultry'],
     createdAt: '2026-01-20',
     updatedAt: '2026-03-01',
   },
@@ -50,6 +54,8 @@ const SAMPLE_RECIPES: Recipe[] = [
       { id: 'n5', text: 'Works great with trout too.', createdAt: '2026-03-05T18:00:00Z' },
       { id: 'n6', text: 'Add capers for extra pop.', createdAt: '2026-03-06T12:00:00Z' },
     ],
+    mealCategory: 'Dinner',
+    proteinTags: ['Fish'],
     createdAt: '2026-03-05',
     updatedAt: '2026-03-05',
   },
@@ -71,8 +77,8 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
   const [recipes, setRecipes] = useState<Recipe[]>(() => {
     const stored = localStorage.getItem('recipes');
     const version = localStorage.getItem('recipes_version');
-    if (stored && version === '4') return JSON.parse(stored);
-    localStorage.setItem('recipes_version', '4');
+    if (stored && version === '5') return JSON.parse(stored);
+    localStorage.setItem('recipes_version', '5');
     localStorage.setItem('recipes', JSON.stringify(SAMPLE_RECIPES));
     return SAMPLE_RECIPES;
   });

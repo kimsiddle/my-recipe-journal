@@ -3,7 +3,7 @@ import { useRecipes } from '@/context/RecipeContext';
 import { RecipeCard } from '@/components/RecipeCard';
 import { RecipeDetail } from '@/components/RecipeDetail';
 import { RecipeForm } from '@/components/RecipeForm';
-import { RecipeFormData } from '@/types/recipe';
+import { RecipeFormData, MEAL_CATEGORIES, PROTEIN_TAGS, MealCategory, ProteinTag } from '@/types/recipe';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,15 +23,9 @@ const Index = () => {
   const { recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote } = useRecipes();
   const [view, setView] = useState<View>({ type: 'list' });
   const [search, setSearch] = useState('');
-  const [selectedIngredient, setSelectedIngredient] = useState<string | null>(null);
+  const [selectedMeal, setSelectedMeal] = useState<MealCategory | null>(null);
+  const [selectedProtein, setSelectedProtein] = useState<ProteinTag | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-
-  // Get all unique ingredients for the filter
-  const allIngredients = useMemo(() => {
-    const set = new Set<string>();
-    recipes.forEach(r => r.ingredients.forEach(i => set.add(i.toLowerCase())));
-    return Array.from(set).sort();
-  }, [recipes]);
 
   // Filter recipes
   const filtered = useMemo(() => {
@@ -40,11 +34,11 @@ const Index = () => {
       const matchesSearch = !q || r.title.toLowerCase().includes(q) ||
         r.description.toLowerCase().includes(q) ||
         r.ingredients.some(i => i.toLowerCase().includes(q));
-      const matchesIngredient = !selectedIngredient ||
-        r.ingredients.some(i => i.toLowerCase() === selectedIngredient);
-      return matchesSearch && matchesIngredient;
+      const matchesMeal = !selectedMeal || r.mealCategory === selectedMeal;
+      const matchesProtein = !selectedProtein || r.proteinTags.includes(selectedProtein);
+      return matchesSearch && matchesMeal && matchesProtein;
     });
-  }, [recipes, search, selectedIngredient]);
+  }, [recipes, search, selectedMeal, selectedProtein]);
 
   const handleAdd = (data: RecipeFormData) => {
     addRecipe(data);
@@ -107,7 +101,7 @@ const Index = () => {
   if (view.type === 'form') {
     const editing = view.editId ? getRecipe(view.editId) : undefined;
     const initialData = editing
-      ? { title: editing.title, description: editing.description, imageUrl: editing.imageUrl, ingredients: editing.ingredients, instructions: editing.instructions, rating: editing.rating, notes: editing.notes, source: editing.source }
+      ? { title: editing.title, description: editing.description, imageUrl: editing.imageUrl, ingredients: editing.ingredients, instructions: editing.instructions, rating: editing.rating, notes: editing.notes, source: editing.source, mealCategory: editing.mealCategory, proteinTags: editing.proteinTags }
       : undefined;
     return (
       <div className="min-h-screen bg-background px-4 py-8">
@@ -152,29 +146,41 @@ const Index = () => {
           />
         </div>
 
-        {/* Ingredient filter */}
-        {allIngredients.length > 0 && (
-          <div className="mb-6">
-            <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Filter by ingredient</p>
+        {/* Category filters */}
+        <div className="mb-6 space-y-3">
+          <div>
+            <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Meal</p>
             <div className="flex flex-wrap gap-1.5">
-              {allIngredients.map(ing => (
-                <button
-                  key={ing}
-                  onClick={() => setSelectedIngredient(selectedIngredient === ing ? null : ing)}
-                  className="inline-block"
-                >
+              {MEAL_CATEGORIES.map(cat => (
+                <button key={cat} onClick={() => setSelectedMeal(selectedMeal === cat ? null : cat)}>
                   <Badge
-                    variant={selectedIngredient === ing ? 'default' : 'secondary'}
-                    className="font-body font-normal cursor-pointer capitalize"
+                    variant={selectedMeal === cat ? 'default' : 'secondary'}
+                    className="font-body font-normal cursor-pointer"
                   >
-                    {ing}
-                    {selectedIngredient === ing && <X className="h-3 w-3 ml-1" />}
+                    {cat}
+                    {selectedMeal === cat && <X className="h-3 w-3 ml-1" />}
                   </Badge>
                 </button>
               ))}
             </div>
           </div>
-        )}
+          <div>
+            <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Type</p>
+            <div className="flex flex-wrap gap-1.5">
+              {PROTEIN_TAGS.map(tag => (
+                <button key={tag} onClick={() => setSelectedProtein(selectedProtein === tag ? null : tag)}>
+                  <Badge
+                    variant={selectedProtein === tag ? 'default' : 'secondary'}
+                    className="font-body font-normal cursor-pointer"
+                  >
+                    {tag}
+                    {selectedProtein === tag && <X className="h-3 w-3 ml-1" />}
+                  </Badge>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
 
         {/* Grid */}
         {filtered.length === 0 ? (
