@@ -20,7 +20,7 @@ import { toast } from 'sonner';
 type View = { type: 'list' } | { type: 'detail'; id: string } | { type: 'form'; editId?: string };
 
 const Index = () => {
-  const { recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe } = useRecipes();
+  const { recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote } = useRecipes();
   const [view, setView] = useState<View>({ type: 'list' });
   const [search, setSearch] = useState('');
   const [selectedIngredient, setSelectedIngredient] = useState<string | null>(null);
