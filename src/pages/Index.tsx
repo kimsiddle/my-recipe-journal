@@ -70,8 +70,8 @@ const Index = () => {
     return sorted;
   }, [recipes, search, selectedMeal, selectedProtein, sortMode]);
 
-  const handleAdd = (data: RecipeFormData) => {
-    addRecipe(data);
+  const handleAdd = async (data: RecipeFormData) => {
+    await addRecipe(data);
     setView({ type: 'list' });
     toast.success('Recipe added!');
   };
