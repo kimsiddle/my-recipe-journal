@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Recipe, CookLogEntry, formatIngredient } from '@/types/recipe';
 import { formatDistanceToNow } from 'date-fns';
 
