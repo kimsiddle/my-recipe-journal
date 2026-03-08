@@ -60,8 +60,10 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
     fetchComments();
   };
 
-  const handleDelete = async (id: string) => {
-    await supabase.from('recipe_comments').delete().eq('id', id);
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+    await supabase.from('recipe_comments').delete().eq('id', deleteId);
+    setDeleteId(null);
     fetchComments();
   };
 
