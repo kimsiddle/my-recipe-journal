@@ -230,7 +230,7 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
       <div>
         <Label className="font-body font-medium text-sm mb-1.5 block">Source</Label>
         <div className="flex gap-1.5 mb-2">
-          {(['book', 'website'] as SourceType[]).map(type => (
+          {(['book', 'website', 'social'] as SourceType[]).map(type => (
             <button
               key={type}
               type="button"
@@ -238,7 +238,7 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
                 if (form.source?.type === type) {
                   set('source', null);
                 } else {
-                  set('source', { type, name: form.source?.name || '', url: type === 'website' ? (form.source?.url || '') : undefined });
+                  set('source', { type, name: form.source?.name || '', url: type !== 'book' ? (form.source?.url || '') : undefined });
                 }
               }}
             >
@@ -246,7 +246,7 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
                 variant={form.source?.type === type ? 'default' : 'secondary'}
                 className="font-body font-normal cursor-pointer capitalize"
               >
-                {type === 'book' ? '📖 Book' : '🌐 Website'}
+                {type === 'book' ? '📖 Book' : type === 'website' ? '🌐 Website' : '📱 Social'}
               </Badge>
             </button>
           ))}
@@ -256,13 +256,13 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
             <Input
               value={form.source.name}
               onChange={e => set('source', { ...form.source!, name: e.target.value })}
-              placeholder={form.source.type === 'book' ? 'Cookbook name (e.g. Salt Fat Acid Heat)' : 'Website name (e.g. Bon Appétit)'}
+              placeholder={form.source.type === 'book' ? 'Cookbook name (e.g. Salt Fat Acid Heat)' : form.source.type === 'social' ? 'Account or creator name' : 'Website name (e.g. Bon Appétit)'}
             />
-            {form.source.type === 'website' && (
+            {(form.source.type === 'website' || form.source.type === 'social') && (
               <Input
                 value={form.source.url || ''}
                 onChange={e => set('source', { ...form.source!, url: e.target.value || undefined })}
-                placeholder="https://..."
+                placeholder={form.source.type === 'social' ? 'Paste social media URL (Instagram, TikTok, etc.)' : 'https://...'}
                 type="url"
               />
             )}

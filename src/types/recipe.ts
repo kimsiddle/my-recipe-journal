@@ -18,7 +18,7 @@ export interface CookLogEntry {
   photoUrls?: string[];
 }
 
-export type SourceType = 'book' | 'website';
+export type SourceType = 'book' | 'website' | 'social';
 
 export interface RecipeSource {
   type: SourceType;
