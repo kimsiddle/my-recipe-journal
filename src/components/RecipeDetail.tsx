@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { RatingScale } from '@/components/RatingScale';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, Plus, Send, X, MessageSquare, BookOpen, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, Plus, Send, X, MessageSquare, BookOpen, ExternalLink, Clock, Flame } from 'lucide-react';
 
 interface RecipeDetailProps {
   recipe: Recipe;
