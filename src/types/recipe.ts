@@ -38,6 +38,7 @@ export interface Recipe {
   difficulty: DifficultyLevel;
   cookTime: string;
   notes: RecipeNote[];
+  photos: RecipePhoto[];
   source: RecipeSource | null;
   mealCategory: MealCategory;
   proteinTags: ProteinTag[];
