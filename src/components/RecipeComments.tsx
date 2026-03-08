@@ -34,6 +34,7 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deletePhotoId, setDeletePhotoId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const fetchComments = useCallback(async () => {
@@ -89,11 +90,13 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
     fetchComments();
   };
 
-  const handleDeletePhoto = async (commentId: string) => {
+  const handleConfirmDeletePhoto = async () => {
+    if (!deletePhotoId) return;
     const { error } = await supabase
       .from('recipe_comments')
       .update({ photo_url: null } as any)
-      .eq('id', commentId);
+      .eq('id', deletePhotoId);
+    setDeletePhotoId(null);
     if (error) { toast.error('Failed to remove photo'); return; }
     fetchComments();
   };
@@ -176,7 +179,7 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
                   {isOwner && (
                     <button
                       type="button"
-                      onClick={() => handleDeletePhoto(c.id)}
+                      onClick={() => setDeletePhotoId(c.id)}
                       className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
                       title="Remove photo"
                     >
@@ -214,6 +217,19 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
           <div className="flex gap-3 justify-end">
             <Button variant="outline" onClick={() => setDeleteId(null)}>Cancel</Button>
             <Button variant="destructive" onClick={handleConfirmDelete}>Remove</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!deletePhotoId} onOpenChange={(open) => !open && setDeletePhotoId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Remove photo from comment?</DialogTitle>
+            <DialogDescription>The photo will be permanently removed but the comment will remain.</DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 justify-end">
+            <Button variant="outline" onClick={() => setDeletePhotoId(null)}>Cancel</Button>
+            <Button variant="destructive" onClick={handleConfirmDeletePhoto}>Remove Photo</Button>
           </div>
         </DialogContent>
       </Dialog>
