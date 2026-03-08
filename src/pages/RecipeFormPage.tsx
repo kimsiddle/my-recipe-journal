@@ -54,8 +54,8 @@ const RecipeFormPage = () => {
       instructions: data.instructions,
       rating: 0,
       difficulty: 'Medium',
-      cookTime: '',
-      servings: null,
+      cookTime: data.cookTime || '',
+      servings: data.servings || null,
       notes: data.notes
         ? [{ id: crypto.randomUUID(), text: data.notes, createdAt: new Date().toISOString() }]
         : [],

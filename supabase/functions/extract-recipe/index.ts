@@ -100,6 +100,17 @@ serve(async (req) => {
                       description:
                         "Any additional notes, tips, or details from the recipe. Empty string if none.",
                     },
+                    cook_time: {
+                      type: "string",
+                      enum: ["5 min", "10 min", "15 min", "20 min", "25 min", "30 min", "45 min", "1 hour", "1.5 hours", "2 hours", "2.5 hours", "3 hours", "4+ hours", ""],
+                      description:
+                        "Approximate total cook/prep time, mapped to the closest option. Empty string if not found.",
+                    },
+                    servings: {
+                      type: "integer",
+                      description:
+                        "Number of servings the recipe makes. Use 0 if not specified.",
+                    },
                     confidence: {
                       type: "string",
                       enum: ["high", "medium", "low"],
@@ -112,6 +123,8 @@ serve(async (req) => {
                     "ingredients",
                     "instructions",
                     "notes",
+                    "cook_time",
+                    "servings",
                     "confidence",
                   ],
                   additionalProperties: false,

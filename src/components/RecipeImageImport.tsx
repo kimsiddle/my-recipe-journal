@@ -10,6 +10,8 @@ export interface ExtractedRecipe {
   ingredients: Ingredient[];
   instructions: string;
   notes: string;
+  cookTime: string;
+  servings: number | null;
   imageUrl: string;
 }
 
@@ -90,6 +92,8 @@ export function RecipeImageImport({ onExtracted, onSkip }: RecipeImageImportProp
             })),
             instructions: data.instructions || '',
             notes: data.notes || '',
+            cookTime: data.cook_time || '',
+            servings: data.servings ? Number(data.servings) : null,
             imageUrl: preview,
           });
           return;
@@ -109,6 +113,8 @@ export function RecipeImageImport({ onExtracted, onSkip }: RecipeImageImportProp
         })),
         instructions: data.instructions || '',
         notes: data.notes || '',
+        cookTime: data.cook_time || '',
+        servings: data.servings ? Number(data.servings) : null,
         imageUrl: preview,
       });
     } catch (err: any) {
