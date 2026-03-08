@@ -9,6 +9,12 @@ export interface RecipeSource {
   url?: string;
 }
 
+export const MEAL_CATEGORIES = ['Breakfast', 'Lunch', 'Dinner', 'Snack', 'Dessert'] as const;
+export type MealCategory = typeof MEAL_CATEGORIES[number];
+
+export const PROTEIN_TAGS = ['Poultry', 'Fish', 'Beef', 'Pork', 'Seafood', 'Vegetables', 'Pasta', 'Lamb', 'Tofu'] as const;
+export type ProteinTag = typeof PROTEIN_TAGS[number];
+
 export interface Recipe {
   id: string;
   title: string;
@@ -19,6 +25,8 @@ export interface Recipe {
   rating: number;
   notes: RecipeNote[];
   source: RecipeSource | null;
+  mealCategory: MealCategory;
+  proteinTags: ProteinTag[];
   createdAt: string;
   updatedAt: string;
 }
