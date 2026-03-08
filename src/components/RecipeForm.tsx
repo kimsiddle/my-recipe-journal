@@ -126,27 +126,75 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
       <div>
         <Label className="font-body font-medium text-sm mb-1.5 block">Type</Label>
         <div className="flex flex-wrap gap-1.5">
-          {PROTEIN_TAGS.map(tag => {
-            const selected = form.proteinTags.includes(tag);
+          {proteinTagOptions.map(tag => {
+            const selected = form.proteinTags.includes(tag as ProteinTag);
             return (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => set('proteinTags', selected
-                  ? form.proteinTags.filter(t => t !== tag)
-                  : [...form.proteinTags, tag]
-                )}
-              >
-                <Badge
-                  variant={selected ? 'default' : 'secondary'}
-                  className="font-body font-normal cursor-pointer"
+              <div key={tag} className="relative group">
+                <button
+                  type="button"
+                  onClick={() => set('proteinTags', selected
+                    ? form.proteinTags.filter(t => t !== tag)
+                    : [...form.proteinTags, tag as ProteinTag]
+                  )}
                 >
-                  {tag}
-                  {selected && <X className="h-3 w-3 ml-1" />}
-                </Badge>
-              </button>
+                  <Badge
+                    variant={selected ? 'default' : 'secondary'}
+                    className="font-body font-normal cursor-pointer"
+                  >
+                    {tag}
+                    {selected && <X className="h-3 w-3 ml-1" />}
+                  </Badge>
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const removed = await removeTag(tag);
+                    if (removed) {
+                      set('proteinTags', form.proteinTags.filter(t => t !== tag));
+                    }
+                  }}
+                  className="absolute -top-1.5 -right-1.5 hidden group-hover:flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-destructive-foreground"
+                  title={`Remove "${tag}" option`}
+                >
+                  <Trash2 className="h-2.5 w-2.5" />
+                </button>
+              </div>
             );
           })}
+          {showNewTagInput ? (
+            <form
+              className="flex items-center gap-1"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const success = await addTag(newTagInput);
+                if (success) {
+                  setNewTagInput('');
+                  setShowNewTagInput(false);
+                }
+              }}
+            >
+              <Input
+                value={newTagInput}
+                onChange={e => setNewTagInput(e.target.value)}
+                placeholder="New tag..."
+                className="h-7 w-28 text-xs"
+                autoFocus
+              />
+              <Button type="submit" size="sm" variant="ghost" className="h-7 w-7 p-0">
+                <Plus className="h-3.5 w-3.5" />
+              </Button>
+              <Button type="button" size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => { setShowNewTagInput(false); setNewTagInput(''); }}>
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            </form>
+          ) : (
+            <button type="button" onClick={() => setShowNewTagInput(true)}>
+              <Badge variant="outline" className="font-body font-normal cursor-pointer border-dashed">
+                <Plus className="h-3 w-3 mr-1" /> Add
+              </Badge>
+            </button>
+          )}
         </div>
       </div>
 
