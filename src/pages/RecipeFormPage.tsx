@@ -3,8 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useRecipes } from '@/context/RecipeContext';
 import { RecipeForm } from '@/components/RecipeForm';
 import { RecipeImageImport, ExtractedRecipe } from '@/components/RecipeImageImport';
+import { RecipeUrlImport } from '@/components/RecipeUrlImport';
 import { RecipeFormData } from '@/types/recipe';
 import { toast } from 'sonner';
+import { Camera, Link2, PenLine } from 'lucide-react';
+
+type ImportMode = 'choose' | 'photo' | 'url';
 
 const RecipeFormPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,7 +17,8 @@ const RecipeFormPage = () => {
 
   const editing = id ? getRecipe(id) : undefined;
   const [importData, setImportData] = useState<RecipeFormData | null>(null);
-  const [showImport, setShowImport] = useState(!editing);
+  const [importMode, setImportMode] = useState<ImportMode>('choose');
+  const [showForm, setShowForm] = useState(!!editing);
 
   const initialData: RecipeFormData | undefined = editing
     ? {
@@ -45,7 +50,11 @@ const RecipeFormPage = () => {
     }
   };
 
-  const handleExtracted = (data: ExtractedRecipe) => {
+  const handleExtracted = (data: ExtractedRecipe, url?: string) => {
+    const source = url
+      ? { type: 'website' as const, name: new URL(url).hostname.replace('www.', ''), url }
+      : null;
+
     setImportData({
       title: data.title,
       description: '',
@@ -58,36 +67,105 @@ const RecipeFormPage = () => {
       servings: data.servings || null,
       notesText: data.notes || '',
       photos: [],
-      source: null,
+      source,
       mealCategory: 'Dinner',
       proteinTags: [],
       occasionTags: [],
       cookLog: [],
       lastCookedAt: null,
     });
-    setShowImport(false);
+    setShowForm(true);
     toast.success('Recipe extracted! Review and edit below.');
   };
 
-  // For new recipes, show import step first
-  if (!editing && showImport) {
+  // For editing, go straight to form
+  if (showForm || editing) {
+    return (
+      <div className="px-4 py-8">
+        <div className="max-w-lg mx-auto">
+          <h1 className="text-2xl font-display mb-6">{editing ? 'Edit Recipe' : 'New Recipe'}</h1>
+          <RecipeForm initial={initialData} onSubmit={handleSubmit} onCancel={handleCancel} />
+        </div>
+      </div>
+    );
+  }
+
+  // Import mode screens
+  if (importMode === 'photo') {
     return (
       <div className="px-4 py-8">
         <div className="max-w-lg mx-auto">
           <RecipeImageImport
-            onExtracted={handleExtracted}
-            onSkip={() => setShowImport(false)}
+            onExtracted={(data) => handleExtracted(data)}
+            onSkip={() => { setShowForm(true); }}
           />
         </div>
       </div>
     );
   }
 
+  if (importMode === 'url') {
+    return (
+      <div className="px-4 py-8">
+        <div className="max-w-lg mx-auto">
+          <RecipeUrlImport
+            onExtracted={(data, url) => handleExtracted(data, url)}
+            onBack={() => setImportMode('choose')}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Chooser screen
   return (
     <div className="px-4 py-8">
-      <div className="max-w-lg mx-auto">
-        <h1 className="text-2xl font-display mb-6">{editing ? 'Edit Recipe' : 'New Recipe'}</h1>
-        <RecipeForm initial={initialData} onSubmit={handleSubmit} onCancel={handleCancel} />
+      <div className="max-w-lg mx-auto space-y-6">
+        <div className="text-center space-y-2">
+          <h1 className="text-2xl font-display">New Recipe</h1>
+          <p className="text-sm text-muted-foreground">How would you like to add your recipe?</p>
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={() => setImportMode('photo')}
+            className="w-full flex items-center gap-4 p-4 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors text-left"
+          >
+            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <Camera className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-medium text-foreground">Import from Photo</p>
+              <p className="text-xs text-muted-foreground">Upload a photo of a recipe to extract details</p>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setImportMode('url')}
+            className="w-full flex items-center gap-4 p-4 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors text-left"
+          >
+            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <Link2 className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-medium text-foreground">Import from URL</p>
+              <p className="text-xs text-muted-foreground">Paste a link to a recipe page</p>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setShowForm(true)}
+            className="w-full flex items-center gap-4 p-4 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors text-left"
+          >
+            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <PenLine className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-medium text-foreground">Start from Scratch</p>
+              <p className="text-xs text-muted-foreground">Manually enter your recipe details</p>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   );
