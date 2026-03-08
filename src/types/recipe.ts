@@ -57,4 +57,4 @@ export interface Recipe {
   userId: string | null;
 }
 
-export type RecipeFormData = Omit<Recipe, 'id' | 'createdAt' | 'updatedAt'>;
+export type RecipeFormData = Omit<Recipe, 'id' | 'createdAt' | 'updatedAt' | 'userId'>;
