@@ -135,6 +135,9 @@ export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDe
         </div>
       </section>
 
+      {/* Photo gallery */}
+      <RecipePhotoGallery photos={recipe.photos} onAddPhoto={onAddPhoto} onDeletePhoto={onDeletePhoto} />
+
       {/* Notes as comment thread */}
       <section className="mt-8">
         <div className="flex items-center justify-between mb-4">

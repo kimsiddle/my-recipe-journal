@@ -84,6 +84,14 @@ const Index = () => {
             updateRecipe(recipe.id, { ...recipe, rating });
             toast.success('Rating updated!');
           }}
+          onAddPhoto={(dataUrl) => {
+            addPhoto(recipe.id, dataUrl);
+            toast.success('Photo added!');
+          }}
+          onDeletePhoto={(photoId) => {
+            deletePhoto(recipe.id, photoId);
+            toast.success('Photo removed');
+          }}
         />
         <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
           <DialogContent>
