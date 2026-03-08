@@ -61,6 +61,7 @@ const RecipeFormPage = () => {
       source: null,
       mealCategory: 'Dinner',
       proteinTags: [],
+      occasionTags: [],
       cookLog: [],
       lastCookedAt: null,
     });

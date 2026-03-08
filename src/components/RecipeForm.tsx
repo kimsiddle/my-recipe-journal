@@ -35,6 +35,7 @@ const emptyForm: RecipeFormData = {
   source: null,
   mealCategory: 'Dinner',
   proteinTags: [],
+  occasionTags: [],
   cookLog: [],
   lastCookedAt: null,
 };

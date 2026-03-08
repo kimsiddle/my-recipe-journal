@@ -176,6 +176,7 @@ export type Database = {
           last_cooked_at: string | null
           meal_category: string
           notes_text: string
+          occasion_tags: string[]
           protein_tags: string[]
           rating: number
           servings: number | null
@@ -198,6 +199,7 @@ export type Database = {
           last_cooked_at?: string | null
           meal_category?: string
           notes_text?: string
+          occasion_tags?: string[]
           protein_tags?: string[]
           rating?: number
           servings?: number | null
@@ -220,6 +222,7 @@ export type Database = {
           last_cooked_at?: string | null
           meal_category?: string
           notes_text?: string
+          occasion_tags?: string[]
           protein_tags?: string[]
           rating?: number
           servings?: number | null
