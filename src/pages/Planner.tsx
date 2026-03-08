@@ -97,8 +97,9 @@ export default function Planner() {
       </div>
 
       {/* Week grid */}
-      <div className="grid grid-cols-7 gap-2">
-        {/* Day headers */}
+      <div className="grid grid-cols-[auto_repeat(7,1fr)] gap-2">
+        {/* Header row: empty corner + day headers */}
+        <div />
         {weekDays.map(day => (
           <div key={day.date} className="text-center pb-2">
             <p className="text-xs text-muted-foreground uppercase">{day.label}</p>
@@ -108,42 +109,47 @@ export default function Planner() {
 
         {/* Meal rows */}
         {PLAN_MEALS.map(meal => (
-          weekDays.map(day => {
-            const recipeId = getRecipeId(day.date, meal);
-            const recipe = recipeId ? getRecipe(recipeId) : null;
+          <>
+            {/* Row label */}
+            <div key={`${meal}-label`} className="flex items-center pr-2">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium whitespace-nowrap">{meal}</p>
+            </div>
+            {weekDays.map(day => {
+              const recipeId = getRecipeId(day.date, meal);
+              const recipe = recipeId ? getRecipe(recipeId) : null;
 
-            return (
-              <div
-                key={`${day.date}-${meal}`}
-                className="min-h-[80px] rounded-lg border bg-card p-2 flex flex-col"
-              >
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">{meal}</p>
-                {recipe ? (
-                  <div className="flex-1 flex flex-col">
-                    <div className="flex-1">
-                      {recipe.imageUrl && (
-                        <img src={recipe.imageUrl} alt="" className="w-full h-10 object-cover rounded mb-1" />
-                      )}
-                      <p className="text-xs font-medium leading-tight line-clamp-2">{recipe.title}</p>
+              return (
+                <div
+                  key={`${day.date}-${meal}`}
+                  className="min-h-[80px] rounded-lg border bg-card p-2 flex flex-col"
+                >
+                  {recipe ? (
+                    <div className="flex-1 flex flex-col">
+                      <div className="flex-1">
+                        {recipe.imageUrl && (
+                          <img src={recipe.imageUrl} alt="" className="w-full h-10 object-cover rounded mb-1" />
+                        )}
+                        <p className="text-xs font-medium leading-tight line-clamp-2">{recipe.title}</p>
+                      </div>
+                      <button
+                        onClick={() => removeRecipe(day.date, meal)}
+                        className="self-end mt-1 text-muted-foreground hover:text-destructive transition-colors"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
                     </div>
+                  ) : (
                     <button
-                      onClick={() => removeRecipe(day.date, meal)}
-                      className="self-end mt-1 text-muted-foreground hover:text-destructive transition-colors"
+                      onClick={() => setPickerOpen({ date: day.date, meal })}
+                      className="flex-1 flex items-center justify-center text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted/50 rounded transition-colors"
                     >
-                      <X className="h-3 w-3" />
+                      <UtensilsCrossed className="h-4 w-4" />
                     </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setPickerOpen({ date: day.date, meal })}
-                    className="flex-1 flex items-center justify-center text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted/50 rounded transition-colors"
-                  >
-                    <UtensilsCrossed className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
-            );
-          })
+                  )}
+                </div>
+              );
+            })}
+          </>
         ))}
       </div>
 
