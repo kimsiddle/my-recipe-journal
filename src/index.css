@@ -151,5 +151,10 @@
   background-size: 320px 320px;
   opacity: 0.05;
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
+}
+
+.food-pattern-bg > * {
+  position: relative;
+  z-index: 2;
 }
