@@ -115,10 +115,10 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       source_url: data.source?.url || null,
       meal_category: data.mealCategory,
       protein_tags: data.proteinTags,
-      servings: data.servings,
       last_cooked_at: data.lastCookedAt,
       user_id: user.id,
-    }).select().single();
+      servings: data.servings,
+    } as any).select().single();
 
     if (error) { console.error('Error adding recipe:', error); return; }
     await fetchRecipes();
@@ -139,10 +139,10 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       source_url: data.source?.url || null,
       meal_category: data.mealCategory,
       protein_tags: data.proteinTags,
-      servings: data.servings,
       last_cooked_at: data.lastCookedAt,
       updated_at: new Date().toISOString(),
-    }).eq('id', id);
+      servings: data.servings,
+    } as any).eq('id', id);
 
     if (error) { console.error('Error updating recipe:', error); return; }
     await fetchRecipes();
