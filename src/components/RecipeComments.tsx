@@ -31,6 +31,7 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
   const [name, setName] = useState('');
   const [text, setText] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const fetchComments = useCallback(async () => {
     const { data } = await supabase
