@@ -3,7 +3,7 @@ import { Recipe } from '@/types/recipe';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { RatingScale } from '@/components/RatingScale';
-import { UtensilsCrossed, Clock, Flame } from 'lucide-react';
+import { UtensilsCrossed, Clock, Flame, Users } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 interface RecipeCardProps {
