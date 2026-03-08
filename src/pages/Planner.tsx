@@ -5,6 +5,7 @@ import { useRecipes } from '@/context/RecipeContext';
 import { MEAL_CATEGORIES, MealCategory } from '@/types/recipe';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import {
   Dialog,
   DialogContent,
@@ -12,7 +13,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { ChevronLeft, ChevronRight, X, ShoppingCart, Trash2, CalendarDays, UtensilsCrossed, Check, Copy } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, ShoppingCart, Trash2, CalendarDays, UtensilsCrossed, Check, Copy, Type } from 'lucide-react';
 import { toast } from 'sonner';
 
 const PLAN_MEALS: MealCategory[] = ['Breakfast', 'Lunch', 'Dinner'];
@@ -21,8 +22,9 @@ export default function Planner() {
   const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
   const [pickerOpen, setPickerOpen] = useState<{ date: string; meal: MealCategory } | null>(null);
   const [showShoppingList, setShowShoppingList] = useState(false);
+  const [quickText, setQuickText] = useState('');
 
-  const { assignRecipe, removeRecipe, getRecipeId, clearWeek, getPlannedRecipeIds } = usePlanner();
+  const { assignRecipe, assignCustomMeal, removeRecipe, getEntry, clearWeek, getPlannedRecipeIds } = usePlanner();
   const { recipes, getRecipe } = useRecipes();
 
   const weekDays = useMemo(() => {
@@ -34,7 +36,7 @@ export default function Planner() {
 
   const weekDates = weekDays.map(d => d.date);
 
-  // Shopping list
+  // Shopping list — only includes saved recipes, not custom text entries
   const shoppingList = useMemo(() => {
     const plannedIds = getPlannedRecipeIds(weekDates);
     const ingredientMap = new Map<string, Set<string>>();
@@ -58,6 +60,41 @@ export default function Planner() {
     const text = shoppingList.map(item => `☐ ${item.ingredient}`).join('\n');
     navigator.clipboard.writeText(text);
     toast.success('Shopping list copied!');
+  };
+
+  const handleQuickAdd = () => {
+    const trimmed = quickText.trim();
+    if (!trimmed || !pickerOpen) return;
+    assignCustomMeal(pickerOpen.date, pickerOpen.meal, trimmed);
+    setQuickText('');
+    setPickerOpen(null);
+    toast.success(`"${trimmed}" added`);
+  };
+
+  // Helper to render a meal cell's content
+  const renderMealContent = (date: string, meal: MealCategory, compact = false) => {
+    const entry = getEntry(date, meal);
+    if (!entry) return null;
+
+    if (entry.recipeId) {
+      const recipe = getRecipe(entry.recipeId);
+      if (!recipe) return null;
+      return {
+        title: recipe.title,
+        imageUrl: recipe.imageUrl,
+        isCustom: false,
+      };
+    }
+
+    if (entry.customName) {
+      return {
+        title: entry.customName,
+        imageUrl: null,
+        isCustom: true,
+      };
+    }
+
+    return null;
   };
 
   return (
@@ -114,21 +151,23 @@ export default function Planner() {
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium whitespace-nowrap">{meal}</p>
             </div>
             {weekDays.map(day => {
-              const recipeId = getRecipeId(day.date, meal);
-              const recipe = recipeId ? getRecipe(recipeId) : null;
+              const content = renderMealContent(day.date, meal);
 
               return (
                 <div
                   key={`${day.date}-${meal}`}
                   className="min-h-[80px] rounded-lg border bg-card p-2 flex flex-col"
                 >
-                  {recipe ? (
+                  {content ? (
                     <div className="flex-1 flex flex-col">
                       <div className="flex-1">
-                        {recipe.imageUrl && (
-                          <img src={recipe.imageUrl} alt="" className="w-full h-10 object-cover rounded mb-1" />
+                        {content.imageUrl && (
+                          <img src={content.imageUrl} alt="" className="w-full h-10 object-cover rounded mb-1" />
                         )}
-                        <p className="text-xs font-medium leading-tight line-clamp-2">{recipe.title}</p>
+                        <p className="text-xs font-medium leading-tight line-clamp-2">
+                          {content.isCustom && <Type className="inline h-3 w-3 mr-0.5 text-muted-foreground" />}
+                          {content.title}
+                        </p>
                       </div>
                       <button
                         onClick={() => removeRecipe(day.date, meal)}
@@ -139,7 +178,7 @@ export default function Planner() {
                     </div>
                   ) : (
                     <button
-                      onClick={() => setPickerOpen({ date: day.date, meal })}
+                      onClick={() => { setPickerOpen({ date: day.date, meal }); setQuickText(''); }}
                       className="flex-1 flex items-center justify-center text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted/50 rounded transition-colors"
                     >
                       <UtensilsCrossed className="h-4 w-4" />
@@ -154,100 +193,122 @@ export default function Planner() {
 
       {/* Mobile: Stacked day view */}
       <div className="md:hidden space-y-4">
-        {weekDays.map(day => {
-          const hasMeals = PLAN_MEALS.some(meal => getRecipeId(day.date, meal));
-          return (
-            <div key={day.date} className="rounded-xl border bg-card overflow-hidden">
-              <div className="px-3 py-2 bg-muted/50 border-b">
-                <p className="text-sm font-medium">
-                  <span className="text-muted-foreground">{day.label}</span>{' '}
-                  <span className="font-display">{day.fullLabel}</span>
-                </p>
-              </div>
-              <div className="divide-y">
-                {PLAN_MEALS.map(meal => {
-                  const recipeId = getRecipeId(day.date, meal);
-                  const recipe = recipeId ? getRecipe(recipeId) : null;
-
-                  return (
-                    <div key={meal} className="flex items-center gap-3 px-3 py-2.5 min-h-[52px]">
-                      <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium w-16 shrink-0">
-                        {meal}
-                      </span>
-                      {recipe ? (
-                        <div className="flex items-center gap-2 flex-1 min-w-0">
-                          {recipe.imageUrl && (
-                            <img src={recipe.imageUrl} alt="" className="h-8 w-8 rounded object-cover shrink-0" />
-                          )}
-                          <p className="text-sm font-medium truncate flex-1">{recipe.title}</p>
-                          <button
-                            onClick={() => removeRecipe(day.date, meal)}
-                            className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => setPickerOpen({ date: day.date, meal })}
-                          className="flex-1 flex items-center gap-2 text-muted-foreground/40 hover:text-muted-foreground transition-colors py-1"
-                        >
-                          <UtensilsCrossed className="h-3.5 w-3.5" />
-                          <span className="text-xs">Add meal</span>
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+        {weekDays.map(day => (
+          <div key={day.date} className="rounded-xl border bg-card overflow-hidden">
+            <div className="px-3 py-2 bg-muted/50 border-b">
+              <p className="text-sm font-medium">
+                <span className="text-muted-foreground">{day.label}</span>{' '}
+                <span className="font-display">{day.fullLabel}</span>
+              </p>
             </div>
-          );
-        })}
+            <div className="divide-y">
+              {PLAN_MEALS.map(meal => {
+                const content = renderMealContent(day.date, meal);
+
+                return (
+                  <div key={meal} className="flex items-center gap-3 px-3 py-2.5 min-h-[52px]">
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium w-16 shrink-0">
+                      {meal}
+                    </span>
+                    {content ? (
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        {content.imageUrl && (
+                          <img src={content.imageUrl} alt="" className="h-8 w-8 rounded object-cover shrink-0" />
+                        )}
+                        <p className="text-sm font-medium truncate flex-1">
+                          {content.isCustom && <Type className="inline h-3 w-3 mr-1 text-muted-foreground" />}
+                          {content.title}
+                        </p>
+                        <button
+                          onClick={() => removeRecipe(day.date, meal)}
+                          className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => { setPickerOpen({ date: day.date, meal }); setQuickText(''); }}
+                        className="flex-1 flex items-center gap-2 text-muted-foreground/40 hover:text-muted-foreground transition-colors py-1"
+                      >
+                        <UtensilsCrossed className="h-3.5 w-3.5" />
+                        <span className="text-xs">Add meal</span>
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </div>
 
-      {/* Recipe picker dialog */}
+      {/* Meal picker dialog — quick text + recipe list */}
       <Dialog open={!!pickerOpen} onOpenChange={() => setPickerOpen(null)}>
         <DialogContent className="max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              Pick a recipe for {pickerOpen?.meal}
+              Add {pickerOpen?.meal}
             </DialogTitle>
             <DialogDescription>
               {pickerOpen && format(new Date(pickerOpen.date + 'T12:00:00'), 'EEEE, MMM d')}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-2 mt-2">
-            {recipes.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-8">No recipes yet. Add some first!</p>
-            ) : (
-              recipes.map(recipe => (
-                <button
-                  key={recipe.id}
-                  onClick={() => {
-                    if (pickerOpen) {
-                      assignRecipe(pickerOpen.date, pickerOpen.meal, recipe.id);
-                      setPickerOpen(null);
-                      toast.success(`${recipe.title} added`);
-                    }
-                  }}
-                  className="w-full flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors text-left"
-                >
-                  <div className="h-10 w-10 rounded-md overflow-hidden bg-muted shrink-0 flex items-center justify-center">
-                    {recipe.imageUrl ? (
-                      <img src={recipe.imageUrl} alt="" className="h-full w-full object-cover" />
-                    ) : (
-                      <UtensilsCrossed className="h-4 w-4 text-muted-foreground/40" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{recipe.title}</p>
-                    <p className="text-xs text-muted-foreground">{recipe.cookTime} · {recipe.difficulty}</p>
-                  </div>
-                  <Badge variant="secondary" className="text-xs shrink-0">{recipe.rating}/10</Badge>
-                </button>
-              ))
-            )}
+
+          {/* Quick text entry */}
+          <div className="mt-2">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Quick entry</p>
+            <form
+              onSubmit={e => { e.preventDefault(); handleQuickAdd(); }}
+              className="flex gap-2"
+            >
+              <Input
+                value={quickText}
+                onChange={e => setQuickText(e.target.value)}
+                placeholder="Type a dish name (e.g. Tacos)"
+                className="flex-1"
+                autoFocus
+              />
+              <Button type="submit" size="sm" disabled={!quickText.trim()}>
+                Add
+              </Button>
+            </form>
           </div>
+
+          {/* Saved recipes */}
+          {recipes.length > 0 && (
+            <div className="mt-4">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">From your recipes</p>
+              <div className="space-y-2">
+                {recipes.map(recipe => (
+                  <button
+                    key={recipe.id}
+                    onClick={() => {
+                      if (pickerOpen) {
+                        assignRecipe(pickerOpen.date, pickerOpen.meal, recipe.id);
+                        setPickerOpen(null);
+                        toast.success(`${recipe.title} added`);
+                      }
+                    }}
+                    className="w-full flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors text-left"
+                  >
+                    <div className="h-10 w-10 rounded-md overflow-hidden bg-muted shrink-0 flex items-center justify-center">
+                      {recipe.imageUrl ? (
+                        <img src={recipe.imageUrl} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <UtensilsCrossed className="h-4 w-4 text-muted-foreground/40" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{recipe.title}</p>
+                      <p className="text-xs text-muted-foreground">{recipe.cookTime} · {recipe.difficulty}</p>
+                    </div>
+                    <Badge variant="secondary" className="text-xs shrink-0">{recipe.rating}/10</Badge>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
