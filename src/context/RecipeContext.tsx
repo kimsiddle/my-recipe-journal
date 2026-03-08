@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, ReactNode } from 'react';
 import { Recipe, RecipeFormData, RecipeNote, RecipePhoto, CookLogEntry, RecipeSource } from '@/types/recipe';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/AuthContext';
 
 interface RecipeContextType {
   recipes: Recipe[];
