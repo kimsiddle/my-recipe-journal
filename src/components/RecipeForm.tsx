@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
-import { RecipeFormData, MEAL_CATEGORIES, DIFFICULTY_LEVELS, MealCategory, ProteinTag, SourceType, Ingredient, formatIngredient } from '@/types/recipe';
+import { RecipeFormData, MEAL_CATEGORIES, DIFFICULTY_LEVELS, COOK_TIME_OPTIONS, SERVING_OPTIONS, MealCategory, ProteinTag, SourceType, Ingredient, formatIngredient } from '@/types/recipe';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,7 @@ const emptyForm: RecipeFormData = {
   rating: 0,
   difficulty: 'Medium',
   cookTime: '',
+  servings: null,
   notes: [],
   photos: [],
   source: null,
@@ -107,15 +109,34 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
         />
       </div>
 
-      {/* Cook Time */}
-      <div>
-        <Label htmlFor="cookTime" className="font-body font-medium text-sm mb-1.5 block">Cook Time</Label>
-        <Input
-          id="cookTime"
-          value={form.cookTime}
-          onChange={e => set('cookTime', e.target.value)}
-          placeholder="e.g. 30 min, 1 hour"
-        />
+      {/* Cook Time & Servings */}
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label className="font-body font-medium text-sm mb-1.5 block">Cook Time</Label>
+          <Select value={form.cookTime || ''} onValueChange={(v) => set('cookTime', v)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select time" />
+            </SelectTrigger>
+            <SelectContent>
+              {COOK_TIME_OPTIONS.map(opt => (
+                <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label className="font-body font-medium text-sm mb-1.5 block">Servings</Label>
+          <Select value={form.servings?.toString() || ''} onValueChange={(v) => set('servings', v ? parseInt(v) : null)}>
+            <SelectTrigger>
+              <SelectValue placeholder="How many?" />
+            </SelectTrigger>
+            <SelectContent>
+              {SERVING_OPTIONS.map(n => (
+                <SelectItem key={n} value={n.toString()}>{n} {n === 1 ? 'person' : 'people'}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Difficulty */}

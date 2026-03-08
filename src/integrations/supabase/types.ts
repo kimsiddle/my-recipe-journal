@@ -174,6 +174,7 @@ export type Database = {
           meal_category: string
           protein_tags: string[]
           rating: number
+          servings: number | null
           source_name: string | null
           source_type: string | null
           source_url: string | null
@@ -194,6 +195,7 @@ export type Database = {
           meal_category?: string
           protein_tags?: string[]
           rating?: number
+          servings?: number | null
           source_name?: string | null
           source_type?: string | null
           source_url?: string | null
@@ -214,6 +216,7 @@ export type Database = {
           meal_category?: string
           protein_tags?: string[]
           rating?: number
+          servings?: number | null
           source_name?: string | null
           source_type?: string | null
           source_url?: string | null

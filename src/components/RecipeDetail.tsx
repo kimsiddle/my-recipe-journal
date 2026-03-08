@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, Plus, Send, X, MessageSquare, BookOpen, ExternalLink, Clock, Flame, ChefHat, Share2, Copy, Mail, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, Plus, Send, X, MessageSquare, BookOpen, ExternalLink, Clock, Flame, ChefHat, Share2, Copy, Mail, MessageCircle, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface RecipeDetailProps {
@@ -153,6 +153,12 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onAddN
           <Flame className="h-4 w-4" />
           {recipe.difficulty}
         </span>
+        {recipe.servings && (
+          <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <Users className="h-4 w-4" />
+            {recipe.servings} {recipe.servings === 1 ? 'serving' : 'servings'}
+          </span>
+        )}
         <span className="text-sm text-muted-foreground">
           {lastCookedLabel}
         </span>

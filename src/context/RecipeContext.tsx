@@ -45,6 +45,7 @@ function mapDbToRecipe(
     source,
     mealCategory: row.meal_category || 'Dinner',
     proteinTags: row.protein_tags || [],
+    servings: row.servings ?? null,
     notes: notes.map(n => ({ id: n.id, text: n.text, createdAt: n.created_at })),
     photos: photos.map(p => ({ id: p.id, url: p.url, createdAt: p.created_at })),
     cookLog: cookLog.map(c => ({
@@ -114,6 +115,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       source_url: data.source?.url || null,
       meal_category: data.mealCategory,
       protein_tags: data.proteinTags,
+      servings: data.servings,
       last_cooked_at: data.lastCookedAt,
       user_id: user.id,
     }).select().single();
@@ -137,6 +139,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       source_url: data.source?.url || null,
       meal_category: data.mealCategory,
       protein_tags: data.proteinTags,
+      servings: data.servings,
       last_cooked_at: data.lastCookedAt,
       updated_at: new Date().toISOString(),
     }).eq('id', id);

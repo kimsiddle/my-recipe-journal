@@ -21,7 +21,7 @@ const RecipeFormPage = () => {
         ingredients: editing.ingredients, instructions: editing.instructions, rating: editing.rating,
         difficulty: editing.difficulty, cookTime: editing.cookTime, notes: editing.notes,
         photos: editing.photos, source: editing.source, mealCategory: editing.mealCategory,
-        proteinTags: editing.proteinTags, cookLog: editing.cookLog, lastCookedAt: editing.lastCookedAt,
+        proteinTags: editing.proteinTags, cookLog: editing.cookLog, lastCookedAt: editing.lastCookedAt, servings: editing.servings,
       }
     : importData || undefined;
 
@@ -55,6 +55,7 @@ const RecipeFormPage = () => {
       rating: 0,
       difficulty: 'Medium',
       cookTime: '',
+      servings: null,
       notes: data.notes
         ? [{ id: crypto.randomUUID(), text: data.notes, createdAt: new Date().toISOString() }]
         : [],

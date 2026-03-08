@@ -3,7 +3,7 @@ import { Recipe } from '@/types/recipe';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { RatingScale } from '@/components/RatingScale';
-import { UtensilsCrossed, Clock, Flame } from 'lucide-react';
+import { UtensilsCrossed, Clock, Flame, Users } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 interface RecipeCardProps {
@@ -50,6 +50,12 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
               <Flame className="h-3 w-3" />
               {recipe.difficulty}
             </span>
+            {recipe.servings && (
+              <span className="flex items-center gap-1">
+                <Users className="h-3 w-3" />
+                {recipe.servings}
+              </span>
+            )}
           </div>
           <p className="text-xs text-muted-foreground mt-2">
             {lastCooked ? `Cooked ${lastCooked}` : 'Never cooked'}
