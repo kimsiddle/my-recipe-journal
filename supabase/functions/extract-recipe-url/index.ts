@@ -134,9 +134,10 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({
           title: jsonLd.name || "",
+          description: jsonLd.description || "",
           ingredients: normalizeIngredients(jsonLd.recipeIngredient),
           instructions: normalizeInstructions(jsonLd.recipeInstructions),
-          notes: jsonLd.description || "",
+          notes: "",
           cook_time: parseIsoDuration(totalTime),
           servings,
           confidence: "high",
