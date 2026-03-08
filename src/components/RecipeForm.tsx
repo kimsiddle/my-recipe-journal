@@ -12,6 +12,7 @@ import { IngredientAutocomplete } from '@/components/IngredientAutocomplete';
 import { useRecipes } from '@/context/RecipeContext';
 import { useProteinTags } from '@/hooks/useProteinTags';
 import { ImageCropper } from '@/components/ImageCropper';
+import { RichTextEditor } from '@/components/RichTextEditor';
 
 interface RecipeFormProps {
   initial?: RecipeFormData;
@@ -434,13 +435,11 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
 
       {/* Instructions */}
       <div>
-        <Label htmlFor="instructions" className="font-body font-medium text-sm mb-1.5 block">Instructions</Label>
-        <Textarea
-          id="instructions"
+        <Label className="font-body font-medium text-sm mb-1.5 block">Instructions</Label>
+        <RichTextEditor
           value={form.instructions}
-          onChange={e => set('instructions', e.target.value)}
+          onChange={(html) => set('instructions', html)}
           placeholder="Step-by-step instructions..."
-          rows={4}
         />
       </div>
 

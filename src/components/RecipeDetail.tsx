@@ -204,9 +204,10 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onAddN
 
       <section className="mt-8">
         <h2 className="text-xl font-display mb-3">Instructions</h2>
-        <div className="bg-card rounded-lg p-4 border whitespace-pre-line text-sm leading-relaxed">
-          {recipe.instructions}
-        </div>
+        <div
+          className="bg-card rounded-lg p-4 border prose prose-sm max-w-none text-sm leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: recipe.instructions }}
+        />
       </section>
 
       {/* Photo gallery */}
