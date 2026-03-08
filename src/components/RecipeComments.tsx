@@ -34,6 +34,7 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deletePhotoId, setDeletePhotoId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const fetchComments = useCallback(async () => {
