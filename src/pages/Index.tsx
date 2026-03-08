@@ -23,6 +23,7 @@ const Index = () => {
   const [search, setSearch] = useState('');
   const [selectedMeal, setSelectedMeal] = useState<MealCategory | null>(null);
   const [selectedProtein, setSelectedProtein] = useState<ProteinTag | null>(null);
+  const [selectedOccasion, setSelectedOccasion] = useState<OccasionTag | null>(null);
   const [sortMode, setSortMode] = useState<SortMode>('recent');
 
   const filtered = useMemo(() => {
