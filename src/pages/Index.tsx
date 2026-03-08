@@ -102,32 +102,32 @@ const Index = () => {
           onBack={() => setView({ type: 'list' })}
           onEdit={() => setView({ type: 'form', editId: recipe.id })}
           onDelete={() => setDeleteConfirm(recipe.id)}
-          onAddNote={(text) => {
-            addNote(recipe.id, text);
+          onAddNote={async (text) => {
+            await addNote(recipe.id, text);
             toast.success('Note added!');
           }}
-          onDeleteNote={(noteId) => {
-            deleteNote(recipe.id, noteId);
+          onDeleteNote={async (noteId) => {
+            await deleteNote(recipe.id, noteId);
             toast.success('Note removed');
           }}
-          onRatingChange={(rating) => {
-            updateRecipe(recipe.id, { ...recipe, rating });
+          onRatingChange={async (rating) => {
+            await updateRecipe(recipe.id, { ...recipe, rating });
             toast.success('Rating updated!');
           }}
-          onAddPhoto={(dataUrl) => {
-            addPhoto(recipe.id, dataUrl);
+          onAddPhoto={async (dataUrl) => {
+            await addPhoto(recipe.id, dataUrl);
             toast.success('Photo added!');
           }}
-          onDeletePhoto={(photoId) => {
-            deletePhoto(recipe.id, photoId);
+          onDeletePhoto={async (photoId) => {
+            await deletePhoto(recipe.id, photoId);
             toast.success('Photo removed');
           }}
-          onAddCookLog={(entry) => {
-            addCookLog(recipe.id, entry);
+          onAddCookLog={async (entry) => {
+            await addCookLog(recipe.id, entry);
             toast.success('Cook log added!');
           }}
-          onDeleteCookLog={(logId) => {
-            deleteCookLog(recipe.id, logId);
+          onDeleteCookLog={async (logId) => {
+            await deleteCookLog(recipe.id, logId);
             toast.success('Cook log removed');
           }}
         />
