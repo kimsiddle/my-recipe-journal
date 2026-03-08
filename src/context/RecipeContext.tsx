@@ -45,6 +45,7 @@ function mapDbToRecipe(
     source,
     mealCategory: row.meal_category || 'Dinner',
     proteinTags: row.protein_tags || [],
+    servings: row.servings ?? null,
     notes: notes.map(n => ({ id: n.id, text: n.text, createdAt: n.created_at })),
     photos: photos.map(p => ({ id: p.id, url: p.url, createdAt: p.created_at })),
     cookLog: cookLog.map(c => ({
