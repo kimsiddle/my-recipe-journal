@@ -51,6 +51,9 @@ export type MealCategory = typeof MEAL_CATEGORIES[number];
 export const PROTEIN_TAGS = ['Poultry', 'Fish', 'Beef', 'Pork', 'Seafood', 'Vegetables', 'Pasta', 'Lamb', 'Tofu'] as const;
 export type ProteinTag = typeof PROTEIN_TAGS[number];
 
+export const OCCASION_TAGS = ['Weekday', 'Weekend', 'Crock Pot', 'Freezer Meal', 'Large Group', 'Quick & Easy', 'Meal Prep'] as const;
+export type OccasionTag = typeof OCCASION_TAGS[number];
+
 export const COOK_TIME_OPTIONS = [
   '5 min', '10 min', '15 min', '20 min', '25 min', '30 min',
   '45 min', '1 hour', '1.5 hours', '2 hours', '2.5 hours', '3 hours', '4+ hours',
