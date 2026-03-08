@@ -22,6 +22,7 @@ const emptyForm: RecipeFormData = {
   instructions: '',
   rating: 0,
   notes: [],
+  source: null,
 };
 
 export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
