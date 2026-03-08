@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { RecipeFormData } from '@/types/recipe';
+import { RecipeFormData, MEAL_CATEGORIES, PROTEIN_TAGS, MealCategory, ProteinTag } from '@/types/recipe';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,8 @@ const emptyForm: RecipeFormData = {
   rating: 0,
   notes: [],
   source: null,
+  mealCategory: 'Dinner',
+  proteinTags: [],
 };
 
 export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
