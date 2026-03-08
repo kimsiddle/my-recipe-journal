@@ -16,9 +16,11 @@ interface RecipeDetailProps {
   onAddNote: (text: string) => void;
   onDeleteNote: (noteId: string) => void;
   onRatingChange: (rating: number) => void;
+  onAddPhoto: (dataUrl: string) => void;
+  onDeletePhoto: (photoId: string) => void;
 }
 
-export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDeleteNote, onRatingChange }: RecipeDetailProps) {
+export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDeleteNote, onRatingChange, onAddPhoto, onDeletePhoto }: RecipeDetailProps) {
   const [noteOpen, setNoteOpen] = useState(false);
   const [noteText, setNoteText] = useState('');
 
