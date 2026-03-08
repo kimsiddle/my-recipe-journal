@@ -14,6 +14,7 @@ interface RecipeDetailProps {
   onDelete: () => void;
   onAddNote: (text: string) => void;
   onDeleteNote: (noteId: string) => void;
+  onRatingChange: (rating: number) => void;
 }
 
 export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDeleteNote }: RecipeDetailProps) {
