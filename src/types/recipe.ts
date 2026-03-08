@@ -51,7 +51,7 @@ export type MealCategory = typeof MEAL_CATEGORIES[number];
 export const PROTEIN_TAGS = ['Poultry', 'Fish', 'Beef', 'Pork', 'Seafood', 'Vegetables', 'Pasta', 'Lamb', 'Tofu'] as const;
 export type ProteinTag = typeof PROTEIN_TAGS[number];
 
-export const OCCASION_TAGS = ['Weekday', 'Weekend', 'Crock Pot', 'Freezer Meal', 'Large Group', 'Quick & Easy', 'Meal Prep'] as const;
+export const OCCASION_TAGS = ['Weekday', 'Weekend', 'Crock Pot', 'Freezer Meal', 'Large Group', 'Quick & Easy', 'Meal Prep', 'Hosting', 'Air Fryer', 'InstaPot'] as const;
 export type OccasionTag = typeof OCCASION_TAGS[number];
 
 export const COOK_TIME_OPTIONS = [
