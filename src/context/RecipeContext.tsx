@@ -33,7 +33,7 @@ const SAMPLE_RECIPES: Recipe[] = [
     id: '3',
     title: 'Lemon Herb Salmon',
     description: 'Pan-seared salmon with a bright lemon and herb butter. Ready in 20 minutes.',
-    imageUrl: null,
+    imageUrl: salmonImg,
     ingredients: ['salmon fillets', 'butter', 'lemon', 'garlic', 'fresh dill', 'fresh parsley', 'salt', 'pepper', 'olive oil'],
     instructions: '1. Pat salmon dry, season with salt and pepper.\n2. Heat olive oil in a skillet over medium-high.\n3. Sear salmon skin-side down 4 min.\n4. Flip, cook 3 more minutes.\n5. Add butter, garlic, lemon juice, and herbs.\n6. Baste salmon with the herb butter.',
     rating: 5,
