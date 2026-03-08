@@ -123,14 +123,6 @@ export default function Planner() {
               </Badge>
             )}
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => { clearWeek(weekDates); toast.success('Week cleared'); }}
-          >
-            <Trash2 className="h-4 w-4 mr-1" />
-            Clear
-          </Button>
         </div>
       </div>
 
