@@ -57,7 +57,7 @@ const Index = () => {
         sorted.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
     }
     return sorted;
-  }, [recipes, search, selectedMeal, selectedProtein, sortMode]);
+  }, [recipes, search, selectedMeal, selectedProtein, selectedOccasion, sortMode]);
 
   return (
     <div className="flex-1">
