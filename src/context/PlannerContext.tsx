@@ -35,10 +35,33 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     return stored ? JSON.parse(stored) : {};
   });
 
+  const [checkedIngredients, setCheckedIngredients] = useState<Set<string>>(() => {
+    const stored = localStorage.getItem('shopping_list_checked');
+    return stored ? new Set(JSON.parse(stored)) : new Set();
+  });
+
   const save = (updated: PlannerState) => {
     setPlan(updated);
     localStorage.setItem('meal_plan', JSON.stringify(updated));
   };
+
+  const toggleIngredient = useCallback((ingredient: string) => {
+    setCheckedIngredients(prev => {
+      const next = new Set(prev);
+      if (next.has(ingredient)) {
+        next.delete(ingredient);
+      } else {
+        next.add(ingredient);
+      }
+      localStorage.setItem('shopping_list_checked', JSON.stringify(Array.from(next)));
+      return next;
+    });
+  }, []);
+
+  const clearCheckedIngredients = useCallback(() => {
+    setCheckedIngredients(new Set());
+    localStorage.removeItem('shopping_list_checked');
+  }, []);
 
   const assignRecipe = useCallback((date: string, meal: MealCategory, recipeId: string) => {
     const key = makeKey(date, meal);
