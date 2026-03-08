@@ -92,6 +92,8 @@ export function RecipeImageImport({ onExtracted, onSkip }: RecipeImageImportProp
             })),
             instructions: data.instructions || '',
             notes: data.notes || '',
+            cookTime: data.cook_time || '',
+            servings: data.servings ? Number(data.servings) : null,
             imageUrl: preview,
           });
           return;
