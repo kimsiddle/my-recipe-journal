@@ -7,6 +7,8 @@ import { RecipeProvider } from "@/context/RecipeContext";
 import { PlannerProvider } from "@/context/PlannerContext";
 import AppLayout from "./components/AppLayout";
 import Index from "./pages/Index";
+import RecipePage from "./pages/RecipePage";
+import RecipeFormPage from "./pages/RecipeFormPage";
 import PlannerPage from "./pages/Planner";
 import NotFound from "./pages/NotFound";
 
@@ -23,6 +25,9 @@ const App = () => (
             <Routes>
               <Route element={<AppLayout />}>
                 <Route path="/" element={<Index />} />
+                <Route path="/recipe/new" element={<RecipeFormPage />} />
+                <Route path="/recipe/:id" element={<RecipePage />} />
+                <Route path="/recipe/:id/edit" element={<RecipeFormPage />} />
                 <Route path="/planner" element={<PlannerPage />} />
               </Route>
               <Route path="*" element={<NotFound />} />
