@@ -52,6 +52,7 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
   const [editAmount, setEditAmount] = useState('');
   const [editName, setEditName] = useState('');
   const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
+  const [originalImageSrc, setOriginalImageSrc] = useState<string | null>(null);
   const [showCropper, setShowCropper] = useState(false);
 
   const set = <K extends keyof RecipeFormData>(key: K, val: RecipeFormData[K]) =>
@@ -73,7 +74,9 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setRawImageSrc(reader.result as string);
+        const dataUrl = reader.result as string;
+        setRawImageSrc(dataUrl);
+        setOriginalImageSrc(dataUrl);
         setShowCropper(true);
       };
       reader.readAsDataURL(file);
@@ -92,8 +95,8 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
   };
 
   const handleRecrop = () => {
-    if (form.imageUrl) {
-      setRawImageSrc(form.imageUrl);
+    if (originalImageSrc) {
+      setRawImageSrc(originalImageSrc);
       setShowCropper(true);
     }
   };
