@@ -5,8 +5,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RatingScale } from '@/components/RatingScale';
-import { X, Plus, Camera } from 'lucide-react';
+import { X, Camera } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { IngredientAutocomplete } from '@/components/IngredientAutocomplete';
+import { useRecipes } from '@/context/RecipeContext';
 
 interface RecipeFormProps {
   initial?: RecipeFormData;
@@ -34,17 +36,15 @@ const emptyForm: RecipeFormData = {
 
 export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
   const [form, setForm] = useState<RecipeFormData>(initial || emptyForm);
-  const [ingredientInput, setIngredientInput] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
+  const { allIngredients } = useRecipes();
 
   const set = <K extends keyof RecipeFormData>(key: K, val: RecipeFormData[K]) =>
     setForm(prev => ({ ...prev, [key]: val }));
 
-  const addIngredient = () => {
-    const trimmed = ingredientInput.trim();
-    if (trimmed && !form.ingredients.includes(trimmed)) {
-      set('ingredients', [...form.ingredients, trimmed]);
-      setIngredientInput('');
+  const addIngredient = (ingredient: string) => {
+    if (!form.ingredients.some(i => i.toLowerCase() === ingredient.toLowerCase())) {
+      set('ingredients', [...form.ingredients, ingredient]);
     }
   };
 
@@ -161,17 +161,11 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
       {/* Ingredients */}
       <div>
         <Label className="font-body font-medium text-sm mb-1.5 block">Ingredients</Label>
-        <div className="flex gap-2">
-          <Input
-            value={ingredientInput}
-            onChange={e => setIngredientInput(e.target.value)}
-            placeholder="Add an ingredient"
-            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addIngredient(); } }}
-          />
-          <Button type="button" size="icon" variant="secondary" onClick={addIngredient}>
-            <Plus className="h-4 w-4" />
-          </Button>
-        </div>
+        <IngredientAutocomplete
+          allIngredients={allIngredients}
+          currentIngredients={form.ingredients}
+          onAdd={addIngredient}
+        />
         {form.ingredients.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-2">
             {form.ingredients.map((ing, i) => (

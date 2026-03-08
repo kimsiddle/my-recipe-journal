@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
 import { Recipe, RecipeFormData, RecipeNote, RecipePhoto, CookLogEntry } from '@/types/recipe';
 import margheritaImg from '@/assets/margherita-pizza.jpg';
 import curryImg from '@/assets/thai-green-curry.jpg';
@@ -82,6 +82,7 @@ const SAMPLE_RECIPES: Recipe[] = [
 
 interface RecipeContextType {
   recipes: Recipe[];
+  allIngredients: string[];
   addRecipe: (data: RecipeFormData) => void;
   updateRecipe: (id: string, data: RecipeFormData) => void;
   deleteRecipe: (id: string) => void;
@@ -105,6 +106,17 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('recipes', JSON.stringify(SAMPLE_RECIPES));
     return SAMPLE_RECIPES;
   });
+
+  const allIngredients = useMemo(() => {
+    const seen = new Map<string, string>();
+    for (const r of recipes) {
+      for (const ing of r.ingredients) {
+        const key = ing.toLowerCase();
+        if (!seen.has(key)) seen.set(key, ing);
+      }
+    }
+    return Array.from(seen.values()).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+  }, [recipes]);
 
   const save = (updated: Recipe[]) => {
     setRecipes(updated);
@@ -201,7 +213,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
   }, [recipes]);
 
   return (
-    <RecipeContext.Provider value={{ recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote, addPhoto, deletePhoto, addCookLog, deleteCookLog }}>
+    <RecipeContext.Provider value={{ recipes, allIngredients, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote, addPhoto, deletePhoto, addCookLog, deleteCookLog }}>
       {children}
     </RecipeContext.Provider>
   );
