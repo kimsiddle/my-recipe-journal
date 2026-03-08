@@ -8,6 +8,7 @@ import { RecipePhotoGallery } from '@/components/RecipePhotoGallery';
 import { CookLogForm } from '@/components/CookLogForm';
 import { CookLogTimeline } from '@/components/CookLogTimeline';
 import { RecipeComments } from '@/components/RecipeComments';
+import { ImageCropper } from '@/components/ImageCropper';
 
 import { Button } from '@/components/ui/button';
 import {
