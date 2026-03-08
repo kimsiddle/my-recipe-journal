@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Recipe, RecipeNote } from '@/types/recipe';
-import { StarRating } from '@/components/StarRating';
+
 import { Badge } from '@/components/ui/badge';
 import { RatingScale } from '@/components/RatingScale';
 import { Button } from '@/components/ui/button';
