@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecipes } from '@/context/RecipeContext';
 import { RecipeCard } from '@/components/RecipeCard';
-import { MEAL_CATEGORIES, PROTEIN_TAGS, MealCategory, ProteinTag } from '@/types/recipe';
+import { MEAL_CATEGORIES, PROTEIN_TAGS, OCCASION_TAGS, MealCategory, ProteinTag, OccasionTag } from '@/types/recipe';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
