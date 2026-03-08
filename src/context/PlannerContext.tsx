@@ -18,6 +18,9 @@ interface PlannerContextType {
   getEntry: (date: string, meal: MealCategory) => PlannerEntry | undefined;
   getRecipeId: (date: string, meal: MealCategory) => string | undefined;
   getPlannedRecipeIds: (dates: string[]) => string[];
+  checkedIngredients: Set<string>;
+  toggleIngredient: (ingredient: string) => void;
+  clearCheckedIngredients: () => void;
 }
 
 const PlannerContext = createContext<PlannerContextType | undefined>(undefined);
