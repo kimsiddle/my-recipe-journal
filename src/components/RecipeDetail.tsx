@@ -138,7 +138,11 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onAddN
       </div>
 
       <div className="flex items-center gap-4 flex-wrap">
-        <RatingScale rating={recipe.rating} onChange={onRatingChange} />
+        {isOwner ? (
+          <RatingScale rating={recipe.rating} onChange={onRatingChange} />
+        ) : (
+          <RatingScale rating={recipe.rating} size="sm" />
+        )}
         {recipe.cookTime && (
           <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <Clock className="h-4 w-4" />
