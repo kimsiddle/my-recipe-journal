@@ -31,7 +31,7 @@ export function RecipeUrlImport({ onExtracted, onBack }: RecipeUrlImportProps) {
         setError(
           "We couldn't fully read this page. You can still review and complete the recipe manually."
         );
-        onExtracted({
+        if (data?.title || data?.ingredients?.length) {
           onExtracted({
             title: data.title || '',
             ingredients: (data.ingredients || []).map((i: any) => ({
@@ -43,7 +43,7 @@ export function RecipeUrlImport({ onExtracted, onBack }: RecipeUrlImportProps) {
             cookTime: data.cook_time || '',
             servings: data.servings ? Number(data.servings) : null,
             imageUrl: data.image_url || '',
-          });
+          }, url.trim());
           return;
         }
         return;
@@ -60,7 +60,7 @@ export function RecipeUrlImport({ onExtracted, onBack }: RecipeUrlImportProps) {
         cookTime: data.cook_time || '',
         servings: data.servings ? Number(data.servings) : null,
         imageUrl: data.image_url || '',
-      });
+      }, url.trim());
     } catch (err: any) {
       console.error('URL extract error:', err);
       setError('Something went wrong. Please check the URL and try again.');
