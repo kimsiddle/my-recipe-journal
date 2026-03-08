@@ -21,6 +21,8 @@ const emptyForm: RecipeFormData = {
   ingredients: [],
   instructions: '',
   rating: 0,
+  difficulty: 'Medium',
+  cookTime: '',
   notes: [],
   source: null,
   mealCategory: 'Dinner',
