@@ -80,7 +80,7 @@ function normalizeInstructions(raw: any): string {
       return [""];
     })
     .filter(Boolean);
-  return steps.map((s: string, i: number) => `${i + 1}. ${s}`).join("\n");
+  return "<ol>" + steps.map((s: string) => `<li>${s}</li>`).join("") + "</ol>";
 }
 
 function findImage(recipe: any): string {
@@ -193,7 +193,7 @@ serve(async (req) => {
                       additionalProperties: false,
                     },
                   },
-                  instructions: { type: "string", description: "Step-by-step cooking instructions as a numbered list (e.g. '1. Preheat oven...\\n2. Mix ingredients...'), one step per line" },
+                  instructions: { type: "string", description: "Step-by-step cooking instructions as an HTML ordered list. Use <ol><li>Step one</li><li>Step two</li></ol> format. Each step should be a separate <li> element. Do NOT include step numbers in the text — the <ol> handles numbering automatically." },
                   description: { type: "string", description: "A brief summary or description of the dish — the main introductory text. Empty string if none." },
                   notes: { type: "string", description: "Any specific tips, variations, or additional notes. NOT the main description. Empty string if none." },
                   cook_time: {
