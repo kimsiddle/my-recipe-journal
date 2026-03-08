@@ -7,6 +7,7 @@ import { Ingredient } from '@/types/recipe';
 
 export interface ExtractedRecipe {
   title: string;
+  description: string;
   ingredients: Ingredient[];
   instructions: string;
   notes: string;
