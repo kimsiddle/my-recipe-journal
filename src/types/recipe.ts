@@ -80,6 +80,7 @@ export interface Recipe {
   source: RecipeSource | null;
   mealCategory: MealCategory;
   proteinTags: ProteinTag[];
+  occasionTags: OccasionTag[];
   servings: number | null;
   cookLog: CookLogEntry[];
   lastCookedAt: string | null;
