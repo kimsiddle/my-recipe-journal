@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { StarRating } from '@/components/StarRating';
+import { RatingScale } from '@/components/RatingScale';
 import { X, Plus, Camera } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
