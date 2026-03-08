@@ -104,7 +104,7 @@ const Index = () => {
       ? { title: editing.title, description: editing.description, imageUrl: editing.imageUrl, ingredients: editing.ingredients, instructions: editing.instructions, rating: editing.rating, difficulty: editing.difficulty, cookTime: editing.cookTime, notes: editing.notes, source: editing.source, mealCategory: editing.mealCategory, proteinTags: editing.proteinTags }
       : undefined;
     return (
-      <div className="min-h-screen bg-background px-4 py-8">
+      <div className="px-4 py-8">
         <div className="max-w-lg mx-auto">
           <h1 className="text-2xl font-display mb-6">{editing ? 'Edit Recipe' : 'New Recipe'}</h1>
           <RecipeForm
