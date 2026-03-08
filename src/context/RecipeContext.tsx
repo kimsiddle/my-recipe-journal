@@ -36,6 +36,8 @@ const SAMPLE_RECIPES: Recipe[] = [
       { id: 'n3', text: 'Use 2 cans coconut milk for a richer sauce.', createdAt: '2026-01-25T20:00:00Z' },
       { id: 'n4', text: 'Add eggplant next time — it soaks up the curry beautifully.', createdAt: '2026-03-01T19:00:00Z' },
     ],
+    mealCategory: 'Dinner',
+    proteinTags: ['Poultry'],
     createdAt: '2026-01-20',
     updatedAt: '2026-03-01',
   },
