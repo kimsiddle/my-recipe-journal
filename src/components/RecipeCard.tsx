@@ -50,6 +50,12 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
               <Flame className="h-3 w-3" />
               {recipe.difficulty}
             </span>
+            {recipe.servings && (
+              <span className="flex items-center gap-1">
+                <Users className="h-3 w-3" />
+                {recipe.servings}
+              </span>
+            )}
           </div>
           <p className="text-xs text-muted-foreground mt-2">
             {lastCooked ? `Cooked ${lastCooked}` : 'Never cooked'}

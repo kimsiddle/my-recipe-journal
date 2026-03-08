@@ -77,6 +77,7 @@ export interface Recipe {
   source: RecipeSource | null;
   mealCategory: MealCategory;
   proteinTags: ProteinTag[];
+  servings: number | null;
   cookLog: CookLogEntry[];
   lastCookedAt: string | null;
   createdAt: string;

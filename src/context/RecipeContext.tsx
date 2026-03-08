@@ -139,6 +139,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       source_url: data.source?.url || null,
       meal_category: data.mealCategory,
       protein_tags: data.proteinTags,
+      servings: data.servings,
       last_cooked_at: data.lastCookedAt,
       updated_at: new Date().toISOString(),
     }).eq('id', id);
