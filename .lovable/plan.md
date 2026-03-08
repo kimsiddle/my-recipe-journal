@@ -1,36 +1,47 @@
 
-## Plan: Database Migration with Multiple Entries per Meal Slot
 
-We will move the meal planner to the database so it syncs across your devices, and simultaneously update the structure to allow you to add multiple recipes or custom entries to a single meal slot (e.g., having both a main dish and a side dish for Dinner).
+## Plan: Migrate Meal Plan & Shopping List to Database
 
-### 1. Database Schema Changes
-We will create two new tables linked to your user account, using Row Level Security (RLS) to keep your data private.
+The meal planner and shopping list are currently stored in `localStorage` only. Here's the plan to move them to the database.
 
-**Table: `meal_plan`**
-- `id` (UUID, Primary Key)
-- `user_id` (UUID, linked to authenticated user)
-- `date` (Text, e.g., "YYYY-MM-DD")
-- `meal_category` (Text, e.g., "Dinner")
-- `recipe_id` (UUID, nullable, linked to recipes table)
-- `custom_name` (Text, nullable)
-*Unlike the previous design, there will be NO unique constraint on `(date, meal_category)` so you can insert multiple rows for the same meal slot.*
+### 1. Create Database Tables
 
-**Table: `shopping_list_checked`**
-- `id` (UUID, Primary Key)
-- `user_id` (UUID, linked to authenticated user)
-- `ingredient` (Text)
-*Unique constraint on `(user_id, ingredient)`.*
+**`meal_plan` table:**
+- `id` (UUID, PK)
+- `user_id` (UUID, not null, references auth.users)
+- `date` (text, not null) — e.g. "2026-03-08"
+- `meal_category` (text, not null) — e.g. "Dinner"
+- `recipe_id` (UUID, nullable, references recipes)
+- `custom_name` (text, nullable)
+- `created_at` (timestamptz, default now())
+- No unique constraint on (date, meal_category) — allows multiple entries per slot
 
-### 2. Update `PlannerContext.tsx`
-We will rewrite the context to use Supabase as the source of truth, storing an array of entries for each slot:
-- **State Structure**: Update from `Record<string, PlannerEntry>` to `Record<string, PlannerEntry[]>` to hold multiple meals per slot.
-- **Initial Load**: Fetch data from both tables on mount and group the `meal_plan` records by `date` and `meal_category`.
-- **Mutations**: 
-  - `assignRecipe`/`assignCustomMeal`: Insert a new row into the `meal_plan` table instead of overwriting the existing one.
-  - `removeEntry`: Delete a specific row by its unique `id` rather than clearing the whole slot.
-  - Keep optimistic updates for a snappy, instant UI feel while database requests process in the background.
+**`shopping_list_checked` table:**
+- `id` (UUID, PK)
+- `user_id` (UUID, not null, references auth.users)
+- `ingredient` (text, not null)
+- Unique constraint on (user_id, ingredient)
+
+**RLS policies** on both tables: users can only SELECT/INSERT/DELETE their own rows (`user_id = auth.uid()`).
+
+### 2. Rewrite `PlannerContext.tsx`
+
+- Change state from `Record<string, PlannerEntry>` to `Record<string, PlannerEntry[]>` (array per slot for multiple entries)
+- On mount, fetch from `meal_plan` and `shopping_list_checked` tables, grouped by date+meal
+- `assignRecipe` / `assignCustomMeal`: INSERT a new row (not overwrite)
+- `removeEntry(id)`: DELETE by row `id` instead of by slot key
+- `toggleIngredient`: upsert/delete from `shopping_list_checked`
+- `clearWeek`: DELETE all `meal_plan` rows for the given date range
+- Use optimistic updates for instant UI
 
 ### 3. Update `Planner.tsx` UI
-- Update the grid cells to loop through and display *all* assigned meals for that slot.
-- Keep the "Add" (fork and knife) button visible even when there are already meals assigned, allowing you to continually add more entries to the same slot.
-- Each entry will have its own individual "X" button to remove it.
+
+- Render an array of entries per cell (loop through all meals in a slot)
+- Each entry gets its own X button (calls `removeEntry(id)`)
+- The "Add meal" button stays visible even when entries already exist
+- Shopping list dialog works the same, but reads checked state from DB
+
+### 4. Fix Unrelated Build Error
+
+- The `@tiptap/react` import in `RichTextEditor.tsx` is causing a build error. Will install the missing dependency or adjust the import.
+
