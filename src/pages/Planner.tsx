@@ -25,7 +25,7 @@ export default function Planner() {
   const [showShoppingList, setShowShoppingList] = useState(false);
   const [quickText, setQuickText] = useState('');
 
-  const { assignRecipe, assignCustomMeal, removeRecipe, getEntry, clearWeek, getPlannedRecipeIds } = usePlanner();
+  const { assignRecipe, assignCustomMeal, removeRecipe, getEntry, clearWeek, getPlannedRecipeIds, checkedIngredients, toggleIngredient, clearCheckedIngredients } = usePlanner();
   const { recipes, getRecipe } = useRecipes();
 
   const weekDays = useMemo(() => {
