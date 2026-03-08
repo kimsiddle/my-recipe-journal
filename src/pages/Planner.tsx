@@ -325,11 +325,19 @@ export default function Planner() {
             </div>
           ) : (
             <>
-              <Button variant="outline" size="sm" onClick={copyShoppingList} className="self-start">
-                <Copy className="h-3.5 w-3.5 mr-1" />
-                Copy List
-              </Button>
-              <ShoppingListItems items={shoppingList} />
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={copyShoppingList}>
+                  <Copy className="h-3.5 w-3.5 mr-1" />
+                  Copy List
+                </Button>
+                {checkedIngredients.size > 0 && (
+                  <Button variant="ghost" size="sm" onClick={clearCheckedIngredients}>
+                    <Trash2 className="h-3.5 w-3.5 mr-1" />
+                    Clear Checked
+                  </Button>
+                )}
+              </div>
+              <ShoppingListItems items={shoppingList} checked={checkedIngredients} onToggle={toggleIngredient} />
             </>
           )}
         </DialogContent>
