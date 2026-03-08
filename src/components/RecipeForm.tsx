@@ -27,6 +27,7 @@ const emptyForm: RecipeFormData = {
   rating: 0,
   difficulty: 'Medium',
   cookTime: '',
+  servings: null,
   notes: [],
   photos: [],
   source: null,
