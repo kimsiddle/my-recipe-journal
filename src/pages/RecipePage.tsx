@@ -29,24 +29,9 @@ const RecipePage = () => {
 
   if (!recipe && loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-6">
+      <div className="flex flex-col items-center justify-center py-20 gap-4">
         <CookingPot className="h-12 w-12 text-primary animate-pulse" />
         <p className="text-lg font-medium text-foreground">Cooking up something good...</p>
-        <div className="w-full max-w-2xl space-y-4 px-4">
-          <Skeleton className="w-full h-64 rounded-xl" />
-          <Skeleton className="h-8 w-3/4" />
-          <Skeleton className="h-4 w-1/2" />
-          <div className="flex gap-3 pt-2">
-            <Skeleton className="h-6 w-20 rounded-full" />
-            <Skeleton className="h-6 w-24 rounded-full" />
-            <Skeleton className="h-6 w-16 rounded-full" />
-          </div>
-          <div className="space-y-2 pt-4">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-5/6" />
-            <Skeleton className="h-4 w-4/6" />
-          </div>
-        </div>
       </div>
     );
   }
