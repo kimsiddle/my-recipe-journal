@@ -3,6 +3,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { Send, MessageSquare, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
@@ -24,6 +31,7 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
   const [name, setName] = useState('');
   const [text, setText] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const fetchComments = useCallback(async () => {
     const { data } = await supabase
@@ -52,8 +60,10 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
     fetchComments();
   };
 
-  const handleDelete = async (id: string) => {
-    await supabase.from('recipe_comments').delete().eq('id', id);
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+    await supabase.from('recipe_comments').delete().eq('id', deleteId);
+    setDeleteId(null);
     fetchComments();
   };
 
@@ -98,7 +108,7 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
               <p className="text-xs text-muted-foreground mt-2">{formatDate(c.created_at)}</p>
               {isOwner && (
                 <button
-                  onClick={() => handleDelete(c.id)}
+                  onClick={() => setDeleteId(c.id)}
                   className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
                   title="Delete comment"
                 >
@@ -114,6 +124,19 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
           <p className="text-sm text-muted-foreground">No comments yet. Be the first!</p>
         </div>
       )}
+
+      <Dialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Remove comment?</DialogTitle>
+            <DialogDescription>This action can't be undone.</DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 justify-end">
+            <Button variant="outline" onClick={() => setDeleteId(null)}>Cancel</Button>
+            <Button variant="destructive" onClick={handleConfirmDelete}>Remove</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
