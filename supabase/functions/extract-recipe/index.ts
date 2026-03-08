@@ -93,7 +93,7 @@ serve(async (req) => {
                     instructions: {
                       type: "string",
                       description:
-                        "Step-by-step cooking instructions as a numbered list (e.g. '1. Preheat oven...\\n2. Mix ingredients...'), one step per line",
+                        "Step-by-step cooking instructions as an HTML ordered list. Use <ol><li>Step one</li><li>Step two</li></ol> format. Each step should be a separate <li> element. Do NOT include step numbers in the text — the <ol> handles numbering automatically.",
                     },
                     description: {
                       type: "string",
