@@ -18,6 +18,8 @@ const SAMPLE_RECIPES: Recipe[] = [
       { id: 'n1', text: 'Added a pinch of red pepper flakes for heat.', createdAt: '2026-02-15T12:00:00Z' },
       { id: 'n2', text: 'Next time try with burrata instead of mozzarella.', createdAt: '2026-02-20T18:30:00Z' },
     ],
+    mealCategory: 'Dinner',
+    proteinTags: ['Vegetables'],
     createdAt: '2026-02-15',
     updatedAt: '2026-02-15',
   },
