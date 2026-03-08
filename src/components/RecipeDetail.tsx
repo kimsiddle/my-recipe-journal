@@ -188,6 +188,17 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
         />
       </section>
 
+      {/* Notes */}
+      {recipe.notesText ? (
+        <section className="mt-8">
+          <h2 className="text-xl font-display mb-3">Notes</h2>
+          <div
+            className="bg-card rounded-lg p-4 border prose prose-sm max-w-none text-sm leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: recipe.notesText }}
+          />
+        </section>
+      ) : null}
+
       {/* Photo gallery */}
       {isOwner ? (
         <RecipePhotoGallery photos={recipe.photos} onAddPhoto={onAddPhoto} onDeletePhoto={onDeletePhoto} />
@@ -204,17 +215,6 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
 
       {/* Cook Log Timeline - owner only */}
       {isOwner && <CookLogTimeline cookLog={recipe.cookLog} onDelete={onDeleteCookLog} />}
-
-      {/* Notes */}
-      {recipe.notesText ? (
-        <section className="mt-8">
-          <h2 className="text-xl font-display mb-3">Notes</h2>
-          <div
-            className="bg-card rounded-lg p-4 border prose prose-sm max-w-none text-sm leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: recipe.notesText }}
-          />
-        </section>
-      ) : null}
 
       {/* Guest comments */}
       <RecipeComments recipeId={recipe.id} isOwner={isOwner} />
