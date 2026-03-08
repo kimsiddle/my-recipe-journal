@@ -17,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, BookOpen, ExternalLink, Clock, Flame, ChefHat, Share2, Copy, Mail, MessageCircle, Users } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, BookOpen, ExternalLink, Clock, Flame, ChefHat, Share2, Copy, Mail, MessageCircle, Users, Camera, Crop } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface RecipeDetailProps {
