@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { Recipe, RecipeFormData, RecipeNote, RecipePhoto } from '@/types/recipe';
+import { Recipe, RecipeFormData, RecipeNote, RecipePhoto, CookLogEntry } from '@/types/recipe';
 import margheritaImg from '@/assets/margherita-pizza.jpg';
 import curryImg from '@/assets/thai-green-curry.jpg';
 import salmonImg from '@/assets/lemon-herb-salmon.jpg';
@@ -21,6 +21,10 @@ const SAMPLE_RECIPES: Recipe[] = [
       { id: 'n2', text: 'Next time try with burrata instead of mozzarella.', createdAt: '2026-02-20T18:30:00Z' },
     ],
     photos: [],
+    cookLog: [
+      { id: 'cl1', cookedAt: '2026-02-15T18:00:00Z', rating: 9, comment: 'Turned out great!' },
+    ],
+    lastCookedAt: '2026-02-15T18:00:00Z',
     mealCategory: 'Dinner',
     proteinTags: ['Vegetables'],
     createdAt: '2026-02-15',
@@ -42,6 +46,8 @@ const SAMPLE_RECIPES: Recipe[] = [
       { id: 'n4', text: 'Add eggplant next time — it soaks up the curry beautifully.', createdAt: '2026-03-01T19:00:00Z' },
     ],
     photos: [],
+    cookLog: [],
+    lastCookedAt: null,
     mealCategory: 'Dinner',
     proteinTags: ['Poultry'],
     createdAt: '2026-01-20',
@@ -63,6 +69,10 @@ const SAMPLE_RECIPES: Recipe[] = [
       { id: 'n6', text: 'Add capers for extra pop.', createdAt: '2026-03-06T12:00:00Z' },
     ],
     photos: [],
+    cookLog: [
+      { id: 'cl2', cookedAt: '2026-01-10T19:00:00Z', rating: 10, comment: 'Perfect every time' },
+    ],
+    lastCookedAt: '2026-01-10T19:00:00Z',
     mealCategory: 'Dinner',
     proteinTags: ['Fish'],
     createdAt: '2026-03-05',
@@ -80,6 +90,8 @@ interface RecipeContextType {
   deleteNote: (recipeId: string, noteId: string) => void;
   addPhoto: (recipeId: string, url: string) => void;
   deletePhoto: (recipeId: string, photoId: string) => void;
+  addCookLog: (recipeId: string, entry: Omit<CookLogEntry, 'id'>) => void;
+  deleteCookLog: (recipeId: string, logId: string) => void;
 }
 
 const RecipeContext = createContext<RecipeContextType | undefined>(undefined);
@@ -88,8 +100,8 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
   const [recipes, setRecipes] = useState<Recipe[]>(() => {
     const stored = localStorage.getItem('recipes');
     const version = localStorage.getItem('recipes_version');
-    if (stored && version === '8') return JSON.parse(stored);
-    localStorage.setItem('recipes_version', '8');
+    if (stored && version === '9') return JSON.parse(stored);
+    localStorage.setItem('recipes_version', '9');
     localStorage.setItem('recipes', JSON.stringify(SAMPLE_RECIPES));
     return SAMPLE_RECIPES;
   });
@@ -151,8 +163,45 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
     ));
   }, [recipes]);
 
+  const addCookLog = useCallback((recipeId: string, entry: Omit<CookLogEntry, 'id'>) => {
+    const logEntry: CookLogEntry = { ...entry, id: crypto.randomUUID() };
+    save(recipes.map(r => {
+      if (r.id !== recipeId) return r;
+      const updatedLog = [...r.cookLog, logEntry];
+      const lastCookedAt = updatedLog.reduce((latest, e) =>
+        !latest || new Date(e.cookedAt) > new Date(latest) ? e.cookedAt : latest,
+        r.lastCookedAt
+      );
+      // Auto-add photos to the recipe gallery
+      const newPhotos = (entry.photoUrls || []).map(url => ({
+        id: crypto.randomUUID(),
+        url,
+        createdAt: new Date().toISOString(),
+      }));
+      return {
+        ...r,
+        cookLog: updatedLog,
+        lastCookedAt,
+        rating: entry.rating ?? r.rating,
+        photos: [...r.photos, ...newPhotos],
+        updatedAt: new Date().toISOString(),
+      };
+    }));
+  }, [recipes]);
+
+  const deleteCookLog = useCallback((recipeId: string, logId: string) => {
+    save(recipes.map(r => {
+      if (r.id !== recipeId) return r;
+      const updatedLog = r.cookLog.filter(e => e.id !== logId);
+      const lastCookedAt = updatedLog.length > 0
+        ? updatedLog.reduce((latest, e) => new Date(e.cookedAt) > new Date(latest) ? e.cookedAt : latest, updatedLog[0].cookedAt)
+        : null;
+      return { ...r, cookLog: updatedLog, lastCookedAt, updatedAt: new Date().toISOString() };
+    }));
+  }, [recipes]);
+
   return (
-    <RecipeContext.Provider value={{ recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote, addPhoto, deletePhoto }}>
+    <RecipeContext.Provider value={{ recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote, addPhoto, deletePhoto, addCookLog, deleteCookLog }}>
       {children}
     </RecipeContext.Provider>
   );
