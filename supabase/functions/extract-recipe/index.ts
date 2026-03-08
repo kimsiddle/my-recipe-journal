@@ -93,7 +93,7 @@ serve(async (req) => {
                     instructions: {
                       type: "string",
                       description:
-                        "Step-by-step cooking instructions, with each step on a new line",
+                        "Step-by-step cooking instructions as a numbered list (e.g. '1. Preheat oven...\\n2. Mix ingredients...'), one step per line",
                     },
                     description: {
                       type: "string",

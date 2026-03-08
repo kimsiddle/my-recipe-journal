@@ -68,19 +68,19 @@ function normalizeIngredients(raw: any): { amount: string; name: string }[] {
 function normalizeInstructions(raw: any): string {
   if (typeof raw === "string") return raw;
   if (!Array.isArray(raw)) return "";
-  return raw
-    .map((step: any) => {
-      if (typeof step === "string") return step;
-      if (step.text) return step.text;
-      if (step["@type"] === "HowToStep") return step.text || step.name || "";
+  const steps = raw
+    .flatMap((step: any) => {
+      if (typeof step === "string") return [step];
+      if (step.text) return [step.text];
+      if (step["@type"] === "HowToStep") return [step.text || step.name || ""];
       if (step["@type"] === "HowToSection") {
-        const steps = step.itemListElement || [];
-        return steps.map((s: any) => s.text || s.name || "").join("\n");
+        const items = step.itemListElement || [];
+        return items.map((s: any) => s.text || s.name || "");
       }
-      return "";
+      return [""];
     })
-    .filter(Boolean)
-    .join("\n");
+    .filter(Boolean);
+  return steps.map((s: string, i: number) => `${i + 1}. ${s}`).join("\n");
 }
 
 function findImage(recipe: any): string {
@@ -193,7 +193,7 @@ serve(async (req) => {
                       additionalProperties: false,
                     },
                   },
-                  instructions: { type: "string", description: "Step-by-step instructions, each step on a new line" },
+                  instructions: { type: "string", description: "Step-by-step cooking instructions as a numbered list (e.g. '1. Preheat oven...\\n2. Mix ingredients...'), one step per line" },
                   description: { type: "string", description: "A brief summary or description of the dish — the main introductory text. Empty string if none." },
                   notes: { type: "string", description: "Any specific tips, variations, or additional notes. NOT the main description. Empty string if none." },
                   cook_time: {
