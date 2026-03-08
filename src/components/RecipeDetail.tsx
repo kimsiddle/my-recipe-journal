@@ -28,11 +28,12 @@ interface RecipeDetailProps {
   onRatingChange: (rating: number) => void;
   onAddPhoto: (dataUrl: string) => void;
   onDeletePhoto: (photoId: string) => void;
+  onSetPhotoAsMain: (photoUrl: string, photoId: string) => void;
   onAddCookLog: (entry: Omit<CookLogEntry, 'id'>) => void;
   onDeleteCookLog: (logId: string) => void;
 }
 
-export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRatingChange, onAddPhoto, onDeletePhoto, onAddCookLog, onDeleteCookLog }: RecipeDetailProps) {
+export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRatingChange, onAddPhoto, onDeletePhoto, onSetPhotoAsMain, onAddCookLog, onDeleteCookLog }: RecipeDetailProps) {
   const [cookLogOpen, setCookLogOpen] = useState(false);
 
   const lastCookedLabel = recipe.lastCookedAt
@@ -212,7 +213,7 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
 
       {/* Photo gallery */}
       {isOwner ? (
-        <RecipePhotoGallery photos={recipe.photos} onAddPhoto={onAddPhoto} onDeletePhoto={onDeletePhoto} />
+        <RecipePhotoGallery photos={recipe.photos} onAddPhoto={onAddPhoto} onDeletePhoto={onDeletePhoto} onSetAsMain={onSetPhotoAsMain} />
       ) : recipe.photos.length > 0 ? (
         <section className="mt-8">
           <h2 className="text-xl font-display mb-3">Photos</h2>

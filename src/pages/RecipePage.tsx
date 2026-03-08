@@ -61,6 +61,17 @@ const RecipePage = () => {
           await deletePhoto(recipe.id, photoId);
           toast.success('Photo removed');
         }}
+        onSetPhotoAsMain={async (photoUrl, photoId) => {
+          // Save current main photo to gallery if it exists
+          if (recipe.imageUrl) {
+            await addPhoto(recipe.id, recipe.imageUrl);
+          }
+          // Set the selected gallery photo as the main image
+          await updateRecipe(recipe.id, { ...recipe, imageUrl: photoUrl });
+          // Remove the photo from the gallery since it's now the main
+          await deletePhoto(recipe.id, photoId);
+          toast.success('Main photo updated!');
+        }}
         onAddCookLog={async (entry) => {
           await addCookLog(recipe.id, entry);
           toast.success('Cook log added!');
