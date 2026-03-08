@@ -238,7 +238,11 @@ const Index = () => {
         </div>
 
         {/* Grid */}
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-20">
+            <p className="text-muted-foreground">Loading recipes...</p>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="text-center py-20">
             <CookingPot className="h-12 w-12 text-muted-foreground/30 mx-auto mb-3" />
             <p className="text-muted-foreground">
