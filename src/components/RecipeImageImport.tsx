@@ -10,6 +10,8 @@ export interface ExtractedRecipe {
   ingredients: Ingredient[];
   instructions: string;
   notes: string;
+  cookTime: string;
+  servings: number | null;
   imageUrl: string;
 }
 
