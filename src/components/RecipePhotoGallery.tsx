@@ -11,7 +11,7 @@ interface RecipePhotoGalleryProps {
   onSetAsMain?: (photoUrl: string, photoId: string) => void;
 }
 
-export function RecipePhotoGallery({ photos, onAddPhoto, onDeletePhoto }: RecipePhotoGalleryProps) {
+export function RecipePhotoGallery({ photos, onAddPhoto, onDeletePhoto, onSetAsMain }: RecipePhotoGalleryProps) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
