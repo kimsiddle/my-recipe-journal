@@ -28,7 +28,7 @@ type View = { type: 'list' } | { type: 'detail'; id: string } | { type: 'form'; 
 type SortMode = 'recent' | 'rating' | 'rediscover';
 
 const Index = () => {
-  const { recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote, addPhoto, deletePhoto, addCookLog, deleteCookLog } = useRecipes();
+  const { recipes, loading, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote, addPhoto, deletePhoto, addCookLog, deleteCookLog } = useRecipes();
   const [view, setView] = useState<View>({ type: 'list' });
   const [search, setSearch] = useState('');
   const [selectedMeal, setSelectedMeal] = useState<MealCategory | null>(null);
@@ -70,22 +70,22 @@ const Index = () => {
     return sorted;
   }, [recipes, search, selectedMeal, selectedProtein, sortMode]);
 
-  const handleAdd = (data: RecipeFormData) => {
-    addRecipe(data);
+  const handleAdd = async (data: RecipeFormData) => {
+    await addRecipe(data);
     setView({ type: 'list' });
     toast.success('Recipe added!');
   };
 
-  const handleEdit = (data: RecipeFormData) => {
+  const handleEdit = async (data: RecipeFormData) => {
     if (view.type === 'form' && view.editId) {
-      updateRecipe(view.editId, data);
+      await updateRecipe(view.editId, data);
       setView({ type: 'detail', id: view.editId });
       toast.success('Recipe updated!');
     }
   };
 
-  const handleDelete = (id: string) => {
-    deleteRecipe(id);
+  const handleDelete = async (id: string) => {
+    await deleteRecipe(id);
     setDeleteConfirm(null);
     setView({ type: 'list' });
     toast.success('Recipe deleted');
@@ -102,32 +102,32 @@ const Index = () => {
           onBack={() => setView({ type: 'list' })}
           onEdit={() => setView({ type: 'form', editId: recipe.id })}
           onDelete={() => setDeleteConfirm(recipe.id)}
-          onAddNote={(text) => {
-            addNote(recipe.id, text);
+          onAddNote={async (text) => {
+            await addNote(recipe.id, text);
             toast.success('Note added!');
           }}
-          onDeleteNote={(noteId) => {
-            deleteNote(recipe.id, noteId);
+          onDeleteNote={async (noteId) => {
+            await deleteNote(recipe.id, noteId);
             toast.success('Note removed');
           }}
-          onRatingChange={(rating) => {
-            updateRecipe(recipe.id, { ...recipe, rating });
+          onRatingChange={async (rating) => {
+            await updateRecipe(recipe.id, { ...recipe, rating });
             toast.success('Rating updated!');
           }}
-          onAddPhoto={(dataUrl) => {
-            addPhoto(recipe.id, dataUrl);
+          onAddPhoto={async (dataUrl) => {
+            await addPhoto(recipe.id, dataUrl);
             toast.success('Photo added!');
           }}
-          onDeletePhoto={(photoId) => {
-            deletePhoto(recipe.id, photoId);
+          onDeletePhoto={async (photoId) => {
+            await deletePhoto(recipe.id, photoId);
             toast.success('Photo removed');
           }}
-          onAddCookLog={(entry) => {
-            addCookLog(recipe.id, entry);
+          onAddCookLog={async (entry) => {
+            await addCookLog(recipe.id, entry);
             toast.success('Cook log added!');
           }}
-          onDeleteCookLog={(logId) => {
-            deleteCookLog(recipe.id, logId);
+          onDeleteCookLog={async (logId) => {
+            await deleteCookLog(recipe.id, logId);
             toast.success('Cook log removed');
           }}
         />
@@ -238,7 +238,11 @@ const Index = () => {
         </div>
 
         {/* Grid */}
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-20">
+            <p className="text-muted-foreground">Loading recipes...</p>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="text-center py-20">
             <CookingPot className="h-12 w-12 text-muted-foreground/30 mx-auto mb-3" />
             <p className="text-muted-foreground">
