@@ -30,7 +30,6 @@ interface RecipeDetailProps {
   onDeletePhoto: (photoId: string) => void;
   onAddCookLog: (entry: Omit<CookLogEntry, 'id'>) => void;
   onDeleteCookLog: (logId: string) => void;
-  onNotesChange: (notesText: string) => void;
 }
 
 export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRatingChange, onAddPhoto, onDeletePhoto, onAddCookLog, onDeleteCookLog }: RecipeDetailProps) {
