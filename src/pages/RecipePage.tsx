@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useRecipes } from '@/context/RecipeContext';
 import { useAuth } from '@/context/AuthContext';
+import { useGuestMode } from '@/context/GuestModeContext';
 import { RecipeDetail } from '@/components/RecipeDetail';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,11 +18,12 @@ const RecipePage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { guestMode } = useGuestMode();
   const { getRecipe, deleteRecipe, updateRecipe, addNote, deleteNote, addPhoto, deletePhoto, addCookLog, deleteCookLog } = useRecipes();
   const [deleteConfirm, setDeleteConfirm] = useState(false);
 
   const recipe = id ? getRecipe(id) : undefined;
-  const isOwner = !!(user && recipe && recipe.userId === user.id);
+  const isOwner = !guestMode && !!(user && recipe && recipe.userId === user.id);
 
   if (!recipe) {
     return (

@@ -1,7 +1,8 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { CookingPot, CalendarDays, LogOut } from 'lucide-react';
+import { CookingPot, CalendarDays, LogOut, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
+import { useGuestMode } from '@/context/GuestModeContext';
 
 const tabs = [
   { to: '/', label: 'Recipes', icon: CookingPot },
@@ -11,9 +12,19 @@ const tabs = [
 export default function AppLayout() {
   const { pathname } = useLocation();
   const { user, signOut } = useAuth();
+  const { guestMode, toggleGuestMode } = useGuestMode();
 
   return (
     <div className="min-h-screen bg-background flex flex-col food-pattern-bg">
+      {/* Guest mode banner */}
+      {guestMode && (
+        <div className="bg-muted border-b px-4 py-1.5 text-center">
+          <p className="text-xs text-muted-foreground">
+            Viewing as guest · <button onClick={toggleGuestMode} className="underline hover:text-foreground">Exit</button>
+          </p>
+        </div>
+      )}
+
       {/* Top nav */}
       <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-4">
@@ -50,7 +61,23 @@ export default function AppLayout() {
         </div>
       </header>
 
-      <Outlet />
+      <div className="flex-1">
+        <Outlet />
+      </div>
+
+      {/* Discreet guest mode toggle at bottom */}
+      {user && (
+        <footer className="py-3 px-4 flex justify-center">
+          <button
+            onClick={toggleGuestMode}
+            className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+            title={guestMode ? 'Exit guest preview' : 'Preview as guest'}
+          >
+            {guestMode ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+            {guestMode ? 'Exit guest view' : 'View as guest'}
+          </button>
+        </footer>
+      )}
     </div>
   );
 }
