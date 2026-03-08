@@ -1,6 +1,15 @@
+import { useState } from 'react';
 import { CookLogEntry } from '@/types/recipe';
 import { RatingScale } from '@/components/RatingScale';
 import { X, ChefHat } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 interface CookLogTimelineProps {
   cookLog: CookLogEntry[];
@@ -8,11 +17,19 @@ interface CookLogTimelineProps {
 }
 
 export function CookLogTimeline({ cookLog, onDelete }: CookLogTimelineProps) {
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const sorted = [...cookLog].sort((a, b) => new Date(b.cookedAt).getTime() - new Date(a.cookedAt).getTime());
 
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
     return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteId) {
+      onDelete(deleteId);
+      setDeleteId(null);
+    }
   };
 
   return (
@@ -44,7 +61,7 @@ export function CookLogTimeline({ cookLog, onDelete }: CookLogTimelineProps) {
                 </div>
               )}
               <button
-                onClick={() => onDelete(entry.id)}
+                onClick={() => setDeleteId(entry.id)}
                 className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
                 title="Delete log entry"
               >
@@ -59,6 +76,19 @@ export function CookLogTimeline({ cookLog, onDelete }: CookLogTimelineProps) {
           <p className="text-sm text-muted-foreground">No cook log entries yet. Click "I Made This" to start tracking!</p>
         </div>
       )}
+
+      <Dialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Remove cook log entry?</DialogTitle>
+            <DialogDescription>This action can't be undone.</DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 justify-end">
+            <Button variant="outline" onClick={() => setDeleteId(null)}>Cancel</Button>
+            <Button variant="destructive" onClick={handleConfirmDelete}>Remove</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
