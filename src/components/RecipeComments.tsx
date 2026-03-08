@@ -89,6 +89,15 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
     fetchComments();
   };
 
+  const handleDeletePhoto = async (commentId: string) => {
+    const { error } = await supabase
+      .from('recipe_comments')
+      .update({ photo_url: null } as any)
+      .eq('id', commentId);
+    if (error) { toast.error('Failed to remove photo'); return; }
+    fetchComments();
+  };
+
   const formatDate = (d: string) =>
     new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 
