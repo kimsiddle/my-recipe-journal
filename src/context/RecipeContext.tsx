@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { Recipe, RecipeFormData, RecipeNote } from '@/types/recipe';
+import { Recipe, RecipeFormData, RecipeNote, RecipePhoto } from '@/types/recipe';
 import margheritaImg from '@/assets/margherita-pizza.jpg';
 import curryImg from '@/assets/thai-green-curry.jpg';
 import salmonImg from '@/assets/lemon-herb-salmon.jpg';
