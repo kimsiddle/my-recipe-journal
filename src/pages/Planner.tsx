@@ -46,7 +46,7 @@ export default function Planner() {
       const recipe = getRecipe(id);
       if (!recipe) return;
       recipe.ingredients.forEach(ing => {
-        const key = ing.toLowerCase();
+        const key = ing.name.toLowerCase();
         if (!ingredientMap.has(key)) ingredientMap.set(key, new Set());
         ingredientMap.get(key)!.add(recipe.title);
       });

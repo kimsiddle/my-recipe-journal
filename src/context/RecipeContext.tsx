@@ -127,7 +127,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       title: data.title,
       description: data.description,
       image_url: data.imageUrl,
-      ingredients: data.ingredients,
+      ingredients: data.ingredients.map(serializeIngredient),
       instructions: data.instructions,
       rating: data.rating,
       difficulty: data.difficulty,

@@ -287,16 +287,26 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
       {/* Ingredients */}
       <div>
         <Label className="font-body font-medium text-sm mb-1.5 block">Ingredients</Label>
-        <IngredientAutocomplete
-          allIngredients={allIngredients}
-          currentIngredients={form.ingredients}
-          onAdd={addIngredient}
-        />
+        <div className="flex gap-2">
+          <Input
+            value={ingredientAmount}
+            onChange={e => setIngredientAmount(e.target.value)}
+            placeholder="Qty (e.g. 2 cups)"
+            className="w-28 shrink-0"
+          />
+          <div className="flex-1">
+            <IngredientAutocomplete
+              allIngredients={allIngredients}
+              currentIngredients={form.ingredients.map(i => i.name)}
+              onAdd={addIngredient}
+            />
+          </div>
+        </div>
         {form.ingredients.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-2">
             {form.ingredients.map((ing, i) => (
               <Badge key={i} variant="secondary" className="gap-1 font-body font-normal">
-                {ing}
+                {formatIngredient(ing)}
                 <button type="button" onClick={() => removeIngredient(i)}>
                   <X className="h-3 w-3" />
                 </button>
