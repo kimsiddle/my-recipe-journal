@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Recipe, CookLogEntry, formatIngredient } from '@/types/recipe';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -8,7 +8,6 @@ import { RecipePhotoGallery } from '@/components/RecipePhotoGallery';
 import { CookLogForm } from '@/components/CookLogForm';
 import { CookLogTimeline } from '@/components/CookLogTimeline';
 import { RecipeComments } from '@/components/RecipeComments';
-import { ImageCropper } from '@/components/ImageCropper';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -17,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, BookOpen, ExternalLink, Clock, Flame, ChefHat, Share2, Copy, Mail, MessageCircle, Users, Camera, Crop } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, BookOpen, ExternalLink, Clock, Flame, ChefHat, Share2, Copy, Mail, MessageCircle, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface RecipeDetailProps {
@@ -37,9 +36,6 @@ interface RecipeDetailProps {
 
 export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRatingChange, onAddPhoto, onDeletePhoto, onSetPhotoAsMain, onUpdateMainPhoto, onAddCookLog, onDeleteCookLog }: RecipeDetailProps) {
   const [cookLogOpen, setCookLogOpen] = useState(false);
-  const mainPhotoRef = useRef<HTMLInputElement>(null);
-  const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
-  const [showCropper, setShowCropper] = useState(false);
 
   const lastCookedLabel = recipe.lastCookedAt
     ? `Last cooked ${formatDistanceToNow(new Date(recipe.lastCookedAt), { addSuffix: true })}`
@@ -55,64 +51,15 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
         Back to recipes
       </button>
 
-      <input
-        ref={mainPhotoRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              setRawImageSrc(reader.result as string);
-              setShowCropper(true);
-            };
-            reader.readAsDataURL(file);
-          }
-          e.target.value = '';
-        }}
-      />
-
-      {showCropper && rawImageSrc ? (
-        <div className="mb-6">
-          <ImageCropper
-            imageSrc={rawImageSrc}
-            onCropComplete={(croppedUrl) => {
-              onUpdateMainPhoto(croppedUrl);
-              setShowCropper(false);
-              setRawImageSrc(null);
-            }}
-            onCancel={() => {
-              setShowCropper(false);
-              setRawImageSrc(null);
-            }}
-          />
-        </div>
-      ) : (
-        <div className="relative group aspect-video rounded-xl overflow-hidden bg-muted mb-6">
-          {recipe.imageUrl ? (
-            <img src={recipe.imageUrl} alt={recipe.title} className="h-full w-full object-cover" />
-          ) : (
-            <div className="h-full w-full flex items-center justify-center">
-              <UtensilsCrossed className="h-16 w-16 text-muted-foreground/30" />
-            </div>
-          )}
-          {isOwner && (
-            <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <Button
-                variant="secondary"
-                size="sm"
-                className="gap-1.5 bg-background/80 backdrop-blur-sm hover:bg-background/95"
-                onClick={() => mainPhotoRef.current?.click()}
-              >
-                <Camera className="h-3.5 w-3.5" />
-                {recipe.imageUrl ? 'Change Photo' : 'Add Photo'}
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
+      <div className="relative aspect-video rounded-xl overflow-hidden bg-muted mb-6">
+        {recipe.imageUrl ? (
+          <img src={recipe.imageUrl} alt={recipe.title} className="h-full w-full object-cover" />
+        ) : (
+          <div className="h-full w-full flex items-center justify-center">
+            <UtensilsCrossed className="h-16 w-16 text-muted-foreground/30" />
+          </div>
+        )}
+      </div>
 
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
         <div className="min-w-0">
@@ -223,7 +170,6 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
         )}
       </div>
 
-      {/* Occasion Tags */}
       {recipe.occasionTags.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mt-3">
           {recipe.occasionTags.map(tag => (
@@ -254,7 +200,6 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
         />
       </section>
 
-      {/* Notes */}
       {recipe.notesText ? (
         <section className="mt-8">
           <h2 className="text-xl font-display mb-3">Notes</h2>
@@ -265,7 +210,6 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
         </section>
       ) : null}
 
-      {/* Photo gallery */}
       {isOwner ? (
         <RecipePhotoGallery photos={recipe.photos} onAddPhoto={onAddPhoto} onDeletePhoto={onDeletePhoto} />
       ) : recipe.photos.length > 0 ? (
@@ -279,10 +223,8 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
         </section>
       ) : null}
 
-      {/* Cook Log Timeline - owner only */}
       {isOwner && <CookLogTimeline cookLog={recipe.cookLog} onDelete={onDeleteCookLog} />}
 
-      {/* Guest comments */}
       <RecipeComments recipeId={recipe.id} isOwner={isOwner} />
 
       <p className="text-xs text-muted-foreground mt-8">
