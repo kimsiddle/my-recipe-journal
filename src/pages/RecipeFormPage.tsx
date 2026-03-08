@@ -21,7 +21,7 @@ const RecipeFormPage = () => {
         ingredients: editing.ingredients, instructions: editing.instructions, rating: editing.rating,
         difficulty: editing.difficulty, cookTime: editing.cookTime, notesText: editing.notesText,
         photos: editing.photos, source: editing.source, mealCategory: editing.mealCategory,
-        proteinTags: editing.proteinTags, cookLog: editing.cookLog, lastCookedAt: editing.lastCookedAt, servings: editing.servings,
+        proteinTags: editing.proteinTags, occasionTags: editing.occasionTags, cookLog: editing.cookLog, lastCookedAt: editing.lastCookedAt, servings: editing.servings,
       }
     : importData || undefined;
 
