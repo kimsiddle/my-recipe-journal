@@ -7,6 +7,7 @@ import { RatingScale } from '@/components/RatingScale';
 import { RecipePhotoGallery } from '@/components/RecipePhotoGallery';
 import { CookLogForm } from '@/components/CookLogForm';
 import { CookLogTimeline } from '@/components/CookLogTimeline';
+import { RecipeComments } from '@/components/RecipeComments';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -20,6 +21,7 @@ import { toast } from 'sonner';
 
 interface RecipeDetailProps {
   recipe: Recipe;
+  isOwner: boolean;
   onBack: () => void;
   onEdit: () => void;
   onDelete: () => void;
