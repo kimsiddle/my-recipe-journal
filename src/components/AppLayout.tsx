@@ -11,7 +11,7 @@ export default function AppLayout() {
   const { pathname } = useLocation();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col food-pattern-bg">
       {/* Top nav */}
       <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-4">
