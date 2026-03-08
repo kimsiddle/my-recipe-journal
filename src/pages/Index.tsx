@@ -20,7 +20,7 @@ import { toast } from 'sonner';
 type View = { type: 'list' } | { type: 'detail'; id: string } | { type: 'form'; editId?: string };
 
 const Index = () => {
-  const { recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote } = useRecipes();
+  const { recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote, addPhoto, deletePhoto } = useRecipes();
   const [view, setView] = useState<View>({ type: 'list' });
   const [search, setSearch] = useState('');
   const [selectedMeal, setSelectedMeal] = useState<MealCategory | null>(null);
@@ -84,6 +84,14 @@ const Index = () => {
             updateRecipe(recipe.id, { ...recipe, rating });
             toast.success('Rating updated!');
           }}
+          onAddPhoto={(dataUrl) => {
+            addPhoto(recipe.id, dataUrl);
+            toast.success('Photo added!');
+          }}
+          onDeletePhoto={(photoId) => {
+            deletePhoto(recipe.id, photoId);
+            toast.success('Photo removed');
+          }}
         />
         <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
           <DialogContent>
@@ -105,7 +113,7 @@ const Index = () => {
   if (view.type === 'form') {
     const editing = view.editId ? getRecipe(view.editId) : undefined;
     const initialData = editing
-      ? { title: editing.title, description: editing.description, imageUrl: editing.imageUrl, ingredients: editing.ingredients, instructions: editing.instructions, rating: editing.rating, difficulty: editing.difficulty, cookTime: editing.cookTime, notes: editing.notes, source: editing.source, mealCategory: editing.mealCategory, proteinTags: editing.proteinTags }
+      ? { title: editing.title, description: editing.description, imageUrl: editing.imageUrl, ingredients: editing.ingredients, instructions: editing.instructions, rating: editing.rating, difficulty: editing.difficulty, cookTime: editing.cookTime, notes: editing.notes, photos: editing.photos, source: editing.source, mealCategory: editing.mealCategory, proteinTags: editing.proteinTags }
       : undefined;
     return (
       <div className="px-4 py-8">

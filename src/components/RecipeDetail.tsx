@@ -3,6 +3,7 @@ import { Recipe, RecipeNote } from '@/types/recipe';
 
 import { Badge } from '@/components/ui/badge';
 import { RatingScale } from '@/components/RatingScale';
+import { RecipePhotoGallery } from '@/components/RecipePhotoGallery';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, Plus, Send, X, MessageSquare, BookOpen, ExternalLink, Clock, Flame } from 'lucide-react';
@@ -15,9 +16,11 @@ interface RecipeDetailProps {
   onAddNote: (text: string) => void;
   onDeleteNote: (noteId: string) => void;
   onRatingChange: (rating: number) => void;
+  onAddPhoto: (dataUrl: string) => void;
+  onDeletePhoto: (photoId: string) => void;
 }
 
-export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDeleteNote, onRatingChange }: RecipeDetailProps) {
+export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDeleteNote, onRatingChange, onAddPhoto, onDeletePhoto }: RecipeDetailProps) {
   const [noteOpen, setNoteOpen] = useState(false);
   const [noteText, setNoteText] = useState('');
 
@@ -131,6 +134,9 @@ export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDe
           {recipe.instructions}
         </div>
       </section>
+
+      {/* Photo gallery */}
+      <RecipePhotoGallery photos={recipe.photos} onAddPhoto={onAddPhoto} onDeletePhoto={onDeletePhoto} />
 
       {/* Notes as comment thread */}
       <section className="mt-8">

@@ -24,6 +24,7 @@ const emptyForm: RecipeFormData = {
   difficulty: 'Medium',
   cookTime: '',
   notes: [],
+  photos: [],
   source: null,
   mealCategory: 'Dinner',
   proteinTags: [],

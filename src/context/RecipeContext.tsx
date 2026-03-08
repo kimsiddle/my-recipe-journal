@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { Recipe, RecipeFormData, RecipeNote } from '@/types/recipe';
+import { Recipe, RecipeFormData, RecipeNote, RecipePhoto } from '@/types/recipe';
 import margheritaImg from '@/assets/margherita-pizza.jpg';
 import curryImg from '@/assets/thai-green-curry.jpg';
 import salmonImg from '@/assets/lemon-herb-salmon.jpg';
@@ -20,6 +20,7 @@ const SAMPLE_RECIPES: Recipe[] = [
       { id: 'n1', text: 'Added a pinch of red pepper flakes for heat.', createdAt: '2026-02-15T12:00:00Z' },
       { id: 'n2', text: 'Next time try with burrata instead of mozzarella.', createdAt: '2026-02-20T18:30:00Z' },
     ],
+    photos: [],
     mealCategory: 'Dinner',
     proteinTags: ['Vegetables'],
     createdAt: '2026-02-15',
@@ -40,6 +41,7 @@ const SAMPLE_RECIPES: Recipe[] = [
       { id: 'n3', text: 'Use 2 cans coconut milk for a richer sauce.', createdAt: '2026-01-25T20:00:00Z' },
       { id: 'n4', text: 'Add eggplant next time — it soaks up the curry beautifully.', createdAt: '2026-03-01T19:00:00Z' },
     ],
+    photos: [],
     mealCategory: 'Dinner',
     proteinTags: ['Poultry'],
     createdAt: '2026-01-20',
@@ -60,6 +62,7 @@ const SAMPLE_RECIPES: Recipe[] = [
       { id: 'n5', text: 'Works great with trout too.', createdAt: '2026-03-05T18:00:00Z' },
       { id: 'n6', text: 'Add capers for extra pop.', createdAt: '2026-03-06T12:00:00Z' },
     ],
+    photos: [],
     mealCategory: 'Dinner',
     proteinTags: ['Fish'],
     createdAt: '2026-03-05',
@@ -75,6 +78,8 @@ interface RecipeContextType {
   getRecipe: (id: string) => Recipe | undefined;
   addNote: (recipeId: string, text: string) => void;
   deleteNote: (recipeId: string, noteId: string) => void;
+  addPhoto: (recipeId: string, url: string) => void;
+  deletePhoto: (recipeId: string, photoId: string) => void;
 }
 
 const RecipeContext = createContext<RecipeContextType | undefined>(undefined);
@@ -83,8 +88,8 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
   const [recipes, setRecipes] = useState<Recipe[]>(() => {
     const stored = localStorage.getItem('recipes');
     const version = localStorage.getItem('recipes_version');
-    if (stored && version === '7') return JSON.parse(stored);
-    localStorage.setItem('recipes_version', '7');
+    if (stored && version === '8') return JSON.parse(stored);
+    localStorage.setItem('recipes_version', '8');
     localStorage.setItem('recipes', JSON.stringify(SAMPLE_RECIPES));
     return SAMPLE_RECIPES;
   });
@@ -131,8 +136,23 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
     ));
   }, [recipes]);
 
+  const addPhoto = useCallback((recipeId: string, url: string) => {
+    const photo: RecipePhoto = { id: crypto.randomUUID(), url, createdAt: new Date().toISOString() };
+    save(recipes.map(r => r.id === recipeId
+      ? { ...r, photos: [...r.photos, photo], updatedAt: new Date().toISOString() }
+      : r
+    ));
+  }, [recipes]);
+
+  const deletePhoto = useCallback((recipeId: string, photoId: string) => {
+    save(recipes.map(r => r.id === recipeId
+      ? { ...r, photos: r.photos.filter(p => p.id !== photoId), updatedAt: new Date().toISOString() }
+      : r
+    ));
+  }, [recipes]);
+
   return (
-    <RecipeContext.Provider value={{ recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote }}>
+    <RecipeContext.Provider value={{ recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote, addPhoto, deletePhoto }}>
       {children}
     </RecipeContext.Provider>
   );

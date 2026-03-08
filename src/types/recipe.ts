@@ -1,3 +1,9 @@
+export interface RecipePhoto {
+  id: string;
+  url: string;
+  createdAt: string;
+}
+
 export interface RecipeNote {
   id: string;
   text: string;
@@ -32,6 +38,7 @@ export interface Recipe {
   difficulty: DifficultyLevel;
   cookTime: string;
   notes: RecipeNote[];
+  photos: RecipePhoto[];
   source: RecipeSource | null;
   mealCategory: MealCategory;
   proteinTags: ProteinTag[];
