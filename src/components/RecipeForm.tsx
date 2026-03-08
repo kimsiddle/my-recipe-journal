@@ -42,13 +42,15 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
   const { tags: proteinTagOptions, addTag, removeTag } = useProteinTags();
   const [newTagInput, setNewTagInput] = useState('');
   const [showNewTagInput, setShowNewTagInput] = useState(false);
+  const [ingredientAmount, setIngredientAmount] = useState('');
 
   const set = <K extends keyof RecipeFormData>(key: K, val: RecipeFormData[K]) =>
     setForm(prev => ({ ...prev, [key]: val }));
 
-  const addIngredient = (ingredient: string) => {
-    if (!form.ingredients.some(i => i.toLowerCase() === ingredient.toLowerCase())) {
-      set('ingredients', [...form.ingredients, ingredient]);
+  const addIngredient = (name: string) => {
+    if (!form.ingredients.some(i => i.name.toLowerCase() === name.toLowerCase())) {
+      set('ingredients', [...form.ingredients, { name, amount: ingredientAmount.trim() }]);
+      setIngredientAmount('');
     }
   };
 
