@@ -11,8 +11,6 @@ interface RecipeContextType {
   updateRecipe: (id: string, data: RecipeFormData) => Promise<void>;
   deleteRecipe: (id: string) => Promise<void>;
   getRecipe: (id: string) => Recipe | undefined;
-  addNote: (recipeId: string, text: string) => Promise<void>;
-  deleteNote: (recipeId: string, noteId: string) => Promise<void>;
   addPhoto: (recipeId: string, url: string) => Promise<void>;
   deletePhoto: (recipeId: string, photoId: string) => Promise<void>;
   addCookLog: (recipeId: string, entry: Omit<CookLogEntry, 'id'>) => Promise<void>;
@@ -24,7 +22,6 @@ const RecipeContext = createContext<RecipeContextType | undefined>(undefined);
 // Helper to map DB row to Recipe
 function mapDbToRecipe(
   row: any,
-  notes: any[],
   photos: any[],
   cookLog: any[]
 ): Recipe {
@@ -46,7 +43,7 @@ function mapDbToRecipe(
     mealCategory: row.meal_category || 'Dinner',
     proteinTags: row.protein_tags || [],
     servings: row.servings ?? null,
-    notes: notes.map(n => ({ id: n.id, text: n.text, createdAt: n.created_at })),
+    notesText: row.notes_text || '',
     photos: photos.map(p => ({ id: p.id, url: p.url, createdAt: p.created_at })),
     cookLog: cookLog.map(c => ({
       id: c.id,
@@ -71,13 +68,11 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
     const { data: rows, error } = await supabase.from('recipes').select('*').order('updated_at', { ascending: false });
     if (error) { console.error('Error fetching recipes:', error); setLoading(false); return; }
 
-    const { data: allNotes } = await supabase.from('recipe_notes').select('*').order('created_at');
     const { data: allPhotos } = await supabase.from('recipe_photos').select('*').order('created_at');
     const { data: allLogs } = await supabase.from('cook_log_entries').select('*').order('cooked_at');
 
     const mapped = (rows || []).map(row => mapDbToRecipe(
       row,
-      (allNotes || []).filter(n => n.recipe_id === row.id),
       (allPhotos || []).filter(p => p.recipe_id === row.id),
       (allLogs || []).filter(l => l.recipe_id === row.id),
     ));
@@ -118,6 +113,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       last_cooked_at: data.lastCookedAt,
       user_id: user.id,
       servings: data.servings,
+      notes_text: data.notesText || '',
     } as any).select().single();
 
     if (error) { console.error('Error adding recipe:', error); return; }
@@ -142,6 +138,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       last_cooked_at: data.lastCookedAt,
       updated_at: new Date().toISOString(),
       servings: data.servings,
+      notes_text: data.notesText || '',
     } as any).eq('id', id);
 
     if (error) { console.error('Error updating recipe:', error); return; }
@@ -158,19 +155,6 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
     return recipes.find(r => r.id === id);
   }, [recipes]);
 
-  const addNote = useCallback(async (recipeId: string, text: string) => {
-    const { error } = await supabase.from('recipe_notes').insert({ recipe_id: recipeId, text });
-    if (error) { console.error('Error adding note:', error); return; }
-    // Update recipe's updated_at
-    await supabase.from('recipes').update({ updated_at: new Date().toISOString() }).eq('id', recipeId);
-    await fetchRecipes();
-  }, [fetchRecipes]);
-
-  const deleteNote = useCallback(async (recipeId: string, noteId: string) => {
-    const { error } = await supabase.from('recipe_notes').delete().eq('id', noteId);
-    if (error) { console.error('Error deleting note:', error); return; }
-    await fetchRecipes();
-  }, [fetchRecipes]);
 
   const addPhoto = useCallback(async (recipeId: string, url: string) => {
     const { error } = await supabase.from('recipe_photos').insert({ recipe_id: recipeId, url });
@@ -228,7 +212,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
   }, [fetchRecipes]);
 
   return (
-    <RecipeContext.Provider value={{ recipes, allIngredients, loading, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote, addPhoto, deletePhoto, addCookLog, deleteCookLog }}>
+    <RecipeContext.Provider value={{ recipes, allIngredients, loading, addRecipe, updateRecipe, deleteRecipe, getRecipe, addPhoto, deletePhoto, addCookLog, deleteCookLog }}>
       {children}
     </RecipeContext.Provider>
   );

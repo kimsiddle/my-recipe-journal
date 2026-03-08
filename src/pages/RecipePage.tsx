@@ -19,7 +19,7 @@ const RecipePage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { guestMode } = useGuestMode();
-  const { getRecipe, deleteRecipe, updateRecipe, addNote, deleteNote, addPhoto, deletePhoto, addCookLog, deleteCookLog } = useRecipes();
+  const { getRecipe, deleteRecipe, updateRecipe, addPhoto, deletePhoto, addCookLog, deleteCookLog } = useRecipes();
   const [deleteConfirm, setDeleteConfirm] = useState(false);
 
   const recipe = id ? getRecipe(id) : undefined;
@@ -49,14 +49,6 @@ const RecipePage = () => {
         onBack={() => navigate('/')}
         onEdit={() => navigate(`/recipe/${recipe.id}/edit`)}
         onDelete={() => setDeleteConfirm(true)}
-        onAddNote={async (text) => {
-          await addNote(recipe.id, text);
-          toast.success('Note added!');
-        }}
-        onDeleteNote={async (noteId) => {
-          await deleteNote(recipe.id, noteId);
-          toast.success('Note removed');
-        }}
         onRatingChange={async (rating) => {
           await updateRecipe(recipe.id, { ...recipe, rating });
           toast.success('Rating updated!');
@@ -76,6 +68,10 @@ const RecipePage = () => {
         onDeleteCookLog={async (logId) => {
           await deleteCookLog(recipe.id, logId);
           toast.success('Cook log removed');
+        }}
+        onNotesChange={async (notesText) => {
+          await updateRecipe(recipe.id, { ...recipe, notesText });
+          toast.success('Notes saved');
         }}
       />
       {isOwner && (

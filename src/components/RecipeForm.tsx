@@ -30,7 +30,7 @@ const emptyForm: RecipeFormData = {
   difficulty: 'Medium',
   cookTime: '',
   servings: null,
-  notes: [],
+  notesText: '',
   photos: [],
   source: null,
   mealCategory: 'Dinner',
