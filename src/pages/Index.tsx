@@ -118,6 +118,19 @@ const Index = () => {
               ))}
             </div>
           </div>
+          <div>
+            <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Occasion</p>
+            <div className="flex flex-wrap gap-1.5">
+              {OCCASION_TAGS.map(tag => (
+                <button key={tag} onClick={() => setSelectedOccasion(selectedOccasion === tag ? null : tag)}>
+                  <Badge variant={selectedOccasion === tag ? 'default' : 'secondary'} className="font-body font-normal cursor-pointer">
+                    {tag}
+                    {selectedOccasion === tag && <X className="h-3 w-3 ml-1" />}
+                  </Badge>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         {loading ? (

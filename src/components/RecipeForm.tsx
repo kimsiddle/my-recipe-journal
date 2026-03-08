@@ -341,7 +341,35 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
               </Badge>
             </button>
           )}
+      </div>
+
+      {/* Occasion Tags */}
+      <div>
+        <Label className="font-body font-medium text-sm mb-1.5 block">Occasion</Label>
+        <div className="flex flex-wrap gap-1.5">
+          {OCCASION_TAGS.map(tag => {
+            const selected = form.occasionTags.includes(tag);
+            return (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => set('occasionTags', selected
+                  ? form.occasionTags.filter(t => t !== tag)
+                  : [...form.occasionTags, tag]
+                )}
+              >
+                <Badge
+                  variant={selected ? 'default' : 'secondary'}
+                  className="font-body font-normal cursor-pointer"
+                >
+                  {tag}
+                  {selected && <X className="h-3 w-3 ml-1" />}
+                </Badge>
+              </button>
+            );
+          })}
         </div>
+      </div>
       </div>
 
       {/* Description */}
