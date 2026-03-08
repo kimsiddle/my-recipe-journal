@@ -128,7 +128,7 @@ const Index = () => {
           Add Recipe
         </Button>
       </div>
-        {/* Search */}
+        <main className="max-w-5xl mx-auto px-4 pb-6">
         <div className="relative mb-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
