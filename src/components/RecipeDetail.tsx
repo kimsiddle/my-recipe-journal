@@ -206,19 +206,7 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
       {isOwner && <CookLogTimeline cookLog={recipe.cookLog} onDelete={onDeleteCookLog} />}
 
       {/* Notes */}
-      {isOwner ? (
-        <section className="mt-8">
-          <h2 className="text-xl font-display mb-3">Notes</h2>
-          <div onBlur={handleNotesBlur}>
-            <RichTextEditor
-              value={recipe.notesText}
-              onChange={handleNotesChange}
-              placeholder="What did you learn? What would you change next time?"
-            />
-          </div>
-          <p className="text-xs text-muted-foreground mt-1.5">Auto-saves when you click away</p>
-        </section>
-      ) : recipe.notesText ? (
+      {recipe.notesText ? (
         <section className="mt-8">
           <h2 className="text-xl font-display mb-3">Notes</h2>
           <div
