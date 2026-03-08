@@ -108,20 +108,42 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
       <div>
         <Label className="font-body font-medium text-sm mb-1.5 block">Photo</Label>
         <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImage} />
-        <button
-          type="button"
-          onClick={() => fileRef.current?.click()}
-          className="w-full aspect-video rounded-lg border-2 border-dashed border-border bg-muted/50 flex flex-col items-center justify-center gap-2 overflow-hidden hover:bg-muted transition-colors"
-        >
-          {form.imageUrl ? (
-            <img src={form.imageUrl} alt="Preview" className="h-full w-full object-cover" />
-          ) : (
-            <>
-              <Camera className="h-8 w-8 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Tap to add a photo</span>
-            </>
-          )}
-        </button>
+        {showCropper && rawImageSrc ? (
+          <ImageCropper
+            imageSrc={rawImageSrc}
+            onCropComplete={handleCropComplete}
+            onCancel={handleCropCancel}
+          />
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              className="w-full aspect-video rounded-lg border-2 border-dashed border-border bg-muted/50 flex flex-col items-center justify-center gap-2 overflow-hidden hover:bg-muted transition-colors"
+            >
+              {form.imageUrl ? (
+                <img src={form.imageUrl} alt="Preview" className="h-full w-full object-cover" />
+              ) : (
+                <>
+                  <Camera className="h-8 w-8 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Tap to add a photo</span>
+                </>
+              )}
+            </button>
+            {form.imageUrl && (
+              <div className="flex gap-2 mt-2">
+                <Button type="button" variant="outline" size="sm" className="gap-1.5" onClick={handleRecrop}>
+                  <Crop className="h-3.5 w-3.5" />
+                  Adjust Crop
+                </Button>
+                <Button type="button" variant="outline" size="sm" className="gap-1.5" onClick={() => fileRef.current?.click()}>
+                  <Camera className="h-3.5 w-3.5" />
+                  Change Photo
+                </Button>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       {/* Title */}
