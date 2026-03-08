@@ -149,7 +149,7 @@
   background-image: url('/food-pattern.png');
   background-repeat: repeat;
   background-size: 320px 320px;
-  opacity: 0.15;
+  opacity: 0.3;
   pointer-events: none;
   z-index: 1;
 }
