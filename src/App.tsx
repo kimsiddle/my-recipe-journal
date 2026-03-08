@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import { RecipeProvider } from "@/context/RecipeContext";
 import { PlannerProvider } from "@/context/PlannerContext";
+import { GuestModeProvider } from "@/context/GuestModeContext";
 import { AuthGuard } from "@/components/AuthGuard";
 import AppLayout from "./components/AppLayout";
 import Index from "./pages/Index";
@@ -21,6 +22,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
+        <GuestModeProvider>
         <RecipeProvider>
           <PlannerProvider>
             <Toaster />
@@ -42,6 +44,7 @@ const App = () => (
             </BrowserRouter>
           </PlannerProvider>
         </RecipeProvider>
+        </GuestModeProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
