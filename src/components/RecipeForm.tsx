@@ -105,7 +105,8 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 max-h-[70vh] overflow-y-auto pr-1">
+    <form onSubmit={handleSubmit} className="flex flex-col max-h-[70vh]">
+      <div className="flex-1 overflow-y-auto space-y-5 pr-1">
       {/* Photo */}
       <div>
         <Label className="font-body font-medium text-sm mb-1.5 block">Photo</Label>
