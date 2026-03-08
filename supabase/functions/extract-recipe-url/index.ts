@@ -68,19 +68,19 @@ function normalizeIngredients(raw: any): { amount: string; name: string }[] {
 function normalizeInstructions(raw: any): string {
   if (typeof raw === "string") return raw;
   if (!Array.isArray(raw)) return "";
-  return raw
-    .map((step: any) => {
-      if (typeof step === "string") return step;
-      if (step.text) return step.text;
-      if (step["@type"] === "HowToStep") return step.text || step.name || "";
+  const steps = raw
+    .flatMap((step: any) => {
+      if (typeof step === "string") return [step];
+      if (step.text) return [step.text];
+      if (step["@type"] === "HowToStep") return [step.text || step.name || ""];
       if (step["@type"] === "HowToSection") {
-        const steps = step.itemListElement || [];
-        return steps.map((s: any) => s.text || s.name || "").join("\n");
+        const items = step.itemListElement || [];
+        return items.map((s: any) => s.text || s.name || "");
       }
-      return "";
+      return [""];
     })
-    .filter(Boolean)
-    .join("\n");
+    .filter(Boolean);
+  return steps.map((s: string, i: number) => `${i + 1}. ${s}`).join("\n");
 }
 
 function findImage(recipe: any): string {
