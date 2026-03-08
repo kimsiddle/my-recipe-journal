@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Recipe, RecipeNote, CookLogEntry, formatIngredient } from '@/types/recipe';
+import { useState, useCallback, useRef } from 'react';
+import { Recipe, CookLogEntry, formatIngredient } from '@/types/recipe';
 import { formatDistanceToNow } from 'date-fns';
 
 import { Badge } from '@/components/ui/badge';
@@ -8,15 +8,15 @@ import { RecipePhotoGallery } from '@/components/RecipePhotoGallery';
 import { CookLogForm } from '@/components/CookLogForm';
 import { CookLogTimeline } from '@/components/CookLogTimeline';
 import { RecipeComments } from '@/components/RecipeComments';
+import { RichTextEditor } from '@/components/RichTextEditor';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, Plus, Send, X, MessageSquare, BookOpen, ExternalLink, Clock, Flame, ChefHat, Share2, Copy, Mail, MessageCircle, Users } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, BookOpen, ExternalLink, Clock, Flame, ChefHat, Share2, Copy, Mail, MessageCircle, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface RecipeDetailProps {
@@ -25,37 +25,27 @@ interface RecipeDetailProps {
   onBack: () => void;
   onEdit: () => void;
   onDelete: () => void;
-  onAddNote: (text: string) => void;
-  onDeleteNote: (noteId: string) => void;
   onRatingChange: (rating: number) => void;
   onAddPhoto: (dataUrl: string) => void;
   onDeletePhoto: (photoId: string) => void;
   onAddCookLog: (entry: Omit<CookLogEntry, 'id'>) => void;
   onDeleteCookLog: (logId: string) => void;
+  onNotesChange: (notesText: string) => void;
 }
 
-export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onAddNote, onDeleteNote, onRatingChange, onAddPhoto, onDeletePhoto, onAddCookLog, onDeleteCookLog }: RecipeDetailProps) {
-  const [noteOpen, setNoteOpen] = useState(false);
-  const [noteText, setNoteText] = useState('');
+export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRatingChange, onAddPhoto, onDeletePhoto, onAddCookLog, onDeleteCookLog, onNotesChange }: RecipeDetailProps) {
   const [cookLogOpen, setCookLogOpen] = useState(false);
+  const notesRef = useRef(recipe.notesText);
 
-  const submitNote = () => {
-    const trimmed = noteText.trim();
-    if (!trimmed) return;
-    onAddNote(trimmed);
-    setNoteText('');
-    setNoteOpen(false);
-  };
+  const handleNotesBlur = useCallback(() => {
+    if (notesRef.current !== recipe.notesText) {
+      onNotesChange(notesRef.current);
+    }
+  }, [recipe.notesText, onNotesChange]);
 
-  const formatDate = (dateStr: string) => {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-  };
-
-  const formatTime = (dateStr: string) => {
-    const d = new Date(dateStr);
-    return d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
-  };
+  const handleNotesChange = useCallback((html: string) => {
+    notesRef.current = html;
+  }, []);
 
   const lastCookedLabel = recipe.lastCookedAt
     ? `Last cooked ${formatDistanceToNow(new Date(recipe.lastCookedAt), { addSuffix: true })}`
@@ -227,66 +217,28 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onAddN
       {/* Cook Log Timeline - owner only */}
       {isOwner && <CookLogTimeline cookLog={recipe.cookLog} onDelete={onDeleteCookLog} />}
 
-      {/* Notes - owner only */}
-      {isOwner && (
+      {/* Notes */}
+      {isOwner ? (
         <section className="mt-8">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl font-display">Notes</h2>
-              <span className="text-sm text-muted-foreground">({recipe.notes.length})</span>
-            </div>
-            {!noteOpen && (
-              <Button variant="ghost" size="sm" onClick={() => setNoteOpen(true)} className="text-accent hover:text-accent">
-                <Plus className="h-4 w-4 mr-1" />
-                Add note
-              </Button>
-            )}
+          <h2 className="text-xl font-display mb-3">Notes</h2>
+          <div onBlur={handleNotesBlur}>
+            <RichTextEditor
+              value={recipe.notesText}
+              onChange={handleNotesChange}
+              placeholder="What did you learn? What would you change next time?"
+            />
           </div>
-
-          {noteOpen && (
-            <div className="mb-4 bg-card border rounded-lg p-3">
-              <Textarea
-                value={noteText}
-                onChange={e => setNoteText(e.target.value)}
-                placeholder="What did you learn? What would you change?"
-                rows={3}
-                autoFocus
-                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitNote(); } }}
-              />
-              <div className="flex justify-end gap-2 mt-2">
-                <Button size="sm" variant="ghost" onClick={() => { setNoteOpen(false); setNoteText(''); }}>
-                  Cancel
-                </Button>
-                <Button size="sm" onClick={submitNote} disabled={!noteText.trim()}>
-                  <Send className="h-3.5 w-3.5 mr-1" />
-                  Post
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {recipe.notes.length > 0 ? (
-            <div className="space-y-3">
-              {recipe.notes.map((note) => (
-                <NoteCard
-                  key={note.id}
-                  note={note}
-                  formatDate={formatDate}
-                  formatTime={formatTime}
-                  onDelete={() => onDeleteNote(note.id)}
-                />
-              ))}
-            </div>
-          ) : (
-            !noteOpen && (
-              <div className="text-center py-8 border border-dashed rounded-lg">
-                <MessageSquare className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">No notes yet. Add your first one!</p>
-              </div>
-            )
-          )}
+          <p className="text-xs text-muted-foreground mt-1.5">Auto-saves when you click away</p>
         </section>
-      )}
+      ) : recipe.notesText ? (
+        <section className="mt-8">
+          <h2 className="text-xl font-display mb-3">Notes</h2>
+          <div
+            className="bg-card rounded-lg p-4 border prose prose-sm max-w-none text-sm leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: recipe.notesText }}
+          />
+        </section>
+      ) : null}
 
       {/* Guest comments */}
       <RecipeComments recipeId={recipe.id} isOwner={isOwner} />
@@ -304,34 +256,6 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onAddN
           onSubmit={onAddCookLog}
         />
       )}
-    </div>
-  );
-}
-
-function NoteCard({
-  note,
-  formatDate,
-  formatTime,
-  onDelete,
-}: {
-  note: RecipeNote;
-  formatDate: (d: string) => string;
-  formatTime: (d: string) => string;
-  onDelete: () => void;
-}) {
-  return (
-    <div className="group relative bg-card border rounded-lg p-4 transition-shadow hover:shadow-sm">
-      <p className="text-sm leading-relaxed pr-6">{note.text}</p>
-      <p className="text-xs text-muted-foreground mt-2">
-        {formatDate(note.createdAt)} at {formatTime(note.createdAt)}
-      </p>
-      <button
-        onClick={onDelete}
-        className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-        title="Delete note"
-      >
-        <X className="h-3.5 w-3.5" />
-      </button>
     </div>
   );
 }

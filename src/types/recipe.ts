@@ -72,7 +72,7 @@ export interface Recipe {
   rating: number;
   difficulty: DifficultyLevel;
   cookTime: string;
-  notes: RecipeNote[];
+  notesText: string;
   photos: RecipePhoto[];
   source: RecipeSource | null;
   mealCategory: MealCategory;
