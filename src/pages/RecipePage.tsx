@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useRecipes } from '@/context/RecipeContext';
+import { useAuth } from '@/context/AuthContext';
 import { RecipeDetail } from '@/components/RecipeDetail';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,10 +16,12 @@ import { toast } from 'sonner';
 const RecipePage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { getRecipe, deleteRecipe, updateRecipe, addNote, deleteNote, addPhoto, deletePhoto, addCookLog, deleteCookLog } = useRecipes();
   const [deleteConfirm, setDeleteConfirm] = useState(false);
 
   const recipe = id ? getRecipe(id) : undefined;
+  const isOwner = !!(user && recipe && recipe.userId === user.id);
 
   if (!recipe) {
     return (
@@ -40,6 +43,7 @@ const RecipePage = () => {
     <div className="px-4 py-8">
       <RecipeDetail
         recipe={recipe}
+        isOwner={isOwner}
         onBack={() => navigate('/')}
         onEdit={() => navigate(`/recipe/${recipe.id}/edit`)}
         onDelete={() => setDeleteConfirm(true)}
@@ -72,18 +76,20 @@ const RecipePage = () => {
           toast.success('Cook log removed');
         }}
       />
-      <Dialog open={deleteConfirm} onOpenChange={setDeleteConfirm}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete recipe?</DialogTitle>
-            <DialogDescription>This can't be undone.</DialogDescription>
-          </DialogHeader>
-          <div className="flex gap-3 justify-end">
-            <Button variant="outline" onClick={() => setDeleteConfirm(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={handleDelete}>Delete</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {isOwner && (
+        <Dialog open={deleteConfirm} onOpenChange={setDeleteConfirm}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete recipe?</DialogTitle>
+              <DialogDescription>This can't be undone.</DialogDescription>
+            </DialogHeader>
+            <div className="flex gap-3 justify-end">
+              <Button variant="outline" onClick={() => setDeleteConfirm(false)}>Cancel</Button>
+              <Button variant="destructive" onClick={handleDelete}>Delete</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
