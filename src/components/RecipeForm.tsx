@@ -152,6 +152,25 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
         <StarRating rating={form.rating} onChange={val => set('rating', val)} />
       </div>
 
+      {/* Source */}
+      <div>
+        <Label className="font-body font-medium text-sm mb-1.5 block">Source</Label>
+        <Input
+          value={form.source?.name || ''}
+          onChange={e => set('source', e.target.value ? { ...form.source, name: e.target.value, url: form.source?.url } : null)}
+          placeholder="Cookbook name or website (e.g. Bon Appétit)"
+          className="mb-2"
+        />
+        {form.source?.name && (
+          <Input
+            value={form.source?.url || ''}
+            onChange={e => set('source', { name: form.source!.name, url: e.target.value || undefined })}
+            placeholder="Website URL (optional, e.g. https://...)"
+            type="url"
+          />
+        )}
+      </div>
+
       {/* Notes are managed separately via the detail view */}
 
       {/* Actions */}

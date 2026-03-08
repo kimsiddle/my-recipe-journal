@@ -45,6 +45,7 @@ const SAMPLE_RECIPES: Recipe[] = [
     ingredients: ['salmon fillets', 'butter', 'lemon', 'garlic', 'fresh dill', 'fresh parsley', 'salt', 'pepper', 'olive oil'],
     instructions: '1. Pat salmon dry, season with salt and pepper.\n2. Heat olive oil in a skillet over medium-high.\n3. Sear salmon skin-side down 4 min.\n4. Flip, cook 3 more minutes.\n5. Add butter, garlic, lemon juice, and herbs.\n6. Baste salmon with the herb butter.',
     rating: 5,
+    source: null,
     notes: [
       { id: 'n5', text: 'Works great with trout too.', createdAt: '2026-03-05T18:00:00Z' },
       { id: 'n6', text: 'Add capers for extra pop.', createdAt: '2026-03-06T12:00:00Z' },
