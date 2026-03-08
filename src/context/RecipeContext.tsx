@@ -113,6 +113,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       last_cooked_at: data.lastCookedAt,
       user_id: user.id,
       servings: data.servings,
+      notes_text: data.notesText || '',
     } as any).select().single();
 
     if (error) { console.error('Error adding recipe:', error); return; }
