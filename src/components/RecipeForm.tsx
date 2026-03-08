@@ -21,7 +21,7 @@ const emptyForm: RecipeFormData = {
   ingredients: [],
   instructions: '',
   rating: 0,
-  adjustments: '',
+  notes: [],
 };
 
 export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
@@ -151,17 +151,7 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
         <StarRating rating={form.rating} onChange={val => set('rating', val)} />
       </div>
 
-      {/* Adjustments */}
-      <div>
-        <Label htmlFor="adjustments" className="font-body font-medium text-sm mb-1.5 block">Notes & Adjustments</Label>
-        <Textarea
-          id="adjustments"
-          value={form.adjustments}
-          onChange={e => set('adjustments', e.target.value)}
-          placeholder="What would you change next time?"
-          rows={3}
-        />
-      </div>
+      {/* Notes are managed separately via the detail view */}
 
       {/* Actions */}
       <div className="flex gap-3 pt-2">

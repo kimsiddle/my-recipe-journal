@@ -20,7 +20,7 @@ import { toast } from 'sonner';
 type View = { type: 'list' } | { type: 'detail'; id: string } | { type: 'form'; editId?: string };
 
 const Index = () => {
-  const { recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe } = useRecipes();
+  const { recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote } = useRecipes();
   const [view, setView] = useState<View>({ type: 'list' });
   const [search, setSearch] = useState('');
   const [selectedIngredient, setSelectedIngredient] = useState<string | null>(null);
@@ -78,14 +78,13 @@ const Index = () => {
           onBack={() => setView({ type: 'list' })}
           onEdit={() => setView({ type: 'form', editId: recipe.id })}
           onDelete={() => setDeleteConfirm(recipe.id)}
-          onQuickNote={(note) => {
-            const existing = recipe.adjustments ? recipe.adjustments + '\n' : '';
-            const timestamp = new Date().toLocaleDateString();
-            updateRecipe(recipe.id, {
-              ...recipe,
-              adjustments: existing + `[${timestamp}] ${note}`,
-            });
+          onAddNote={(text) => {
+            addNote(recipe.id, text);
             toast.success('Note added!');
+          }}
+          onDeleteNote={(noteId) => {
+            deleteNote(recipe.id, noteId);
+            toast.success('Note removed');
           }}
         />
         <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
@@ -108,7 +107,7 @@ const Index = () => {
   if (view.type === 'form') {
     const editing = view.editId ? getRecipe(view.editId) : undefined;
     const initialData = editing
-      ? { title: editing.title, description: editing.description, imageUrl: editing.imageUrl, ingredients: editing.ingredients, instructions: editing.instructions, rating: editing.rating, adjustments: editing.adjustments }
+      ? { title: editing.title, description: editing.description, imageUrl: editing.imageUrl, ingredients: editing.ingredients, instructions: editing.instructions, rating: editing.rating, notes: editing.notes }
       : undefined;
     return (
       <div className="min-h-screen bg-background px-4 py-8">

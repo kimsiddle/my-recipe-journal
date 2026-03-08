@@ -1,29 +1,40 @@
 import { useState } from 'react';
-import { Recipe } from '@/types/recipe';
+import { Recipe, RecipeNote } from '@/types/recipe';
 import { StarRating } from '@/components/StarRating';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, Plus, Send } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, Plus, Send, X, MessageSquare } from 'lucide-react';
 
 interface RecipeDetailProps {
   recipe: Recipe;
   onBack: () => void;
   onEdit: () => void;
   onDelete: () => void;
-  onQuickNote: (note: string) => void;
+  onAddNote: (text: string) => void;
+  onDeleteNote: (noteId: string) => void;
 }
 
-export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onQuickNote }: RecipeDetailProps) {
+export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDeleteNote }: RecipeDetailProps) {
   const [noteOpen, setNoteOpen] = useState(false);
   const [noteText, setNoteText] = useState('');
 
   const submitNote = () => {
     const trimmed = noteText.trim();
     if (!trimmed) return;
-    onQuickNote(trimmed);
+    onAddNote(trimmed);
     setNoteText('');
     setNoteOpen(false);
+  };
+
+  const formatDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const formatTime = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
   };
 
   return (
@@ -81,46 +92,64 @@ export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onQuickNote }: 
         </div>
       </section>
 
-      {/* Notes & Adjustments with Quick Add */}
+      {/* Notes as comment thread */}
       <section className="mt-8">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-xl font-display">Notes & Adjustments</h2>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-display">Notes</h2>
+            <span className="text-sm text-muted-foreground">({recipe.notes.length})</span>
+          </div>
           {!noteOpen && (
             <Button variant="ghost" size="sm" onClick={() => setNoteOpen(true)} className="text-accent hover:text-accent">
               <Plus className="h-4 w-4 mr-1" />
-              Quick note
+              Add note
             </Button>
           )}
         </div>
 
+        {/* Add note input */}
         {noteOpen && (
-          <div className="mb-3 flex gap-2">
+          <div className="mb-4 bg-card border rounded-lg p-3">
             <Textarea
               value={noteText}
               onChange={e => setNoteText(e.target.value)}
-              placeholder="Jot down a quick note..."
-              rows={2}
+              placeholder="What did you learn? What would you change?"
+              rows={3}
               autoFocus
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitNote(); } }}
-              className="flex-1"
             />
-            <div className="flex flex-col gap-1">
-              <Button size="icon" onClick={submitNote} disabled={!noteText.trim()}>
-                <Send className="h-4 w-4" />
+            <div className="flex justify-end gap-2 mt-2">
+              <Button size="sm" variant="ghost" onClick={() => { setNoteOpen(false); setNoteText(''); }}>
+                Cancel
               </Button>
-              <Button size="icon" variant="ghost" onClick={() => { setNoteOpen(false); setNoteText(''); }}>
-                ✕
+              <Button size="sm" onClick={submitNote} disabled={!noteText.trim()}>
+                <Send className="h-3.5 w-3.5 mr-1" />
+                Post
               </Button>
             </div>
           </div>
         )}
 
-        {recipe.adjustments ? (
-          <div className="bg-accent/10 border border-accent/20 rounded-lg p-4 text-sm leading-relaxed whitespace-pre-line">
-            {recipe.adjustments}
+        {/* Notes list */}
+        {recipe.notes.length > 0 ? (
+          <div className="space-y-3">
+            {recipe.notes.map((note) => (
+              <NoteCard
+                key={note.id}
+                note={note}
+                formatDate={formatDate}
+                formatTime={formatTime}
+                onDelete={() => onDeleteNote(note.id)}
+              />
+            ))}
           </div>
         ) : (
-          !noteOpen && <p className="text-sm text-muted-foreground italic">No notes yet. Add one!</p>
+          !noteOpen && (
+            <div className="text-center py-8 border border-dashed rounded-lg">
+              <MessageSquare className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">No notes yet. Add your first one!</p>
+            </div>
+          )
         )}
       </section>
 
@@ -128,6 +157,34 @@ export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onQuickNote }: 
         Added {new Date(recipe.createdAt).toLocaleDateString()}
         {recipe.updatedAt !== recipe.createdAt && ` · Updated ${new Date(recipe.updatedAt).toLocaleDateString()}`}
       </p>
+    </div>
+  );
+}
+
+function NoteCard({
+  note,
+  formatDate,
+  formatTime,
+  onDelete,
+}: {
+  note: RecipeNote;
+  formatDate: (d: string) => string;
+  formatTime: (d: string) => string;
+  onDelete: () => void;
+}) {
+  return (
+    <div className="group relative bg-card border rounded-lg p-4 transition-shadow hover:shadow-sm">
+      <p className="text-sm leading-relaxed pr-6">{note.text}</p>
+      <p className="text-xs text-muted-foreground mt-2">
+        {formatDate(note.createdAt)} at {formatTime(note.createdAt)}
+      </p>
+      <button
+        onClick={onDelete}
+        className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+        title="Delete note"
+      >
+        <X className="h-3.5 w-3.5" />
+      </button>
     </div>
   );
 }

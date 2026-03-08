@@ -1,3 +1,9 @@
+export interface RecipeNote {
+  id: string;
+  text: string;
+  createdAt: string;
+}
+
 export interface Recipe {
   id: string;
   title: string;
@@ -6,7 +12,7 @@ export interface Recipe {
   ingredients: string[];
   instructions: string;
   rating: number;
-  adjustments: string;
+  notes: RecipeNote[];
   createdAt: string;
   updatedAt: string;
 }
