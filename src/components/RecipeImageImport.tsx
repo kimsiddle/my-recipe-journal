@@ -88,6 +88,7 @@ export function RecipeImageImport({ onExtracted, onSkip }: RecipeImageImportProp
 
       onExtracted({
         title: data.title || '',
+        description: data.description || '',
         ingredients: (data.ingredients || []).map((i: any) => ({
           name: i.name || '',
           amount: i.amount || '',

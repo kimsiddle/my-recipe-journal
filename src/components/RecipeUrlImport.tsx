@@ -52,6 +52,7 @@ export function RecipeUrlImport({ onExtracted, onBack }: RecipeUrlImportProps) {
 
       onExtracted({
         title: data.title || '',
+        description: data.description || '',
         ingredients: (data.ingredients || []).map((i: any) => ({
           name: i.name || '',
           amount: i.amount || '',

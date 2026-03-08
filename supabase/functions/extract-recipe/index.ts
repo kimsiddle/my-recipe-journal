@@ -127,6 +127,7 @@ serve(async (req) => {
                     "title",
                     "ingredients",
                     "instructions",
+                    "description",
                     "notes",
                     "cook_time",
                     "servings",
