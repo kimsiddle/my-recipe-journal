@@ -95,10 +95,15 @@ serve(async (req) => {
                       description:
                         "Step-by-step cooking instructions, with each step on a new line",
                     },
+                    description: {
+                      type: "string",
+                      description:
+                        "A brief summary or description of the dish — the main introductory text about what the recipe is. Empty string if none.",
+                    },
                     notes: {
                       type: "string",
                       description:
-                        "Any additional notes, tips, or details from the recipe. Empty string if none.",
+                        "Any specific tips, variations, or additional notes. NOT the main description. Empty string if none.",
                     },
                     cook_time: {
                       type: "string",
@@ -122,6 +127,7 @@ serve(async (req) => {
                     "title",
                     "ingredients",
                     "instructions",
+                    "description",
                     "notes",
                     "cook_time",
                     "servings",

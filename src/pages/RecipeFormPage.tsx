@@ -57,7 +57,7 @@ const RecipeFormPage = () => {
 
     setImportData({
       title: data.title,
-      description: '',
+      description: data.description || '',
       imageUrl: data.imageUrl,
       ingredients: data.ingredients,
       instructions: data.instructions,

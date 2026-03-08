@@ -134,9 +134,10 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({
           title: jsonLd.name || "",
+          description: jsonLd.description || "",
           ingredients: normalizeIngredients(jsonLd.recipeIngredient),
           instructions: normalizeInstructions(jsonLd.recipeInstructions),
-          notes: jsonLd.description || "",
+          notes: "",
           cook_time: parseIsoDuration(totalTime),
           servings,
           confidence: "high",
@@ -193,7 +194,8 @@ serve(async (req) => {
                     },
                   },
                   instructions: { type: "string", description: "Step-by-step instructions, each step on a new line" },
-                  notes: { type: "string" },
+                  description: { type: "string", description: "A brief summary or description of the dish — the main introductory text. Empty string if none." },
+                  notes: { type: "string", description: "Any specific tips, variations, or additional notes. NOT the main description. Empty string if none." },
                   cook_time: {
                     type: "string",
                     enum: ["5 min","10 min","15 min","20 min","25 min","30 min","45 min","1 hour","1.5 hours","2 hours","2.5 hours","3 hours","4+ hours",""],
@@ -201,7 +203,7 @@ serve(async (req) => {
                   servings: { type: "integer" },
                   confidence: { type: "string", enum: ["high", "medium", "low"] },
                 },
-                required: ["title", "ingredients", "instructions", "notes", "cook_time", "servings", "confidence"],
+                required: ["title", "ingredients", "instructions", "description", "notes", "cook_time", "servings", "confidence"],
                 additionalProperties: false,
               },
             },

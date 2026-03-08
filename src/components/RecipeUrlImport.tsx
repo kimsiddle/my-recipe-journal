@@ -34,6 +34,7 @@ export function RecipeUrlImport({ onExtracted, onBack }: RecipeUrlImportProps) {
         if (data?.title || data?.ingredients?.length) {
           onExtracted({
             title: data.title || '',
+            description: data.description || '',
             ingredients: (data.ingredients || []).map((i: any) => ({
               name: i.name || '',
               amount: i.amount || '',
@@ -51,6 +52,7 @@ export function RecipeUrlImport({ onExtracted, onBack }: RecipeUrlImportProps) {
 
       onExtracted({
         title: data.title || '',
+        description: data.description || '',
         ingredients: (data.ingredients || []).map((i: any) => ({
           name: i.name || '',
           amount: i.amount || '',

@@ -7,6 +7,7 @@ import { Ingredient } from '@/types/recipe';
 
 export interface ExtractedRecipe {
   title: string;
+  description: string;
   ingredients: Ingredient[];
   instructions: string;
   notes: string;
@@ -65,6 +66,7 @@ export function RecipeImageImport({ onExtracted, onSkip }: RecipeImageImportProp
         if (data?.title || data?.ingredients?.length) {
           onExtracted({
             title: data.title || '',
+            description: data.description || '',
             ingredients: (data.ingredients || []).map((i: any) => ({
               name: i.name || '',
               amount: i.amount || '',
@@ -86,6 +88,7 @@ export function RecipeImageImport({ onExtracted, onSkip }: RecipeImageImportProp
 
       onExtracted({
         title: data.title || '',
+        description: data.description || '',
         ingredients: (data.ingredients || []).map((i: any) => ({
           name: i.name || '',
           amount: i.amount || '',
