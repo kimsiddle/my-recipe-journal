@@ -119,22 +119,15 @@ const Index = () => {
 
   // List view
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <CookingPot className="h-6 w-6 text-accent" />
-            <h1 className="text-xl font-display">My Recipes</h1>
-          </div>
-          <Button size="sm" onClick={() => setView({ type: 'form' })}>
-            <Plus className="h-4 w-4 mr-1" />
-            Add Recipe
-          </Button>
-        </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto px-4 py-6">
+    <div className="flex-1">
+      {/* Sub-header */}
+      <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+        <h2 className="text-xl font-display">My Recipes</h2>
+        <Button size="sm" onClick={() => setView({ type: 'form' })}>
+          <Plus className="h-4 w-4 mr-1" />
+          Add Recipe
+        </Button>
+      </div>
         {/* Search */}
         <div className="relative mb-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
