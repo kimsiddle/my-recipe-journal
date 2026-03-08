@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { RatingScale } from '@/components/RatingScale';
 import { UtensilsCrossed, Clock, Flame } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -10,6 +11,10 @@ interface RecipeCardProps {
 }
 
 export function RecipeCard({ recipe, onClick }: RecipeCardProps) {
+  const lastCooked = recipe.lastCookedAt
+    ? formatDistanceToNow(new Date(recipe.lastCookedAt), { addSuffix: true })
+    : null;
+
   return (
     <Card
       className="group cursor-pointer overflow-hidden transition-shadow hover:shadow-[var(--shadow-recipe-hover)]"
@@ -46,6 +51,9 @@ export function RecipeCard({ recipe, onClick }: RecipeCardProps) {
             {recipe.difficulty}
           </span>
         </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          {lastCooked ? `Cooked ${lastCooked}` : 'Never cooked'}
+        </p>
       </CardContent>
     </Card>
   );
