@@ -71,8 +71,8 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
   const [recipes, setRecipes] = useState<Recipe[]>(() => {
     const stored = localStorage.getItem('recipes');
     const version = localStorage.getItem('recipes_version');
-    if (stored && version === '3') return JSON.parse(stored);
-    localStorage.setItem('recipes_version', '3');
+    if (stored && version === '4') return JSON.parse(stored);
+    localStorage.setItem('recipes_version', '4');
     localStorage.setItem('recipes', JSON.stringify(SAMPLE_RECIPES));
     return SAMPLE_RECIPES;
   });
