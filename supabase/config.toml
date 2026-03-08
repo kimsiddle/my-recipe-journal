@@ -1,1 +1,4 @@
 project_id = "brivsmkdmpnvunthaepy"
+
+[functions.extract-recipe]
+verify_jwt = false
