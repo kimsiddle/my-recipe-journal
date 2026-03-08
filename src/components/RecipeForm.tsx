@@ -74,7 +74,9 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setRawImageSrc(reader.result as string);
+        const dataUrl = reader.result as string;
+        setRawImageSrc(dataUrl);
+        setOriginalImageSrc(dataUrl);
         setShowCropper(true);
       };
       reader.readAsDataURL(file);
