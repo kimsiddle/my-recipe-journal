@@ -36,8 +36,8 @@ const emptyForm: RecipeFormData = {
 
 export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
   const [form, setForm] = useState<RecipeFormData>(initial || emptyForm);
-  const [ingredientInput, setIngredientInput] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
+  const { allIngredients } = useRecipes();
 
   const set = <K extends keyof RecipeFormData>(key: K, val: RecipeFormData[K]) =>
     setForm(prev => ({ ...prev, [key]: val }));
