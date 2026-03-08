@@ -21,7 +21,7 @@ const SAMPLE_RECIPES: Recipe[] = [
     id: '2',
     title: 'Thai Green Curry',
     description: 'Aromatic coconut curry with chicken and vegetables. Perfect weeknight dinner.',
-    imageUrl: null,
+    imageUrl: curryImg,
     ingredients: ['chicken thighs', 'coconut milk', 'green curry paste', 'bamboo shoots', 'Thai basil', 'fish sauce', 'sugar', 'bell pepper', 'jasmine rice'],
     instructions: '1. Cook curry paste in oil until fragrant.\n2. Add chicken, cook until sealed.\n3. Pour in coconut milk.\n4. Add vegetables and simmer 15 min.\n5. Season with fish sauce and sugar.\n6. Serve over jasmine rice with Thai basil.',
     rating: 4,
