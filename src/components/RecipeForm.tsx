@@ -1,14 +1,15 @@
 import { useState, useRef } from 'react';
-import { RecipeFormData, MEAL_CATEGORIES, PROTEIN_TAGS, DIFFICULTY_LEVELS, MealCategory, ProteinTag, SourceType } from '@/types/recipe';
+import { RecipeFormData, MEAL_CATEGORIES, DIFFICULTY_LEVELS, MealCategory, ProteinTag, SourceType } from '@/types/recipe';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RatingScale } from '@/components/RatingScale';
-import { X, Camera } from 'lucide-react';
+import { X, Camera, Plus, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { IngredientAutocomplete } from '@/components/IngredientAutocomplete';
 import { useRecipes } from '@/context/RecipeContext';
+import { useProteinTags } from '@/hooks/useProteinTags';
 
 interface RecipeFormProps {
   initial?: RecipeFormData;
