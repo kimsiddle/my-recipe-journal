@@ -329,12 +329,58 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
         {form.ingredients.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-2">
             {form.ingredients.map((ing, i) => (
-              <Badge key={i} variant="secondary" className="gap-1 font-body font-normal">
-                {formatIngredient(ing)}
-                <button type="button" onClick={() => removeIngredient(i)}>
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
+              editingIndex === i ? (
+                <form
+                  key={i}
+                  className="flex items-center gap-1"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (editName.trim()) {
+                      const updated = [...form.ingredients];
+                      updated[i] = { name: editName.trim(), amount: editAmount.trim() };
+                      set('ingredients', updated);
+                    }
+                    setEditingIndex(null);
+                  }}
+                >
+                  <Input
+                    value={editAmount}
+                    onChange={e => setEditAmount(e.target.value)}
+                    placeholder="Qty"
+                    className="h-7 w-20 text-xs"
+                  />
+                  <Input
+                    value={editName}
+                    onChange={e => setEditName(e.target.value)}
+                    placeholder="Ingredient"
+                    className="h-7 w-28 text-xs"
+                    autoFocus
+                    onKeyDown={e => {
+                      if (e.key === 'Escape') setEditingIndex(null);
+                    }}
+                  />
+                  <Button type="submit" size="sm" variant="ghost" className="h-7 w-7 p-0">
+                    <Plus className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button type="button" size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => setEditingIndex(null)}>
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </form>
+              ) : (
+                <Badge key={i} variant="secondary" className="gap-1 font-body font-normal cursor-pointer"
+                  onClick={() => {
+                    setEditingIndex(i);
+                    setEditAmount(ing.amount);
+                    setEditName(ing.name);
+                  }}
+                >
+                  {formatIngredient(ing)}
+                  <button type="button" onClick={(e) => { e.stopPropagation(); removeIngredient(i); }}>
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              )
             ))}
           </div>
         )}
