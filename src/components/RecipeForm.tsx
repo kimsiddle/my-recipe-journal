@@ -95,8 +95,8 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
   };
 
   const handleRecrop = () => {
-    if (form.imageUrl) {
-      setRawImageSrc(form.imageUrl);
+    if (originalImageSrc) {
+      setRawImageSrc(originalImageSrc);
       setShowCropper(true);
     }
   };
