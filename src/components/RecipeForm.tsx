@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { RecipeFormData, MEAL_CATEGORIES, DIFFICULTY_LEVELS, COOK_TIME_OPTIONS, SERVING_OPTIONS, MealCategory, ProteinTag, SourceType, Ingredient, formatIngredient } from '@/types/recipe';
+import { RecipeFormData, MEAL_CATEGORIES, OCCASION_TAGS, DIFFICULTY_LEVELS, COOK_TIME_OPTIONS, SERVING_OPTIONS, MealCategory, ProteinTag, OccasionTag, SourceType, Ingredient, formatIngredient } from '@/types/recipe';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
