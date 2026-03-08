@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { RecipeFormData, MEAL_CATEGORIES, PROTEIN_TAGS, MealCategory, ProteinTag } from '@/types/recipe';
+import { RecipeFormData, MEAL_CATEGORIES, PROTEIN_TAGS, MealCategory, ProteinTag, SourceType } from '@/types/recipe';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -202,19 +202,44 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
       {/* Source */}
       <div>
         <Label className="font-body font-medium text-sm mb-1.5 block">Source</Label>
-        <Input
-          value={form.source?.name || ''}
-          onChange={e => set('source', e.target.value ? { ...form.source, name: e.target.value, url: form.source?.url } : null)}
-          placeholder="Cookbook name or website (e.g. Bon Appétit)"
-          className="mb-2"
-        />
-        {form.source?.name && (
-          <Input
-            value={form.source?.url || ''}
-            onChange={e => set('source', { name: form.source!.name, url: e.target.value || undefined })}
-            placeholder="Website URL (optional, e.g. https://...)"
-            type="url"
-          />
+        <div className="flex gap-1.5 mb-2">
+          {(['book', 'website'] as SourceType[]).map(type => (
+            <button
+              key={type}
+              type="button"
+              onClick={() => {
+                if (form.source?.type === type) {
+                  set('source', null);
+                } else {
+                  set('source', { type, name: form.source?.name || '', url: type === 'website' ? (form.source?.url || '') : undefined });
+                }
+              }}
+            >
+              <Badge
+                variant={form.source?.type === type ? 'default' : 'secondary'}
+                className="font-body font-normal cursor-pointer capitalize"
+              >
+                {type === 'book' ? '📖 Book' : '🌐 Website'}
+              </Badge>
+            </button>
+          ))}
+        </div>
+        {form.source && (
+          <div className="space-y-2">
+            <Input
+              value={form.source.name}
+              onChange={e => set('source', { ...form.source!, name: e.target.value })}
+              placeholder={form.source.type === 'book' ? 'Cookbook name (e.g. Salt Fat Acid Heat)' : 'Website name (e.g. Bon Appétit)'}
+            />
+            {form.source.type === 'website' && (
+              <Input
+                value={form.source.url || ''}
+                onChange={e => set('source', { ...form.source!, url: e.target.value || undefined })}
+                placeholder="https://..."
+                type="url"
+              />
+            )}
+          </div>
         )}
       </div>
 
