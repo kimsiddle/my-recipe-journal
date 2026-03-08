@@ -34,7 +34,7 @@ interface RecipeDetailProps {
   onDeleteCookLog: (logId: string) => void;
 }
 
-export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDeleteNote, onRatingChange, onAddPhoto, onDeletePhoto, onAddCookLog, onDeleteCookLog }: RecipeDetailProps) {
+export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onAddNote, onDeleteNote, onRatingChange, onAddPhoto, onDeletePhoto, onAddCookLog, onDeleteCookLog }: RecipeDetailProps) {
   const [noteOpen, setNoteOpen] = useState(false);
   const [noteText, setNoteText] = useState('');
   const [cookLogOpen, setCookLogOpen] = useState(false);
