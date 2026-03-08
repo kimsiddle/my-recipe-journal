@@ -56,9 +56,7 @@ const RecipeFormPage = () => {
       difficulty: 'Medium',
       cookTime: data.cookTime || '',
       servings: data.servings || null,
-      notes: data.notes
-        ? [{ id: crypto.randomUUID(), text: data.notes, createdAt: new Date().toISOString() }]
-        : [],
+      notesText: data.notes || '',
       photos: [],
       source: null,
       mealCategory: 'Dinner',
