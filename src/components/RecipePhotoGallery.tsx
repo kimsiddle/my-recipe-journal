@@ -2,12 +2,13 @@ import { useRef, useState } from 'react';
 import { RecipePhoto } from '@/types/recipe';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Camera, ChevronLeft, ChevronRight, X, Plus } from 'lucide-react';
+import { Camera, ChevronLeft, ChevronRight, X, Plus, ImageIcon } from 'lucide-react';
 
 interface RecipePhotoGalleryProps {
   photos: RecipePhoto[];
   onAddPhoto: (dataUrl: string) => void;
   onDeletePhoto: (photoId: string) => void;
+  onSetAsMain?: (photoUrl: string, photoId: string) => void;
 }
 
 export function RecipePhotoGallery({ photos, onAddPhoto, onDeletePhoto }: RecipePhotoGalleryProps) {
