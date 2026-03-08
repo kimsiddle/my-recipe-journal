@@ -68,13 +68,11 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
     const { data: rows, error } = await supabase.from('recipes').select('*').order('updated_at', { ascending: false });
     if (error) { console.error('Error fetching recipes:', error); setLoading(false); return; }
 
-    const { data: allNotes } = await supabase.from('recipe_notes').select('*').order('created_at');
     const { data: allPhotos } = await supabase.from('recipe_photos').select('*').order('created_at');
     const { data: allLogs } = await supabase.from('cook_log_entries').select('*').order('cooked_at');
 
     const mapped = (rows || []).map(row => mapDbToRecipe(
       row,
-      (allNotes || []).filter(n => n.recipe_id === row.id),
       (allPhotos || []).filter(p => p.recipe_id === row.id),
       (allLogs || []).filter(l => l.recipe_id === row.id),
     ));
