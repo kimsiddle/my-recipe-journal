@@ -8,8 +8,9 @@ interface RecipePhotoGalleryProps {
   photos: RecipePhoto[];
   onAddPhoto: (dataUrl: string) => void;
   onDeletePhoto: (photoId: string) => void;
-  onSetAsMain?: (photoUrl: string, photoId: string) => void;
 }
+
+export function RecipePhotoGallery({ photos, onAddPhoto, onDeletePhoto }: RecipePhotoGalleryProps) {
 
 export function RecipePhotoGallery({ photos, onAddPhoto, onDeletePhoto, onSetAsMain }: RecipePhotoGalleryProps) {
   const fileRef = useRef<HTMLInputElement>(null);
