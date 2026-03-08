@@ -13,7 +13,7 @@ const SAMPLE_RECIPES: Recipe[] = [
     ingredients: ['pizza dough', 'San Marzano tomatoes', 'fresh mozzarella', 'fresh basil', 'olive oil', 'salt'],
     instructions: '1. Preheat oven to 500°F.\n2. Stretch dough into a round.\n3. Spread crushed tomatoes.\n4. Tear mozzarella over top.\n5. Bake 10-12 minutes.\n6. Top with fresh basil and olive oil.',
     rating: 5,
-    source: { name: 'Serious Eats', url: 'https://www.seriouseats.com/basic-neapolitan-pizza-dough-recipe' },
+    source: { type: 'website', name: 'Serious Eats', url: 'https://www.seriouseats.com/basic-neapolitan-pizza-dough-recipe' },
     notes: [
       { id: 'n1', text: 'Added a pinch of red pepper flakes for heat.', createdAt: '2026-02-15T12:00:00Z' },
       { id: 'n2', text: 'Next time try with burrata instead of mozzarella.', createdAt: '2026-02-20T18:30:00Z' },
