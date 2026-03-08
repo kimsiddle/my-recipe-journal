@@ -75,6 +75,7 @@ export type Database = {
           author_name: string
           created_at: string
           id: string
+          photo_url: string | null
           recipe_id: string
           text: string
         }
@@ -82,6 +83,7 @@ export type Database = {
           author_name: string
           created_at?: string
           id?: string
+          photo_url?: string | null
           recipe_id: string
           text: string
         }
@@ -89,6 +91,7 @@ export type Database = {
           author_name?: string
           created_at?: string
           id?: string
+          photo_url?: string | null
           recipe_id?: string
           text?: string
         }
