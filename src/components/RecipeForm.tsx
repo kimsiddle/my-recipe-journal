@@ -45,6 +45,9 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
   const [newTagInput, setNewTagInput] = useState('');
   const [showNewTagInput, setShowNewTagInput] = useState(false);
   const [ingredientAmount, setIngredientAmount] = useState('');
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editAmount, setEditAmount] = useState('');
+  const [editName, setEditName] = useState('');
 
   const set = <K extends keyof RecipeFormData>(key: K, val: RecipeFormData[K]) =>
     setForm(prev => ({ ...prev, [key]: val }));
