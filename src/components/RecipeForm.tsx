@@ -6,11 +6,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RatingScale } from '@/components/RatingScale';
-import { X, Camera, Plus, Trash2 } from 'lucide-react';
+import { X, Camera, Plus, Trash2, Crop } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { IngredientAutocomplete } from '@/components/IngredientAutocomplete';
 import { useRecipes } from '@/context/RecipeContext';
 import { useProteinTags } from '@/hooks/useProteinTags';
+import { ImageCropper } from '@/components/ImageCropper';
 
 interface RecipeFormProps {
   initial?: RecipeFormData;
