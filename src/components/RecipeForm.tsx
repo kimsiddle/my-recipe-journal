@@ -12,6 +12,7 @@ import { IngredientAutocomplete } from '@/components/IngredientAutocomplete';
 import { useRecipes } from '@/context/RecipeContext';
 import { useProteinTags } from '@/hooks/useProteinTags';
 import { ImageCropper } from '@/components/ImageCropper';
+import { RichTextEditor } from '@/components/RichTextEditor';
 
 interface RecipeFormProps {
   initial?: RecipeFormData;
