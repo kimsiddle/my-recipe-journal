@@ -213,7 +213,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
   }, [recipes]);
 
   return (
-    <RecipeContext.Provider value={{ recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote, addPhoto, deletePhoto, addCookLog, deleteCookLog }}>
+    <RecipeContext.Provider value={{ recipes, allIngredients, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote, addPhoto, deletePhoto, addCookLog, deleteCookLog }}>
       {children}
     </RecipeContext.Provider>
   );
