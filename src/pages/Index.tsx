@@ -80,6 +80,10 @@ const Index = () => {
             deleteNote(recipe.id, noteId);
             toast.success('Note removed');
           }}
+          onRatingChange={(rating) => {
+            updateRecipe(recipe.id, { ...recipe, rating });
+            toast.success('Rating updated!');
+          }}
         />
         <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
           <DialogContent>
