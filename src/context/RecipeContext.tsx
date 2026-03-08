@@ -11,8 +11,6 @@ interface RecipeContextType {
   updateRecipe: (id: string, data: RecipeFormData) => Promise<void>;
   deleteRecipe: (id: string) => Promise<void>;
   getRecipe: (id: string) => Recipe | undefined;
-  addNote: (recipeId: string, text: string) => Promise<void>;
-  deleteNote: (recipeId: string, noteId: string) => Promise<void>;
   addPhoto: (recipeId: string, url: string) => Promise<void>;
   deletePhoto: (recipeId: string, photoId: string) => Promise<void>;
   addCookLog: (recipeId: string, entry: Omit<CookLogEntry, 'id'>) => Promise<void>;
