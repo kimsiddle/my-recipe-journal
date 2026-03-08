@@ -87,10 +87,12 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onAddN
           <p className="text-muted-foreground">{recipe.description}</p>
         </div>
         <div className="flex gap-2 shrink-0">
-          <Button onClick={() => setCookLogOpen(true)} size="sm" className="gap-1.5">
-            <ChefHat className="h-4 w-4" />
-            I Made This
-          </Button>
+          {isOwner && (
+            <Button onClick={() => setCookLogOpen(true)} size="sm" className="gap-1.5">
+              <ChefHat className="h-4 w-4" />
+              I Made This
+            </Button>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon">
@@ -122,12 +124,16 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onAddN
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button variant="outline" size="icon" onClick={onEdit}>
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="icon" onClick={onDelete} className="hover:bg-destructive hover:text-destructive-foreground">
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          {isOwner && (
+            <>
+              <Button variant="outline" size="icon" onClick={onEdit}>
+                <Pencil className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="icon" onClick={onDelete} className="hover:bg-destructive hover:text-destructive-foreground">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
