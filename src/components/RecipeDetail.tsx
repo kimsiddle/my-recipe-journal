@@ -30,6 +30,7 @@ interface RecipeDetailProps {
   onAddPhoto: (dataUrl: string) => void;
   onDeletePhoto: (photoId: string) => void;
   onSetPhotoAsMain: (photoUrl: string, photoId: string) => void;
+  onUpdateMainPhoto: (dataUrl: string) => void;
   onAddCookLog: (entry: Omit<CookLogEntry, 'id'>) => void;
   onDeleteCookLog: (logId: string) => void;
 }
