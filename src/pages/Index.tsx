@@ -78,6 +78,15 @@ const Index = () => {
           onBack={() => setView({ type: 'list' })}
           onEdit={() => setView({ type: 'form', editId: recipe.id })}
           onDelete={() => setDeleteConfirm(recipe.id)}
+          onQuickNote={(note) => {
+            const existing = recipe.adjustments ? recipe.adjustments + '\n' : '';
+            const timestamp = new Date().toLocaleDateString();
+            updateRecipe(recipe.id, {
+              ...recipe,
+              adjustments: existing + `[${timestamp}] ${note}`,
+            });
+            toast.success('Note added!');
+          }}
         />
         <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
           <DialogContent>
