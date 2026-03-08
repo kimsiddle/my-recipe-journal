@@ -22,7 +22,6 @@ const RecipeContext = createContext<RecipeContextType | undefined>(undefined);
 // Helper to map DB row to Recipe
 function mapDbToRecipe(
   row: any,
-  notes: any[],
   photos: any[],
   cookLog: any[]
 ): Recipe {
@@ -44,7 +43,7 @@ function mapDbToRecipe(
     mealCategory: row.meal_category || 'Dinner',
     proteinTags: row.protein_tags || [],
     servings: row.servings ?? null,
-    notes: notes.map(n => ({ id: n.id, text: n.text, createdAt: n.created_at })),
+    notesText: row.notes_text || '',
     photos: photos.map(p => ({ id: p.id, url: p.url, createdAt: p.created_at })),
     cookLog: cookLog.map(c => ({
       id: c.id,
