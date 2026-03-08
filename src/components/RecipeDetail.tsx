@@ -81,12 +81,12 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onAddN
         )}
       </div>
 
-      <div className="flex items-start justify-between gap-4 mb-4">
-        <div>
-          <h1 className="text-3xl font-display mb-2">{recipe.title}</h1>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+        <div className="min-w-0">
+          <h1 className="text-2xl sm:text-3xl font-display mb-2">{recipe.title}</h1>
           <p className="text-muted-foreground">{recipe.description}</p>
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex flex-wrap gap-2 shrink-0">
           {isOwner && (
             <Button onClick={() => setCookLogOpen(true)} size="sm" className="gap-1.5">
               <ChefHat className="h-4 w-4" />
@@ -95,7 +95,7 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onAddN
           )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon">
+              <Button variant="outline" size="icon" className="h-9 w-9">
                 <Share2 className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -126,10 +126,10 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onAddN
           </DropdownMenu>
           {isOwner && (
             <>
-              <Button variant="outline" size="icon" onClick={onEdit}>
+              <Button variant="outline" size="icon" className="h-9 w-9" onClick={onEdit}>
                 <Pencil className="h-4 w-4" />
               </Button>
-              <Button variant="outline" size="icon" onClick={onDelete} className="hover:bg-destructive hover:text-destructive-foreground">
+              <Button variant="outline" size="icon" onClick={onDelete} className="h-9 w-9 hover:bg-destructive hover:text-destructive-foreground">
                 <Trash2 className="h-4 w-4" />
               </Button>
             </>

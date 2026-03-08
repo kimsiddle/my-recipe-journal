@@ -61,17 +61,17 @@ export default function Planner() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
+    <div className="max-w-5xl mx-auto px-4 py-4 sm:py-6">
       {/* Week nav */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 sm:mb-6">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => setWeekStart(subWeeks(weekStart, 1))}>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setWeekStart(subWeeks(weekStart, 1))}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <h2 className="text-lg font-display">
+          <h2 className="text-base sm:text-lg font-display">
             {format(weekStart, 'MMM d')} – {format(addDays(weekStart, 6), 'MMM d, yyyy')}
           </h2>
-          <Button variant="ghost" size="icon" onClick={() => setWeekStart(addWeeks(weekStart, 1))}>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setWeekStart(addWeeks(weekStart, 1))}>
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
@@ -96,9 +96,9 @@ export default function Planner() {
         </div>
       </div>
 
-      {/* Week grid */}
-      <div className="grid grid-cols-[auto_repeat(7,1fr)] gap-2">
-        {/* Header row: empty corner + day headers */}
+      {/* Desktop: Week grid */}
+      <div className="hidden md:grid grid-cols-[auto_repeat(7,1fr)] gap-2">
+        {/* Header row */}
         <div />
         {weekDays.map(day => (
           <div key={day.date} className="text-center pb-2">
@@ -110,7 +110,6 @@ export default function Planner() {
         {/* Meal rows */}
         {PLAN_MEALS.map(meal => (
           <>
-            {/* Row label */}
             <div key={`${meal}-label`} className="flex items-center pr-2">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium whitespace-nowrap">{meal}</p>
             </div>
@@ -151,6 +150,59 @@ export default function Planner() {
             })}
           </>
         ))}
+      </div>
+
+      {/* Mobile: Stacked day view */}
+      <div className="md:hidden space-y-4">
+        {weekDays.map(day => {
+          const hasMeals = PLAN_MEALS.some(meal => getRecipeId(day.date, meal));
+          return (
+            <div key={day.date} className="rounded-xl border bg-card overflow-hidden">
+              <div className="px-3 py-2 bg-muted/50 border-b">
+                <p className="text-sm font-medium">
+                  <span className="text-muted-foreground">{day.label}</span>{' '}
+                  <span className="font-display">{day.fullLabel}</span>
+                </p>
+              </div>
+              <div className="divide-y">
+                {PLAN_MEALS.map(meal => {
+                  const recipeId = getRecipeId(day.date, meal);
+                  const recipe = recipeId ? getRecipe(recipeId) : null;
+
+                  return (
+                    <div key={meal} className="flex items-center gap-3 px-3 py-2.5 min-h-[52px]">
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium w-16 shrink-0">
+                        {meal}
+                      </span>
+                      {recipe ? (
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          {recipe.imageUrl && (
+                            <img src={recipe.imageUrl} alt="" className="h-8 w-8 rounded object-cover shrink-0" />
+                          )}
+                          <p className="text-sm font-medium truncate flex-1">{recipe.title}</p>
+                          <button
+                            onClick={() => removeRecipe(day.date, meal)}
+                            className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setPickerOpen({ date: day.date, meal })}
+                          className="flex-1 flex items-center gap-2 text-muted-foreground/40 hover:text-muted-foreground transition-colors py-1"
+                        >
+                          <UtensilsCrossed className="h-3.5 w-3.5" />
+                          <span className="text-xs">Add meal</span>
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Recipe picker dialog */}
