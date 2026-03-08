@@ -1,0 +1,1 @@
+ALTER TABLE public.recipe_comments ADD COLUMN photo_url text;
