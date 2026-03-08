@@ -105,7 +105,8 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 max-h-[70vh] overflow-y-auto pr-1">
+    <form onSubmit={handleSubmit} className="flex flex-col max-h-[70vh]">
+      <div className="flex-1 overflow-y-auto space-y-5 pr-1">
       {/* Photo */}
       <div>
         <Label className="font-body font-medium text-sm mb-1.5 block">Photo</Label>
@@ -488,8 +489,10 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
         />
       </div>
 
-      {/* Actions */}
-      <div className="flex gap-3 pt-2">
+      </div>
+
+      {/* Sticky Actions */}
+      <div className="sticky bottom-0 border-t border-border bg-background pt-3 pb-1 flex gap-3 mt-3">
         <Button type="submit" className="flex-1">{initial ? 'Save Changes' : 'Add Recipe'}</Button>
         <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
       </div>
