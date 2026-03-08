@@ -33,19 +33,8 @@ interface RecipeDetailProps {
   onNotesChange: (notesText: string) => void;
 }
 
-export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRatingChange, onAddPhoto, onDeletePhoto, onAddCookLog, onDeleteCookLog, onNotesChange }: RecipeDetailProps) {
+export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRatingChange, onAddPhoto, onDeletePhoto, onAddCookLog, onDeleteCookLog }: RecipeDetailProps) {
   const [cookLogOpen, setCookLogOpen] = useState(false);
-  const notesRef = useRef(recipe.notesText);
-
-  const handleNotesBlur = useCallback(() => {
-    if (notesRef.current !== recipe.notesText) {
-      onNotesChange(notesRef.current);
-    }
-  }, [recipe.notesText, onNotesChange]);
-
-  const handleNotesChange = useCallback((html: string) => {
-    notesRef.current = html;
-  }, []);
 
   const lastCookedLabel = recipe.lastCookedAt
     ? `Last cooked ${formatDistanceToNow(new Date(recipe.lastCookedAt), { addSuffix: true })}`
