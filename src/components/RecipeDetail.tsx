@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Recipe, CookLogEntry, formatIngredient } from '@/types/recipe';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -8,7 +8,6 @@ import { RecipePhotoGallery } from '@/components/RecipePhotoGallery';
 import { CookLogForm } from '@/components/CookLogForm';
 import { CookLogTimeline } from '@/components/CookLogTimeline';
 import { RecipeComments } from '@/components/RecipeComments';
-import { ImageCropper } from '@/components/ImageCropper';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -17,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, BookOpen, ExternalLink, Clock, Flame, ChefHat, Share2, Copy, Mail, MessageCircle, Users, Camera, Crop } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, BookOpen, ExternalLink, Clock, Flame, ChefHat, Share2, Copy, Mail, MessageCircle, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface RecipeDetailProps {
@@ -171,7 +170,6 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
         )}
       </div>
 
-      {/* Occasion Tags */}
       {recipe.occasionTags.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mt-3">
           {recipe.occasionTags.map(tag => (
@@ -202,7 +200,6 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
         />
       </section>
 
-      {/* Notes */}
       {recipe.notesText ? (
         <section className="mt-8">
           <h2 className="text-xl font-display mb-3">Notes</h2>
@@ -213,7 +210,6 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
         </section>
       ) : null}
 
-      {/* Photo gallery */}
       {isOwner ? (
         <RecipePhotoGallery photos={recipe.photos} onAddPhoto={onAddPhoto} onDeletePhoto={onDeletePhoto} />
       ) : recipe.photos.length > 0 ? (
@@ -227,10 +223,8 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
         </section>
       ) : null}
 
-      {/* Cook Log Timeline - owner only */}
       {isOwner && <CookLogTimeline cookLog={recipe.cookLog} onDelete={onDeleteCookLog} />}
 
-      {/* Guest comments */}
       <RecipeComments recipeId={recipe.id} isOwner={isOwner} />
 
       <p className="text-xs text-muted-foreground mt-8">
