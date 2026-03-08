@@ -38,6 +38,20 @@ interface RecipeDetailProps {
 export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRatingChange, onAddPhoto, onDeletePhoto, onSetPhotoAsMain, onUpdateMainPhoto, onAddCookLog, onDeleteCookLog }: RecipeDetailProps) {
   const [cookLogOpen, setCookLogOpen] = useState(false);
 
+  const lastCookedLabel = recipe.lastCookedAt
+    ? `Last cooked ${formatDistanceToNow(new Date(recipe.lastCookedAt), { addSuffix: true })}`
+    : 'Never cooked';
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <button
+        onClick={onBack}
+        className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to recipes
+      </button>
+
       <div className="relative aspect-video rounded-xl overflow-hidden bg-muted mb-6">
         {recipe.imageUrl ? (
           <img src={recipe.imageUrl} alt={recipe.title} className="h-full w-full object-cover" />
