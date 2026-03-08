@@ -13,23 +13,51 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import { Skeleton } from '@/components/ui/skeleton';
+import { CookingPot, SearchX } from 'lucide-react';
 
 const RecipePage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { guestMode } = useGuestMode();
-  const { getRecipe, deleteRecipe, updateRecipe, addPhoto, deletePhoto, addCookLog, deleteCookLog } = useRecipes();
+  const { getRecipe, deleteRecipe, updateRecipe, addPhoto, deletePhoto, addCookLog, deleteCookLog, loading } = useRecipes();
   const [deleteConfirm, setDeleteConfirm] = useState(false);
 
   const recipe = id ? getRecipe(id) : undefined;
   const isOwner = !guestMode && !!(user && recipe && recipe.userId === user.id);
 
+  if (!recipe && loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 gap-6">
+        <CookingPot className="h-12 w-12 text-primary animate-pulse" />
+        <p className="text-lg font-medium text-foreground">Cooking up something good...</p>
+        <div className="w-full max-w-2xl space-y-4 px-4">
+          <Skeleton className="w-full h-64 rounded-xl" />
+          <Skeleton className="h-8 w-3/4" />
+          <Skeleton className="h-4 w-1/2" />
+          <div className="flex gap-3 pt-2">
+            <Skeleton className="h-6 w-20 rounded-full" />
+            <Skeleton className="h-6 w-24 rounded-full" />
+            <Skeleton className="h-6 w-16 rounded-full" />
+          </div>
+          <div className="space-y-2 pt-4">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+            <Skeleton className="h-4 w-4/6" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!recipe) {
     return (
-      <div className="text-center py-20">
-        <p className="text-muted-foreground">Recipe not found.</p>
-        <Button variant="link" onClick={() => navigate('/')}>Back to recipes</Button>
+      <div className="flex flex-col items-center justify-center py-20 gap-4">
+        <SearchX className="h-12 w-12 text-muted-foreground" />
+        <p className="text-lg font-medium text-foreground">We couldn't find this recipe</p>
+        <p className="text-sm text-muted-foreground">It may have been removed or the link is incorrect.</p>
+        <Button variant="outline" onClick={() => navigate('/')}>Back to recipes</Button>
       </div>
     );
   }
