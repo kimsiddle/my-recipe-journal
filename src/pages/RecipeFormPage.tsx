@@ -6,7 +6,6 @@ import { RecipeImageImport, ExtractedRecipe } from '@/components/RecipeImageImpo
 import { RecipeUrlImport } from '@/components/RecipeUrlImport';
 import { RecipeFormData } from '@/types/recipe';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
 import { Camera, Link2, PenLine } from 'lucide-react';
 
 type ImportMode = 'choose' | 'photo' | 'url';
