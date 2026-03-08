@@ -90,11 +90,13 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
     fetchComments();
   };
 
-  const handleDeletePhoto = async (commentId: string) => {
+  const handleConfirmDeletePhoto = async () => {
+    if (!deletePhotoId) return;
     const { error } = await supabase
       .from('recipe_comments')
       .update({ photo_url: null } as any)
-      .eq('id', commentId);
+      .eq('id', deletePhotoId);
+    setDeletePhotoId(null);
     if (error) { toast.error('Failed to remove photo'); return; }
     fetchComments();
   };
