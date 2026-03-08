@@ -194,7 +194,8 @@ serve(async (req) => {
                     },
                   },
                   instructions: { type: "string", description: "Step-by-step instructions, each step on a new line" },
-                  notes: { type: "string" },
+                  description: { type: "string", description: "A brief summary or description of the dish — the main introductory text. Empty string if none." },
+                  notes: { type: "string", description: "Any specific tips, variations, or additional notes. NOT the main description. Empty string if none." },
                   cook_time: {
                     type: "string",
                     enum: ["5 min","10 min","15 min","20 min","25 min","30 min","45 min","1 hour","1.5 hours","2 hours","2.5 hours","3 hours","4+ hours",""],
