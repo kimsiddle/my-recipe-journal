@@ -1,6 +1,7 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { CookingPot, CalendarDays } from 'lucide-react';
+import { CookingPot, CalendarDays, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/context/AuthContext';
 
 const tabs = [
   { to: '/', label: 'Recipes', icon: CookingPot },
@@ -9,6 +10,7 @@ const tabs = [
 
 export default function AppLayout() {
   const { pathname } = useLocation();
+  const { user, signOut } = useAuth();
 
   return (
     <div className="min-h-screen bg-background flex flex-col food-pattern-bg">
@@ -34,6 +36,16 @@ export default function AppLayout() {
                 </Link>
               );
             })}
+            {user && (
+              <button
+                onClick={() => signOut()}
+                className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-body font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                title="Sign out"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign out
+              </button>
+            )}
           </nav>
         </div>
       </header>
