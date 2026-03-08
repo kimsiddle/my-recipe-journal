@@ -33,9 +33,16 @@ export function RecipeCard({ recipe, onClick }: RecipeCardProps) {
         <div className="flex items-center justify-between">
           <StarRating rating={recipe.rating} size="sm" />
           <Badge variant="secondary" className="text-xs font-body">
-            {recipe.ingredients.length} ingredients
+            {recipe.mealCategory}
           </Badge>
         </div>
+        {recipe.proteinTags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-2">
+            {recipe.proteinTags.map(tag => (
+              <span key={tag} className="text-xs text-muted-foreground">{tag}</span>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
