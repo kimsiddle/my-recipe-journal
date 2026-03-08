@@ -62,15 +62,6 @@ export function RecipePhotoGallery({ photos, onAddPhoto, onDeletePhoto }: Recipe
               >
                 <X className="h-3 w-3" />
               </button>
-              {onSetAsMain && (
-                <button
-                  onClick={e => { e.stopPropagation(); onSetAsMain(photo.url, photo.id); }}
-                  className="absolute bottom-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity bg-background/80 rounded-full p-1.5 text-muted-foreground hover:text-primary"
-                  title="Set as main photo"
-                >
-                  <ImageIcon className="h-3.5 w-3.5" />
-                </button>
-              )}
             </div>
           ))}
         </div>
