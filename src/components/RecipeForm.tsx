@@ -49,6 +49,8 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editAmount, setEditAmount] = useState('');
   const [editName, setEditName] = useState('');
+  const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
+  const [showCropper, setShowCropper] = useState(false);
 
   const set = <K extends keyof RecipeFormData>(key: K, val: RecipeFormData[K]) =>
     setForm(prev => ({ ...prev, [key]: val }));
