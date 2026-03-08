@@ -203,7 +203,7 @@ serve(async (req) => {
                   servings: { type: "integer" },
                   confidence: { type: "string", enum: ["high", "medium", "low"] },
                 },
-                required: ["title", "ingredients", "instructions", "description", "notes", "cook_time", "servings", "confidence"],
+                required: ["title", "ingredients", "instructions", "notes", "cook_time", "servings", "confidence"],
                 additionalProperties: false,
               },
             },
