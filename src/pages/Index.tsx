@@ -23,15 +23,9 @@ const Index = () => {
   const { recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote } = useRecipes();
   const [view, setView] = useState<View>({ type: 'list' });
   const [search, setSearch] = useState('');
-  const [selectedIngredient, setSelectedIngredient] = useState<string | null>(null);
+  const [selectedMeal, setSelectedMeal] = useState<MealCategory | null>(null);
+  const [selectedProtein, setSelectedProtein] = useState<ProteinTag | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-
-  // Get all unique ingredients for the filter
-  const allIngredients = useMemo(() => {
-    const set = new Set<string>();
-    recipes.forEach(r => r.ingredients.forEach(i => set.add(i.toLowerCase())));
-    return Array.from(set).sort();
-  }, [recipes]);
 
   // Filter recipes
   const filtered = useMemo(() => {
@@ -40,11 +34,11 @@ const Index = () => {
       const matchesSearch = !q || r.title.toLowerCase().includes(q) ||
         r.description.toLowerCase().includes(q) ||
         r.ingredients.some(i => i.toLowerCase().includes(q));
-      const matchesIngredient = !selectedIngredient ||
-        r.ingredients.some(i => i.toLowerCase() === selectedIngredient);
-      return matchesSearch && matchesIngredient;
+      const matchesMeal = !selectedMeal || r.mealCategory === selectedMeal;
+      const matchesProtein = !selectedProtein || r.proteinTags.includes(selectedProtein);
+      return matchesSearch && matchesMeal && matchesProtein;
     });
-  }, [recipes, search, selectedIngredient]);
+  }, [recipes, search, selectedMeal, selectedProtein]);
 
   const handleAdd = (data: RecipeFormData) => {
     addRecipe(data);
