@@ -124,6 +124,19 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
           <p className="text-sm text-muted-foreground">No comments yet. Be the first!</p>
         </div>
       )}
+
+      <Dialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Remove comment?</DialogTitle>
+            <DialogDescription>This action can't be undone.</DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 justify-end">
+            <Button variant="outline" onClick={() => setDeleteId(null)}>Cancel</Button>
+            <Button variant="destructive" onClick={handleConfirmDelete}>Remove</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
