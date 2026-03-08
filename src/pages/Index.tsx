@@ -76,9 +76,9 @@ const Index = () => {
     toast.success('Recipe added!');
   };
 
-  const handleEdit = (data: RecipeFormData) => {
+  const handleEdit = async (data: RecipeFormData) => {
     if (view.type === 'form' && view.editId) {
-      updateRecipe(view.editId, data);
+      await updateRecipe(view.editId, data);
       setView({ type: 'detail', id: view.editId });
       toast.success('Recipe updated!');
     }
