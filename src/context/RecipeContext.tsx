@@ -136,8 +136,23 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
     ));
   }, [recipes]);
 
+  const addPhoto = useCallback((recipeId: string, url: string) => {
+    const photo: RecipePhoto = { id: crypto.randomUUID(), url, createdAt: new Date().toISOString() };
+    save(recipes.map(r => r.id === recipeId
+      ? { ...r, photos: [...r.photos, photo], updatedAt: new Date().toISOString() }
+      : r
+    ));
+  }, [recipes]);
+
+  const deletePhoto = useCallback((recipeId: string, photoId: string) => {
+    save(recipes.map(r => r.id === recipeId
+      ? { ...r, photos: r.photos.filter(p => p.id !== photoId), updatedAt: new Date().toISOString() }
+      : r
+    ));
+  }, [recipes]);
+
   return (
-    <RecipeContext.Provider value={{ recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote }}>
+    <RecipeContext.Provider value={{ recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote, addPhoto, deletePhoto }}>
       {children}
     </RecipeContext.Provider>
   );
