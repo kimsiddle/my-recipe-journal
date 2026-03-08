@@ -28,7 +28,7 @@ type View = { type: 'list' } | { type: 'detail'; id: string } | { type: 'form'; 
 type SortMode = 'recent' | 'rating' | 'rediscover';
 
 const Index = () => {
-  const { recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote, addPhoto, deletePhoto, addCookLog, deleteCookLog } = useRecipes();
+  const { recipes, loading, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote, addPhoto, deletePhoto, addCookLog, deleteCookLog } = useRecipes();
   const [view, setView] = useState<View>({ type: 'list' });
   const [search, setSearch] = useState('');
   const [selectedMeal, setSelectedMeal] = useState<MealCategory | null>(null);
