@@ -91,8 +91,8 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
     const seen = new Map<string, string>();
     for (const r of recipes) {
       for (const ing of r.ingredients) {
-        const key = ing.toLowerCase();
-        if (!seen.has(key)) seen.set(key, ing);
+        const key = ing.name.toLowerCase();
+        if (!seen.has(key)) seen.set(key, ing.name);
       }
     }
     return Array.from(seen.values()).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
