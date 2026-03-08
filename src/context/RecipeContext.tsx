@@ -56,7 +56,11 @@ const RecipeContext = createContext<RecipeContextType | undefined>(undefined);
 export function RecipeProvider({ children }: { children: ReactNode }) {
   const [recipes, setRecipes] = useState<Recipe[]>(() => {
     const stored = localStorage.getItem('recipes');
-    return stored ? JSON.parse(stored) : SAMPLE_RECIPES;
+    const version = localStorage.getItem('recipes_version');
+    if (stored && version === '2') return JSON.parse(stored);
+    localStorage.setItem('recipes_version', '2');
+    localStorage.setItem('recipes', JSON.stringify(SAMPLE_RECIPES));
+    return SAMPLE_RECIPES;
   });
 
   const save = (updated: Recipe[]) => {
