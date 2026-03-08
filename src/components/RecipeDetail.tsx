@@ -37,82 +37,16 @@ interface RecipeDetailProps {
 
 export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRatingChange, onAddPhoto, onDeletePhoto, onSetPhotoAsMain, onUpdateMainPhoto, onAddCookLog, onDeleteCookLog }: RecipeDetailProps) {
   const [cookLogOpen, setCookLogOpen] = useState(false);
-  const mainPhotoRef = useRef<HTMLInputElement>(null);
-  const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
-  const [showCropper, setShowCropper] = useState(false);
 
-  const lastCookedLabel = recipe.lastCookedAt
-    ? `Last cooked ${formatDistanceToNow(new Date(recipe.lastCookedAt), { addSuffix: true })}`
-    : 'Never cooked';
-
-  return (
-    <div className="max-w-2xl mx-auto">
-      <button
-        onClick={onBack}
-        className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to recipes
-      </button>
-
-      <input
-        ref={mainPhotoRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              setRawImageSrc(reader.result as string);
-              setShowCropper(true);
-            };
-            reader.readAsDataURL(file);
-          }
-          e.target.value = '';
-        }}
-      />
-
-      {showCropper && rawImageSrc ? (
-        <div className="mb-6">
-          <ImageCropper
-            imageSrc={rawImageSrc}
-            onCropComplete={(croppedUrl) => {
-              onUpdateMainPhoto(croppedUrl);
-              setShowCropper(false);
-              setRawImageSrc(null);
-            }}
-            onCancel={() => {
-              setShowCropper(false);
-              setRawImageSrc(null);
-            }}
-          />
-        </div>
-      ) : (
-        <div className="relative group aspect-video rounded-xl overflow-hidden bg-muted mb-6">
-          {recipe.imageUrl ? (
-            <img src={recipe.imageUrl} alt={recipe.title} className="h-full w-full object-cover" />
-          ) : (
-            <div className="h-full w-full flex items-center justify-center">
-              <UtensilsCrossed className="h-16 w-16 text-muted-foreground/30" />
-            </div>
-          )}
-          {isOwner && (
-            <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <Button
-                variant="secondary"
-                size="sm"
-                className="gap-1.5 bg-background/80 backdrop-blur-sm hover:bg-background/95"
-                onClick={() => mainPhotoRef.current?.click()}
-              >
-                <Camera className="h-3.5 w-3.5" />
-                {recipe.imageUrl ? 'Change Photo' : 'Add Photo'}
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
+      <div className="relative aspect-video rounded-xl overflow-hidden bg-muted mb-6">
+        {recipe.imageUrl ? (
+          <img src={recipe.imageUrl} alt={recipe.title} className="h-full w-full object-cover" />
+        ) : (
+          <div className="h-full w-full flex items-center justify-center">
+            <UtensilsCrossed className="h-16 w-16 text-muted-foreground/30" />
+          </div>
+        )}
+      </div>
 
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
         <div className="min-w-0">
