@@ -30,11 +30,11 @@ const App = () => (
             <BrowserRouter>
               <Routes>
                 <Route path="/auth" element={<AuthPage />} />
-                <Route path="/recipe/:id" element={<AppLayout />}>
-                  <Route index element={<RecipePage />} />
+                <Route element={<AppLayout />}>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/recipe/:id" element={<RecipePage />} />
                 </Route>
                 <Route element={<AuthGuard><AppLayout /></AuthGuard>}>
-                  <Route path="/" element={<Index />} />
                   <Route path="/recipe/new" element={<RecipeFormPage />} />
                   <Route path="/recipe/:id/edit" element={<RecipeFormPage />} />
                   <Route path="/planner" element={<PlannerPage />} />
