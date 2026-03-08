@@ -1,3 +1,9 @@
+export interface RecipePhoto {
+  id: string;
+  url: string;
+  createdAt: string;
+}
+
 export interface RecipeNote {
   id: string;
   text: string;
