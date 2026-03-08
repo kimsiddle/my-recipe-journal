@@ -9,7 +9,14 @@ import { CookLogForm } from '@/components/CookLogForm';
 import { CookLogTimeline } from '@/components/CookLogTimeline';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, Plus, Send, X, MessageSquare, BookOpen, ExternalLink, Clock, Flame, ChefHat } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, Plus, Send, X, MessageSquare, BookOpen, ExternalLink, Clock, Flame, ChefHat, Share2, Copy, Mail, MessageCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface RecipeDetailProps {
   recipe: Recipe;
