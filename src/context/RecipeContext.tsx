@@ -155,19 +155,6 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
     return recipes.find(r => r.id === id);
   }, [recipes]);
 
-  const addNote = useCallback(async (recipeId: string, text: string) => {
-    const { error } = await supabase.from('recipe_notes').insert({ recipe_id: recipeId, text });
-    if (error) { console.error('Error adding note:', error); return; }
-    // Update recipe's updated_at
-    await supabase.from('recipes').update({ updated_at: new Date().toISOString() }).eq('id', recipeId);
-    await fetchRecipes();
-  }, [fetchRecipes]);
-
-  const deleteNote = useCallback(async (recipeId: string, noteId: string) => {
-    const { error } = await supabase.from('recipe_notes').delete().eq('id', noteId);
-    if (error) { console.error('Error deleting note:', error); return; }
-    await fetchRecipes();
-  }, [fetchRecipes]);
 
   const addPhoto = useCallback(async (recipeId: string, url: string) => {
     const { error } = await supabase.from('recipe_photos').insert({ recipe_id: recipeId, url });
