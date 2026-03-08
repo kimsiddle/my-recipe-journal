@@ -3,7 +3,7 @@ import { useRecipes } from '@/context/RecipeContext';
 import { RecipeCard } from '@/components/RecipeCard';
 import { RecipeDetail } from '@/components/RecipeDetail';
 import { RecipeForm } from '@/components/RecipeForm';
-import { RecipeFormData } from '@/types/recipe';
+import { RecipeFormData, MEAL_CATEGORIES, PROTEIN_TAGS, MealCategory, ProteinTag } from '@/types/recipe';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
