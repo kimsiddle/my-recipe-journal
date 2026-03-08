@@ -35,8 +35,11 @@ interface RecipeDetailProps {
   onDeleteCookLog: (logId: string) => void;
 }
 
-export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRatingChange, onAddPhoto, onDeletePhoto, onSetPhotoAsMain, onAddCookLog, onDeleteCookLog }: RecipeDetailProps) {
+export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRatingChange, onAddPhoto, onDeletePhoto, onSetPhotoAsMain, onUpdateMainPhoto, onAddCookLog, onDeleteCookLog }: RecipeDetailProps) {
   const [cookLogOpen, setCookLogOpen] = useState(false);
+  const mainPhotoRef = useRef<HTMLInputElement>(null);
+  const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
+  const [showCropper, setShowCropper] = useState(false);
 
   const lastCookedLabel = recipe.lastCookedAt
     ? `Last cooked ${formatDistanceToNow(new Date(recipe.lastCookedAt), { addSuffix: true })}`
