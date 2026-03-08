@@ -84,8 +84,8 @@ const Index = () => {
     }
   };
 
-  const handleDelete = (id: string) => {
-    deleteRecipe(id);
+  const handleDelete = async (id: string) => {
+    await deleteRecipe(id);
     setDeleteConfirm(null);
     setView({ type: 'list' });
     toast.success('Recipe deleted');
