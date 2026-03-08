@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, ReactNode } from 'react';
 import { Recipe, RecipeFormData, RecipeNote, RecipePhoto, CookLogEntry, RecipeSource } from '@/types/recipe';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/AuthContext';
 
 interface RecipeContextType {
   recipes: Recipe[];
@@ -56,12 +57,14 @@ function mapDbToRecipe(
     lastCookedAt: row.last_cooked_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    userId: row.user_id || null,
   };
 }
 
 export function RecipeProvider({ children }: { children: ReactNode }) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   const fetchRecipes = useCallback(async () => {
     const { data: rows, error } = await supabase.from('recipes').select('*').order('updated_at', { ascending: false });
@@ -96,6 +99,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
   }, [recipes]);
 
   const addRecipe = useCallback(async (data: RecipeFormData) => {
+    if (!user) return;
     const { data: row, error } = await supabase.from('recipes').insert({
       title: data.title,
       description: data.description,
@@ -111,11 +115,12 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       meal_category: data.mealCategory,
       protein_tags: data.proteinTags,
       last_cooked_at: data.lastCookedAt,
+      user_id: user.id,
     }).select().single();
 
     if (error) { console.error('Error adding recipe:', error); return; }
     await fetchRecipes();
-  }, [fetchRecipes]);
+  }, [fetchRecipes, user]);
 
   const updateRecipe = useCallback(async (id: string, data: RecipeFormData) => {
     const { error } = await supabase.from('recipes').update({

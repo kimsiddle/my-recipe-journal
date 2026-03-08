@@ -7,6 +7,7 @@ import { RatingScale } from '@/components/RatingScale';
 import { RecipePhotoGallery } from '@/components/RecipePhotoGallery';
 import { CookLogForm } from '@/components/CookLogForm';
 import { CookLogTimeline } from '@/components/CookLogTimeline';
+import { RecipeComments } from '@/components/RecipeComments';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -20,6 +21,7 @@ import { toast } from 'sonner';
 
 interface RecipeDetailProps {
   recipe: Recipe;
+  isOwner: boolean;
   onBack: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -32,7 +34,7 @@ interface RecipeDetailProps {
   onDeleteCookLog: (logId: string) => void;
 }
 
-export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDeleteNote, onRatingChange, onAddPhoto, onDeletePhoto, onAddCookLog, onDeleteCookLog }: RecipeDetailProps) {
+export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onAddNote, onDeleteNote, onRatingChange, onAddPhoto, onDeletePhoto, onAddCookLog, onDeleteCookLog }: RecipeDetailProps) {
   const [noteOpen, setNoteOpen] = useState(false);
   const [noteText, setNoteText] = useState('');
   const [cookLogOpen, setCookLogOpen] = useState(false);
@@ -85,10 +87,12 @@ export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDe
           <p className="text-muted-foreground">{recipe.description}</p>
         </div>
         <div className="flex gap-2 shrink-0">
-          <Button onClick={() => setCookLogOpen(true)} size="sm" className="gap-1.5">
-            <ChefHat className="h-4 w-4" />
-            I Made This
-          </Button>
+          {isOwner && (
+            <Button onClick={() => setCookLogOpen(true)} size="sm" className="gap-1.5">
+              <ChefHat className="h-4 w-4" />
+              I Made This
+            </Button>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon">
@@ -120,17 +124,25 @@ export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDe
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button variant="outline" size="icon" onClick={onEdit}>
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="icon" onClick={onDelete} className="hover:bg-destructive hover:text-destructive-foreground">
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          {isOwner && (
+            <>
+              <Button variant="outline" size="icon" onClick={onEdit}>
+                <Pencil className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="icon" onClick={onDelete} className="hover:bg-destructive hover:text-destructive-foreground">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
       <div className="flex items-center gap-4 flex-wrap">
-        <RatingScale rating={recipe.rating} onChange={onRatingChange} />
+        {isOwner ? (
+          <RatingScale rating={recipe.rating} onChange={onRatingChange} />
+        ) : (
+          <RatingScale rating={recipe.rating} size="sm" />
+        )}
         {recipe.cookTime && (
           <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <Clock className="h-4 w-4" />
@@ -191,81 +203,99 @@ export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDe
       </section>
 
       {/* Photo gallery */}
-      <RecipePhotoGallery photos={recipe.photos} onAddPhoto={onAddPhoto} onDeletePhoto={onDeletePhoto} />
-
-      {/* Cook Log Timeline */}
-      <CookLogTimeline cookLog={recipe.cookLog} onDelete={onDeleteCookLog} />
-
-      {/* Notes as comment thread */}
-      <section className="mt-8">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-display">Notes</h2>
-            <span className="text-sm text-muted-foreground">({recipe.notes.length})</span>
-          </div>
-          {!noteOpen && (
-            <Button variant="ghost" size="sm" onClick={() => setNoteOpen(true)} className="text-accent hover:text-accent">
-              <Plus className="h-4 w-4 mr-1" />
-              Add note
-            </Button>
-          )}
-        </div>
-
-        {noteOpen && (
-          <div className="mb-4 bg-card border rounded-lg p-3">
-            <Textarea
-              value={noteText}
-              onChange={e => setNoteText(e.target.value)}
-              placeholder="What did you learn? What would you change?"
-              rows={3}
-              autoFocus
-              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitNote(); } }}
-            />
-            <div className="flex justify-end gap-2 mt-2">
-              <Button size="sm" variant="ghost" onClick={() => { setNoteOpen(false); setNoteText(''); }}>
-                Cancel
-              </Button>
-              <Button size="sm" onClick={submitNote} disabled={!noteText.trim()}>
-                <Send className="h-3.5 w-3.5 mr-1" />
-                Post
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {recipe.notes.length > 0 ? (
-          <div className="space-y-3">
-            {recipe.notes.map((note) => (
-              <NoteCard
-                key={note.id}
-                note={note}
-                formatDate={formatDate}
-                formatTime={formatTime}
-                onDelete={() => onDeleteNote(note.id)}
-              />
+      {isOwner ? (
+        <RecipePhotoGallery photos={recipe.photos} onAddPhoto={onAddPhoto} onDeletePhoto={onDeletePhoto} />
+      ) : recipe.photos.length > 0 ? (
+        <section className="mt-8">
+          <h2 className="text-xl font-display mb-3">Photos</h2>
+          <div className="flex gap-2 flex-wrap">
+            {recipe.photos.map(p => (
+              <img key={p.id} src={p.url} alt="" className="h-24 w-24 rounded-lg object-cover" />
             ))}
           </div>
-        ) : (
-          !noteOpen && (
-            <div className="text-center py-8 border border-dashed rounded-lg">
-              <MessageSquare className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">No notes yet. Add your first one!</p>
+        </section>
+      ) : null}
+
+      {/* Cook Log Timeline - owner only */}
+      {isOwner && <CookLogTimeline cookLog={recipe.cookLog} onDelete={onDeleteCookLog} />}
+
+      {/* Notes - owner only */}
+      {isOwner && (
+        <section className="mt-8">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-display">Notes</h2>
+              <span className="text-sm text-muted-foreground">({recipe.notes.length})</span>
             </div>
-          )
-        )}
-      </section>
+            {!noteOpen && (
+              <Button variant="ghost" size="sm" onClick={() => setNoteOpen(true)} className="text-accent hover:text-accent">
+                <Plus className="h-4 w-4 mr-1" />
+                Add note
+              </Button>
+            )}
+          </div>
+
+          {noteOpen && (
+            <div className="mb-4 bg-card border rounded-lg p-3">
+              <Textarea
+                value={noteText}
+                onChange={e => setNoteText(e.target.value)}
+                placeholder="What did you learn? What would you change?"
+                rows={3}
+                autoFocus
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitNote(); } }}
+              />
+              <div className="flex justify-end gap-2 mt-2">
+                <Button size="sm" variant="ghost" onClick={() => { setNoteOpen(false); setNoteText(''); }}>
+                  Cancel
+                </Button>
+                <Button size="sm" onClick={submitNote} disabled={!noteText.trim()}>
+                  <Send className="h-3.5 w-3.5 mr-1" />
+                  Post
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {recipe.notes.length > 0 ? (
+            <div className="space-y-3">
+              {recipe.notes.map((note) => (
+                <NoteCard
+                  key={note.id}
+                  note={note}
+                  formatDate={formatDate}
+                  formatTime={formatTime}
+                  onDelete={() => onDeleteNote(note.id)}
+                />
+              ))}
+            </div>
+          ) : (
+            !noteOpen && (
+              <div className="text-center py-8 border border-dashed rounded-lg">
+                <MessageSquare className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">No notes yet. Add your first one!</p>
+              </div>
+            )
+          )}
+        </section>
+      )}
+
+      {/* Guest comments */}
+      <RecipeComments recipeId={recipe.id} isOwner={isOwner} />
 
       <p className="text-xs text-muted-foreground mt-8">
         Added {new Date(recipe.createdAt).toLocaleDateString()}
         {recipe.updatedAt !== recipe.createdAt && ` · Updated ${new Date(recipe.updatedAt).toLocaleDateString()}`}
       </p>
 
-      <CookLogForm
-        open={cookLogOpen}
-        onOpenChange={setCookLogOpen}
-        currentRating={recipe.rating}
-        onSubmit={onAddCookLog}
-      />
+      {isOwner && (
+        <CookLogForm
+          open={cookLogOpen}
+          onOpenChange={setCookLogOpen}
+          currentRating={recipe.rating}
+          onSubmit={onAddCookLog}
+        />
+      )}
     </div>
   );
 }

@@ -70,6 +70,38 @@ export type Database = {
         }
         Relationships: []
       }
+      recipe_comments: {
+        Row: {
+          author_name: string
+          created_at: string
+          id: string
+          recipe_id: string
+          text: string
+        }
+        Insert: {
+          author_name: string
+          created_at?: string
+          id?: string
+          recipe_id: string
+          text: string
+        }
+        Update: {
+          author_name?: string
+          created_at?: string
+          id?: string
+          recipe_id?: string
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipe_comments_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "recipes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       recipe_notes: {
         Row: {
           created_at: string
@@ -147,6 +179,7 @@ export type Database = {
           source_url: string | null
           title: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           cook_time?: string
@@ -166,6 +199,7 @@ export type Database = {
           source_url?: string | null
           title: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           cook_time?: string
@@ -185,6 +219,7 @@ export type Database = {
           source_url?: string | null
           title?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -193,7 +228,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_recipe_owner: { Args: { _recipe_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
