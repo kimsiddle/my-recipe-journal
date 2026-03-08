@@ -54,6 +54,8 @@ const SAMPLE_RECIPES: Recipe[] = [
       { id: 'n5', text: 'Works great with trout too.', createdAt: '2026-03-05T18:00:00Z' },
       { id: 'n6', text: 'Add capers for extra pop.', createdAt: '2026-03-06T12:00:00Z' },
     ],
+    mealCategory: 'Dinner',
+    proteinTags: ['Fish'],
     createdAt: '2026-03-05',
     updatedAt: '2026-03-05',
   },

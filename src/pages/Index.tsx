@@ -146,29 +146,41 @@ const Index = () => {
           />
         </div>
 
-        {/* Ingredient filter */}
-        {allIngredients.length > 0 && (
-          <div className="mb-6">
-            <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Filter by ingredient</p>
+        {/* Category filters */}
+        <div className="mb-6 space-y-3">
+          <div>
+            <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Meal</p>
             <div className="flex flex-wrap gap-1.5">
-              {allIngredients.map(ing => (
-                <button
-                  key={ing}
-                  onClick={() => setSelectedIngredient(selectedIngredient === ing ? null : ing)}
-                  className="inline-block"
-                >
+              {MEAL_CATEGORIES.map(cat => (
+                <button key={cat} onClick={() => setSelectedMeal(selectedMeal === cat ? null : cat)}>
                   <Badge
-                    variant={selectedIngredient === ing ? 'default' : 'secondary'}
-                    className="font-body font-normal cursor-pointer capitalize"
+                    variant={selectedMeal === cat ? 'default' : 'secondary'}
+                    className="font-body font-normal cursor-pointer"
                   >
-                    {ing}
-                    {selectedIngredient === ing && <X className="h-3 w-3 ml-1" />}
+                    {cat}
+                    {selectedMeal === cat && <X className="h-3 w-3 ml-1" />}
                   </Badge>
                 </button>
               ))}
             </div>
           </div>
-        )}
+          <div>
+            <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Type</p>
+            <div className="flex flex-wrap gap-1.5">
+              {PROTEIN_TAGS.map(tag => (
+                <button key={tag} onClick={() => setSelectedProtein(selectedProtein === tag ? null : tag)}>
+                  <Badge
+                    variant={selectedProtein === tag ? 'default' : 'secondary'}
+                    className="font-body font-normal cursor-pointer"
+                  >
+                    {tag}
+                    {selectedProtein === tag && <X className="h-3 w-3 ml-1" />}
+                  </Badge>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
 
         {/* Grid */}
         {filtered.length === 0 ? (

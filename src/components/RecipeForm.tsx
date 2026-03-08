@@ -96,6 +96,51 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
         />
       </div>
 
+      {/* Meal Category */}
+      <div>
+        <Label className="font-body font-medium text-sm mb-1.5 block">Meal</Label>
+        <div className="flex flex-wrap gap-1.5">
+          {MEAL_CATEGORIES.map(cat => (
+            <button key={cat} type="button" onClick={() => set('mealCategory', cat)}>
+              <Badge
+                variant={form.mealCategory === cat ? 'default' : 'secondary'}
+                className="font-body font-normal cursor-pointer"
+              >
+                {cat}
+              </Badge>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Protein / Type Tags */}
+      <div>
+        <Label className="font-body font-medium text-sm mb-1.5 block">Type</Label>
+        <div className="flex flex-wrap gap-1.5">
+          {PROTEIN_TAGS.map(tag => {
+            const selected = form.proteinTags.includes(tag);
+            return (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => set('proteinTags', selected
+                  ? form.proteinTags.filter(t => t !== tag)
+                  : [...form.proteinTags, tag]
+                )}
+              >
+                <Badge
+                  variant={selected ? 'default' : 'secondary'}
+                  className="font-body font-normal cursor-pointer"
+                >
+                  {tag}
+                  {selected && <X className="h-3 w-3 ml-1" />}
+                </Badge>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Description */}
       <div>
         <Label htmlFor="desc" className="font-body font-medium text-sm mb-1.5 block">Description</Label>
