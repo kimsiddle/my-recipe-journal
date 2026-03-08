@@ -57,6 +57,7 @@ function mapDbToRecipe(
     lastCookedAt: row.last_cooked_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    userId: row.user_id || null,
   };
 }
 
