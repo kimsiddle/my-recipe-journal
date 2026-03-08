@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, ReactNode } from 'react';
-import { Recipe, RecipeFormData, RecipeNote, RecipePhoto, CookLogEntry, RecipeSource } from '@/types/recipe';
+import { Recipe, RecipeFormData, RecipeNote, RecipePhoto, CookLogEntry, RecipeSource, Ingredient, parseIngredient, serializeIngredient } from '@/types/recipe';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 
@@ -37,7 +37,7 @@ function mapDbToRecipe(
     title: row.title,
     description: row.description || '',
     imageUrl: row.image_url,
-    ingredients: row.ingredients || [],
+    ingredients: (row.ingredients || []).map((s: string) => parseIngredient(s)),
     instructions: row.instructions || '',
     rating: row.rating || 0,
     difficulty: row.difficulty || 'Medium',
@@ -91,8 +91,8 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
     const seen = new Map<string, string>();
     for (const r of recipes) {
       for (const ing of r.ingredients) {
-        const key = ing.toLowerCase();
-        if (!seen.has(key)) seen.set(key, ing);
+        const key = ing.name.toLowerCase();
+        if (!seen.has(key)) seen.set(key, ing.name);
       }
     }
     return Array.from(seen.values()).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
@@ -104,7 +104,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       title: data.title,
       description: data.description,
       image_url: data.imageUrl,
-      ingredients: data.ingredients,
+      ingredients: data.ingredients.map(serializeIngredient),
       instructions: data.instructions,
       rating: data.rating,
       difficulty: data.difficulty,
@@ -127,7 +127,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       title: data.title,
       description: data.description,
       image_url: data.imageUrl,
-      ingredients: data.ingredients,
+      ingredients: data.ingredients.map(serializeIngredient),
       instructions: data.instructions,
       rating: data.rating,
       difficulty: data.difficulty,

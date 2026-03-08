@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Recipe, RecipeNote, CookLogEntry } from '@/types/recipe';
+import { Recipe, RecipeNote, CookLogEntry, formatIngredient } from '@/types/recipe';
 import { formatDistanceToNow } from 'date-fns';
 
 import { Badge } from '@/components/ui/badge';
@@ -186,13 +186,14 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onAddN
 
       <section className="mt-8">
         <h2 className="text-xl font-display mb-3">Ingredients</h2>
-        <div className="flex flex-wrap gap-2">
+        <ul className="space-y-1.5">
           {recipe.ingredients.map((ing, i) => (
-            <Badge key={i} variant="secondary" className="font-body font-normal text-sm py-1 px-3">
-              {ing}
-            </Badge>
+            <li key={i} className="flex items-baseline gap-2 text-sm">
+              {ing.amount && <span className="text-muted-foreground font-medium shrink-0">{ing.amount}</span>}
+              <span>{ing.name}</span>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
 
       <section className="mt-8">

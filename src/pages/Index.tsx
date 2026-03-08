@@ -30,7 +30,7 @@ const Index = () => {
       const q = search.toLowerCase();
       const matchesSearch = !q || r.title.toLowerCase().includes(q) ||
         r.description.toLowerCase().includes(q) ||
-        r.ingredients.some(i => i.toLowerCase().includes(q));
+        r.ingredients.some(i => i.name.toLowerCase().includes(q));
       const matchesMeal = !selectedMeal || r.mealCategory === selectedMeal;
       const matchesProtein = !selectedProtein || r.proteinTags.includes(selectedProtein);
       return matchesSearch && matchesMeal && matchesProtein;

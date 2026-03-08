@@ -1,3 +1,22 @@
+export interface Ingredient {
+  name: string;
+  amount: string;
+}
+
+export function parseIngredient(raw: string): Ingredient {
+  const pipeIdx = raw.indexOf('|');
+  if (pipeIdx === -1) return { name: raw, amount: '' };
+  return { amount: raw.substring(0, pipeIdx), name: raw.substring(pipeIdx + 1) };
+}
+
+export function serializeIngredient(ing: Ingredient): string {
+  return ing.amount ? `${ing.amount}|${ing.name}` : ing.name;
+}
+
+export function formatIngredient(ing: Ingredient): string {
+  return ing.amount ? `${ing.amount} ${ing.name}` : ing.name;
+}
+
 export interface RecipePhoto {
   id: string;
   url: string;
@@ -40,7 +59,7 @@ export interface Recipe {
   title: string;
   description: string;
   imageUrl: string | null;
-  ingredients: string[];
+  ingredients: Ingredient[];
   instructions: string;
   rating: number;
   difficulty: DifficultyLevel;
