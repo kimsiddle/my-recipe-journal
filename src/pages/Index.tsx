@@ -34,7 +34,8 @@ const Index = () => {
         r.ingredients.some(i => i.name.toLowerCase().includes(q));
       const matchesMeal = !selectedMeal || r.mealCategory === selectedMeal;
       const matchesProtein = !selectedProtein || r.proteinTags.includes(selectedProtein);
-      return matchesSearch && matchesMeal && matchesProtein;
+      const matchesOccasion = !selectedOccasion || r.occasionTags.includes(selectedOccasion);
+      return matchesSearch && matchesMeal && matchesProtein && matchesOccasion;
     });
 
     const sorted = [...list];
