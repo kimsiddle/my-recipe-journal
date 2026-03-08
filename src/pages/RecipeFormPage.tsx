@@ -19,7 +19,7 @@ const RecipeFormPage = () => {
     ? {
         title: editing.title, description: editing.description, imageUrl: editing.imageUrl,
         ingredients: editing.ingredients, instructions: editing.instructions, rating: editing.rating,
-        difficulty: editing.difficulty, cookTime: editing.cookTime, notes: editing.notes,
+        difficulty: editing.difficulty, cookTime: editing.cookTime, notesText: editing.notesText,
         photos: editing.photos, source: editing.source, mealCategory: editing.mealCategory,
         proteinTags: editing.proteinTags, cookLog: editing.cookLog, lastCookedAt: editing.lastCookedAt, servings: editing.servings,
       }
