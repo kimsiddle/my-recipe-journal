@@ -78,6 +78,8 @@ interface RecipeContextType {
   getRecipe: (id: string) => Recipe | undefined;
   addNote: (recipeId: string, text: string) => void;
   deleteNote: (recipeId: string, noteId: string) => void;
+  addPhoto: (recipeId: string, url: string) => void;
+  deletePhoto: (recipeId: string, photoId: string) => void;
 }
 
 const RecipeContext = createContext<RecipeContextType | undefined>(undefined);
