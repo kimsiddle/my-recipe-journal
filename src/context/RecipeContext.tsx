@@ -138,6 +138,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       last_cooked_at: data.lastCookedAt,
       updated_at: new Date().toISOString(),
       servings: data.servings,
+      notes_text: data.notesText || '',
     } as any).eq('id', id);
 
     if (error) { console.error('Error updating recipe:', error); return; }
