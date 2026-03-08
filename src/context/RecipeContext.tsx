@@ -63,6 +63,7 @@ function mapDbToRecipe(
 export function RecipeProvider({ children }: { children: ReactNode }) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   const fetchRecipes = useCallback(async () => {
     const { data: rows, error } = await supabase.from('recipes').select('*').order('updated_at', { ascending: false });
