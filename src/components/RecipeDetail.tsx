@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Recipe, RecipeNote } from '@/types/recipe';
 import { StarRating } from '@/components/StarRating';
 import { Badge } from '@/components/ui/badge';
+import { RatingScale } from '@/components/RatingScale';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, Plus, Send, X, MessageSquare, BookOpen, ExternalLink } from 'lucide-react';
