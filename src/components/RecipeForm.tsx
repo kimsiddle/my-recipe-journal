@@ -258,11 +258,11 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
               onChange={e => set('source', { ...form.source!, name: e.target.value })}
               placeholder={form.source.type === 'book' ? 'Cookbook name (e.g. Salt Fat Acid Heat)' : form.source.type === 'social' ? 'Account or creator name' : 'Website name (e.g. Bon Appétit)'}
             />
-            {form.source.type === 'website' && (
+            {(form.source.type === 'website' || form.source.type === 'social') && (
               <Input
                 value={form.source.url || ''}
                 onChange={e => set('source', { ...form.source!, url: e.target.value || undefined })}
-                placeholder="https://..."
+                placeholder={form.source.type === 'social' ? 'Paste social media URL (Instagram, TikTok, etc.)' : 'https://...'}
                 type="url"
               />
             )}
