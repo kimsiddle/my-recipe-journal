@@ -1,111 +1,88 @@
-import React, { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
-import { Recipe, RecipeFormData, RecipeNote, RecipePhoto, CookLogEntry } from '@/types/recipe';
-import margheritaImg from '@/assets/margherita-pizza.jpg';
-import curryImg from '@/assets/thai-green-curry.jpg';
-import salmonImg from '@/assets/lemon-herb-salmon.jpg';
-
-const SAMPLE_RECIPES: Recipe[] = [
-  {
-    id: '1',
-    title: 'Classic Margherita Pizza',
-    description: 'Simple, fresh, and bursting with flavor. San Marzano tomatoes, fresh mozzarella, and basil.',
-    imageUrl: margheritaImg,
-    ingredients: ['pizza dough', 'San Marzano tomatoes', 'fresh mozzarella', 'fresh basil', 'olive oil', 'salt'],
-    instructions: '1. Preheat oven to 500°F.\n2. Stretch dough into a round.\n3. Spread crushed tomatoes.\n4. Tear mozzarella over top.\n5. Bake 10-12 minutes.\n6. Top with fresh basil and olive oil.',
-    rating: 9,
-    difficulty: 'Medium',
-    cookTime: '25 min',
-    source: { type: 'website', name: 'Serious Eats', url: 'https://www.seriouseats.com/basic-neapolitan-pizza-dough-recipe' },
-    notes: [
-      { id: 'n1', text: 'Added a pinch of red pepper flakes for heat.', createdAt: '2026-02-15T12:00:00Z' },
-      { id: 'n2', text: 'Next time try with burrata instead of mozzarella.', createdAt: '2026-02-20T18:30:00Z' },
-    ],
-    photos: [],
-    cookLog: [
-      { id: 'cl1', cookedAt: '2026-02-15T18:00:00Z', rating: 9, comment: 'Turned out great!' },
-    ],
-    lastCookedAt: '2026-02-15T18:00:00Z',
-    mealCategory: 'Dinner',
-    proteinTags: ['Vegetables'],
-    createdAt: '2026-02-15',
-    updatedAt: '2026-02-15',
-  },
-  {
-    id: '2',
-    title: 'Thai Green Curry',
-    description: 'Aromatic coconut curry with chicken and vegetables. Perfect weeknight dinner.',
-    imageUrl: curryImg,
-    ingredients: ['chicken thighs', 'coconut milk', 'green curry paste', 'bamboo shoots', 'Thai basil', 'fish sauce', 'sugar', 'bell pepper', 'jasmine rice'],
-    instructions: '1. Cook curry paste in oil until fragrant.\n2. Add chicken, cook until sealed.\n3. Pour in coconut milk.\n4. Add vegetables and simmer 15 min.\n5. Season with fish sauce and sugar.\n6. Serve over jasmine rice with Thai basil.',
-    rating: 8,
-    difficulty: 'Easy',
-    cookTime: '30 min',
-    source: { type: 'book', name: 'Hot Thai Kitchen' },
-    notes: [
-      { id: 'n3', text: 'Use 2 cans coconut milk for a richer sauce.', createdAt: '2026-01-25T20:00:00Z' },
-      { id: 'n4', text: 'Add eggplant next time — it soaks up the curry beautifully.', createdAt: '2026-03-01T19:00:00Z' },
-    ],
-    photos: [],
-    cookLog: [],
-    lastCookedAt: null,
-    mealCategory: 'Dinner',
-    proteinTags: ['Poultry'],
-    createdAt: '2026-01-20',
-    updatedAt: '2026-03-01',
-  },
-  {
-    id: '3',
-    title: 'Lemon Herb Salmon',
-    description: 'Pan-seared salmon with a bright lemon and herb butter. Ready in 20 minutes.',
-    imageUrl: salmonImg,
-    ingredients: ['salmon fillets', 'butter', 'lemon', 'garlic', 'fresh dill', 'fresh parsley', 'salt', 'pepper', 'olive oil'],
-    instructions: '1. Pat salmon dry, season with salt and pepper.\n2. Heat olive oil in a skillet over medium-high.\n3. Sear salmon skin-side down 4 min.\n4. Flip, cook 3 more minutes.\n5. Add butter, garlic, lemon juice, and herbs.\n6. Baste salmon with the herb butter.',
-    rating: 10,
-    difficulty: 'Easy',
-    cookTime: '20 min',
-    source: null,
-    notes: [
-      { id: 'n5', text: 'Works great with trout too.', createdAt: '2026-03-05T18:00:00Z' },
-      { id: 'n6', text: 'Add capers for extra pop.', createdAt: '2026-03-06T12:00:00Z' },
-    ],
-    photos: [],
-    cookLog: [
-      { id: 'cl2', cookedAt: '2026-01-10T19:00:00Z', rating: 10, comment: 'Perfect every time' },
-    ],
-    lastCookedAt: '2026-01-10T19:00:00Z',
-    mealCategory: 'Dinner',
-    proteinTags: ['Fish'],
-    createdAt: '2026-03-05',
-    updatedAt: '2026-03-05',
-  },
-];
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, ReactNode } from 'react';
+import { Recipe, RecipeFormData, RecipeNote, RecipePhoto, CookLogEntry, RecipeSource } from '@/types/recipe';
+import { supabase } from '@/integrations/supabase/client';
 
 interface RecipeContextType {
   recipes: Recipe[];
   allIngredients: string[];
-  addRecipe: (data: RecipeFormData) => void;
-  updateRecipe: (id: string, data: RecipeFormData) => void;
-  deleteRecipe: (id: string) => void;
+  loading: boolean;
+  addRecipe: (data: RecipeFormData) => Promise<void>;
+  updateRecipe: (id: string, data: RecipeFormData) => Promise<void>;
+  deleteRecipe: (id: string) => Promise<void>;
   getRecipe: (id: string) => Recipe | undefined;
-  addNote: (recipeId: string, text: string) => void;
-  deleteNote: (recipeId: string, noteId: string) => void;
-  addPhoto: (recipeId: string, url: string) => void;
-  deletePhoto: (recipeId: string, photoId: string) => void;
-  addCookLog: (recipeId: string, entry: Omit<CookLogEntry, 'id'>) => void;
-  deleteCookLog: (recipeId: string, logId: string) => void;
+  addNote: (recipeId: string, text: string) => Promise<void>;
+  deleteNote: (recipeId: string, noteId: string) => Promise<void>;
+  addPhoto: (recipeId: string, url: string) => Promise<void>;
+  deletePhoto: (recipeId: string, photoId: string) => Promise<void>;
+  addCookLog: (recipeId: string, entry: Omit<CookLogEntry, 'id'>) => Promise<void>;
+  deleteCookLog: (recipeId: string, logId: string) => Promise<void>;
 }
 
 const RecipeContext = createContext<RecipeContextType | undefined>(undefined);
 
+// Helper to map DB row to Recipe
+function mapDbToRecipe(
+  row: any,
+  notes: any[],
+  photos: any[],
+  cookLog: any[]
+): Recipe {
+  const source: RecipeSource | null = row.source_type
+    ? { type: row.source_type, name: row.source_name || '', url: row.source_url || undefined }
+    : null;
+
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description || '',
+    imageUrl: row.image_url,
+    ingredients: row.ingredients || [],
+    instructions: row.instructions || '',
+    rating: row.rating || 0,
+    difficulty: row.difficulty || 'Medium',
+    cookTime: row.cook_time || '',
+    source,
+    mealCategory: row.meal_category || 'Dinner',
+    proteinTags: row.protein_tags || [],
+    notes: notes.map(n => ({ id: n.id, text: n.text, createdAt: n.created_at })),
+    photos: photos.map(p => ({ id: p.id, url: p.url, createdAt: p.created_at })),
+    cookLog: cookLog.map(c => ({
+      id: c.id,
+      cookedAt: c.cooked_at,
+      rating: c.rating ?? undefined,
+      comment: c.comment ?? undefined,
+      photoUrls: c.photo_urls?.length ? c.photo_urls : undefined,
+    })),
+    lastCookedAt: row.last_cooked_at,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
 export function RecipeProvider({ children }: { children: ReactNode }) {
-  const [recipes, setRecipes] = useState<Recipe[]>(() => {
-    const stored = localStorage.getItem('recipes');
-    const version = localStorage.getItem('recipes_version');
-    if (stored && version === '9') return JSON.parse(stored);
-    localStorage.setItem('recipes_version', '9');
-    localStorage.setItem('recipes', JSON.stringify(SAMPLE_RECIPES));
-    return SAMPLE_RECIPES;
-  });
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchRecipes = useCallback(async () => {
+    const { data: rows, error } = await supabase.from('recipes').select('*').order('updated_at', { ascending: false });
+    if (error) { console.error('Error fetching recipes:', error); setLoading(false); return; }
+
+    const { data: allNotes } = await supabase.from('recipe_notes').select('*').order('created_at');
+    const { data: allPhotos } = await supabase.from('recipe_photos').select('*').order('created_at');
+    const { data: allLogs } = await supabase.from('cook_log_entries').select('*').order('cooked_at');
+
+    const mapped = (rows || []).map(row => mapDbToRecipe(
+      row,
+      (allNotes || []).filter(n => n.recipe_id === row.id),
+      (allPhotos || []).filter(p => p.recipe_id === row.id),
+      (allLogs || []).filter(l => l.recipe_id === row.id),
+    ));
+
+    setRecipes(mapped);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { fetchRecipes(); }, [fetchRecipes]);
 
   const allIngredients = useMemo(() => {
     const seen = new Map<string, string>();
@@ -118,102 +95,132 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
     return Array.from(seen.values()).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
   }, [recipes]);
 
-  const save = (updated: Recipe[]) => {
-    setRecipes(updated);
-    localStorage.setItem('recipes', JSON.stringify(updated));
-  };
+  const addRecipe = useCallback(async (data: RecipeFormData) => {
+    const { data: row, error } = await supabase.from('recipes').insert({
+      title: data.title,
+      description: data.description,
+      image_url: data.imageUrl,
+      ingredients: data.ingredients,
+      instructions: data.instructions,
+      rating: data.rating,
+      difficulty: data.difficulty,
+      cook_time: data.cookTime,
+      source_type: data.source?.type || null,
+      source_name: data.source?.name || null,
+      source_url: data.source?.url || null,
+      meal_category: data.mealCategory,
+      protein_tags: data.proteinTags,
+      last_cooked_at: data.lastCookedAt,
+    }).select().single();
 
-  const addRecipe = useCallback((data: RecipeFormData) => {
-    const newRecipe: Recipe = {
-      ...data,
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    save([newRecipe, ...recipes]);
-  }, [recipes]);
+    if (error) { console.error('Error adding recipe:', error); return; }
+    await fetchRecipes();
+  }, [fetchRecipes]);
 
-  const updateRecipe = useCallback((id: string, data: RecipeFormData) => {
-    save(recipes.map(r => r.id === id ? { ...r, ...data, updatedAt: new Date().toISOString() } : r));
-  }, [recipes]);
+  const updateRecipe = useCallback(async (id: string, data: RecipeFormData) => {
+    const { error } = await supabase.from('recipes').update({
+      title: data.title,
+      description: data.description,
+      image_url: data.imageUrl,
+      ingredients: data.ingredients,
+      instructions: data.instructions,
+      rating: data.rating,
+      difficulty: data.difficulty,
+      cook_time: data.cookTime,
+      source_type: data.source?.type || null,
+      source_name: data.source?.name || null,
+      source_url: data.source?.url || null,
+      meal_category: data.mealCategory,
+      protein_tags: data.proteinTags,
+      last_cooked_at: data.lastCookedAt,
+      updated_at: new Date().toISOString(),
+    }).eq('id', id);
 
-  const deleteRecipe = useCallback((id: string) => {
-    save(recipes.filter(r => r.id !== id));
-  }, [recipes]);
+    if (error) { console.error('Error updating recipe:', error); return; }
+    await fetchRecipes();
+  }, [fetchRecipes]);
+
+  const deleteRecipe = useCallback(async (id: string) => {
+    const { error } = await supabase.from('recipes').delete().eq('id', id);
+    if (error) { console.error('Error deleting recipe:', error); return; }
+    await fetchRecipes();
+  }, [fetchRecipes]);
 
   const getRecipe = useCallback((id: string) => {
     return recipes.find(r => r.id === id);
   }, [recipes]);
 
-  const addNote = useCallback((recipeId: string, text: string) => {
-    const note: RecipeNote = { id: crypto.randomUUID(), text, createdAt: new Date().toISOString() };
-    save(recipes.map(r => r.id === recipeId
-      ? { ...r, notes: [...r.notes, note], updatedAt: new Date().toISOString() }
-      : r
-    ));
-  }, [recipes]);
+  const addNote = useCallback(async (recipeId: string, text: string) => {
+    const { error } = await supabase.from('recipe_notes').insert({ recipe_id: recipeId, text });
+    if (error) { console.error('Error adding note:', error); return; }
+    // Update recipe's updated_at
+    await supabase.from('recipes').update({ updated_at: new Date().toISOString() }).eq('id', recipeId);
+    await fetchRecipes();
+  }, [fetchRecipes]);
 
-  const deleteNote = useCallback((recipeId: string, noteId: string) => {
-    save(recipes.map(r => r.id === recipeId
-      ? { ...r, notes: r.notes.filter(n => n.id !== noteId), updatedAt: new Date().toISOString() }
-      : r
-    ));
-  }, [recipes]);
+  const deleteNote = useCallback(async (recipeId: string, noteId: string) => {
+    const { error } = await supabase.from('recipe_notes').delete().eq('id', noteId);
+    if (error) { console.error('Error deleting note:', error); return; }
+    await fetchRecipes();
+  }, [fetchRecipes]);
 
-  const addPhoto = useCallback((recipeId: string, url: string) => {
-    const photo: RecipePhoto = { id: crypto.randomUUID(), url, createdAt: new Date().toISOString() };
-    save(recipes.map(r => r.id === recipeId
-      ? { ...r, photos: [...r.photos, photo], updatedAt: new Date().toISOString() }
-      : r
-    ));
-  }, [recipes]);
+  const addPhoto = useCallback(async (recipeId: string, url: string) => {
+    const { error } = await supabase.from('recipe_photos').insert({ recipe_id: recipeId, url });
+    if (error) { console.error('Error adding photo:', error); return; }
+    await supabase.from('recipes').update({ updated_at: new Date().toISOString() }).eq('id', recipeId);
+    await fetchRecipes();
+  }, [fetchRecipes]);
 
-  const deletePhoto = useCallback((recipeId: string, photoId: string) => {
-    save(recipes.map(r => r.id === recipeId
-      ? { ...r, photos: r.photos.filter(p => p.id !== photoId), updatedAt: new Date().toISOString() }
-      : r
-    ));
-  }, [recipes]);
+  const deletePhoto = useCallback(async (recipeId: string, photoId: string) => {
+    const { error } = await supabase.from('recipe_photos').delete().eq('id', photoId);
+    if (error) { console.error('Error deleting photo:', error); return; }
+    await fetchRecipes();
+  }, [fetchRecipes]);
 
-  const addCookLog = useCallback((recipeId: string, entry: Omit<CookLogEntry, 'id'>) => {
-    const logEntry: CookLogEntry = { ...entry, id: crypto.randomUUID() };
-    save(recipes.map(r => {
-      if (r.id !== recipeId) return r;
-      const updatedLog = [...r.cookLog, logEntry];
-      const lastCookedAt = updatedLog.reduce((latest, e) =>
-        !latest || new Date(e.cookedAt) > new Date(latest) ? e.cookedAt : latest,
-        r.lastCookedAt
-      );
-      // Auto-add photos to the recipe gallery
-      const newPhotos = (entry.photoUrls || []).map(url => ({
-        id: crypto.randomUUID(),
-        url,
-        createdAt: new Date().toISOString(),
-      }));
-      return {
-        ...r,
-        cookLog: updatedLog,
-        lastCookedAt,
-        rating: entry.rating ?? r.rating,
-        photos: [...r.photos, ...newPhotos],
-        updatedAt: new Date().toISOString(),
-      };
-    }));
-  }, [recipes]);
+  const addCookLog = useCallback(async (recipeId: string, entry: Omit<CookLogEntry, 'id'>) => {
+    const { error } = await supabase.from('cook_log_entries').insert({
+      recipe_id: recipeId,
+      cooked_at: entry.cookedAt,
+      rating: entry.rating ?? null,
+      comment: entry.comment ?? null,
+      photo_urls: entry.photoUrls || [],
+    });
+    if (error) { console.error('Error adding cook log:', error); return; }
 
-  const deleteCookLog = useCallback((recipeId: string, logId: string) => {
-    save(recipes.map(r => {
-      if (r.id !== recipeId) return r;
-      const updatedLog = r.cookLog.filter(e => e.id !== logId);
-      const lastCookedAt = updatedLog.length > 0
-        ? updatedLog.reduce((latest, e) => new Date(e.cookedAt) > new Date(latest) ? e.cookedAt : latest, updatedLog[0].cookedAt)
-        : null;
-      return { ...r, cookLog: updatedLog, lastCookedAt, updatedAt: new Date().toISOString() };
-    }));
-  }, [recipes]);
+    // Add photos to gallery
+    if (entry.photoUrls?.length) {
+      const photoInserts = entry.photoUrls.map(url => ({ recipe_id: recipeId, url }));
+      await supabase.from('recipe_photos').insert(photoInserts);
+    }
+
+    // Update last_cooked_at and rating on recipe
+    const recipe = recipes.find(r => r.id === recipeId);
+    const updateData: any = { updated_at: new Date().toISOString() };
+    if (entry.rating != null) updateData.rating = entry.rating;
+
+    // Recalculate last_cooked_at
+    const allDates = [...(recipe?.cookLog.map(c => c.cookedAt) || []), entry.cookedAt];
+    updateData.last_cooked_at = allDates.reduce((latest, d) =>
+      !latest || new Date(d) > new Date(latest) ? d : latest, null as string | null
+    );
+
+    await supabase.from('recipes').update(updateData).eq('id', recipeId);
+    await fetchRecipes();
+  }, [fetchRecipes, recipes]);
+
+  const deleteCookLog = useCallback(async (recipeId: string, logId: string) => {
+    const { error } = await supabase.from('cook_log_entries').delete().eq('id', logId);
+    if (error) { console.error('Error deleting cook log:', error); return; }
+
+    // Recalculate last_cooked_at
+    const { data: remaining } = await supabase.from('cook_log_entries').select('cooked_at').eq('recipe_id', recipeId).order('cooked_at', { ascending: false }).limit(1);
+    const lastCooked = remaining?.[0]?.cooked_at || null;
+    await supabase.from('recipes').update({ last_cooked_at: lastCooked, updated_at: new Date().toISOString() }).eq('id', recipeId);
+    await fetchRecipes();
+  }, [fetchRecipes]);
 
   return (
-    <RecipeContext.Provider value={{ recipes, allIngredients, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote, addPhoto, deletePhoto, addCookLog, deleteCookLog }}>
+    <RecipeContext.Provider value={{ recipes, allIngredients, loading, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote, addPhoto, deletePhoto, addCookLog, deleteCookLog }}>
       {children}
     </RecipeContext.Provider>
   );
