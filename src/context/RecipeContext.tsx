@@ -119,7 +119,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
 
     if (error) { console.error('Error adding recipe:', error); return; }
     await fetchRecipes();
-  }, [fetchRecipes]);
+  }, [fetchRecipes, user]);
 
   const updateRecipe = useCallback(async (id: string, data: RecipeFormData) => {
     const { error } = await supabase.from('recipes').update({
