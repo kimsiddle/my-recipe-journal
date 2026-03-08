@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState } from 'react';
 import { Recipe, CookLogEntry, formatIngredient } from '@/types/recipe';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -8,7 +8,7 @@ import { RecipePhotoGallery } from '@/components/RecipePhotoGallery';
 import { CookLogForm } from '@/components/CookLogForm';
 import { CookLogTimeline } from '@/components/CookLogTimeline';
 import { RecipeComments } from '@/components/RecipeComments';
-import { RichTextEditor } from '@/components/RichTextEditor';
+
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -30,22 +30,10 @@ interface RecipeDetailProps {
   onDeletePhoto: (photoId: string) => void;
   onAddCookLog: (entry: Omit<CookLogEntry, 'id'>) => void;
   onDeleteCookLog: (logId: string) => void;
-  onNotesChange: (notesText: string) => void;
 }
 
-export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRatingChange, onAddPhoto, onDeletePhoto, onAddCookLog, onDeleteCookLog, onNotesChange }: RecipeDetailProps) {
+export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRatingChange, onAddPhoto, onDeletePhoto, onAddCookLog, onDeleteCookLog }: RecipeDetailProps) {
   const [cookLogOpen, setCookLogOpen] = useState(false);
-  const notesRef = useRef(recipe.notesText);
-
-  const handleNotesBlur = useCallback(() => {
-    if (notesRef.current !== recipe.notesText) {
-      onNotesChange(notesRef.current);
-    }
-  }, [recipe.notesText, onNotesChange]);
-
-  const handleNotesChange = useCallback((html: string) => {
-    notesRef.current = html;
-  }, []);
 
   const lastCookedLabel = recipe.lastCookedAt
     ? `Last cooked ${formatDistanceToNow(new Date(recipe.lastCookedAt), { addSuffix: true })}`
@@ -218,19 +206,7 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
       {isOwner && <CookLogTimeline cookLog={recipe.cookLog} onDelete={onDeleteCookLog} />}
 
       {/* Notes */}
-      {isOwner ? (
-        <section className="mt-8">
-          <h2 className="text-xl font-display mb-3">Notes</h2>
-          <div onBlur={handleNotesBlur}>
-            <RichTextEditor
-              value={recipe.notesText}
-              onChange={handleNotesChange}
-              placeholder="What did you learn? What would you change next time?"
-            />
-          </div>
-          <p className="text-xs text-muted-foreground mt-1.5">Auto-saves when you click away</p>
-        </section>
-      ) : recipe.notesText ? (
+      {recipe.notesText ? (
         <section className="mt-8">
           <h2 className="text-xl font-display mb-3">Notes</h2>
           <div

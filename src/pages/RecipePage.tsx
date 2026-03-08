@@ -69,10 +69,6 @@ const RecipePage = () => {
           await deleteCookLog(recipe.id, logId);
           toast.success('Cook log removed');
         }}
-        onNotesChange={async (notesText) => {
-          await updateRecipe(recipe.id, { ...recipe, notesText });
-          toast.success('Notes saved');
-        }}
       />
       {isOwner && (
         <Dialog open={deleteConfirm} onOpenChange={setDeleteConfirm}>

@@ -449,8 +449,15 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
         <RatingScale rating={form.rating} onChange={val => set('rating', val)} />
       </div>
 
-
-      {/* Notes are managed separately via the detail view */}
+      {/* Notes */}
+      <div>
+        <Label className="font-body font-medium text-sm mb-1.5 block">Notes</Label>
+        <RichTextEditor
+          value={form.notesText}
+          onChange={val => set('notesText', val)}
+          placeholder="What did you learn? What would you change next time?"
+        />
+      </div>
 
       {/* Actions */}
       <div className="flex gap-3 pt-2">
