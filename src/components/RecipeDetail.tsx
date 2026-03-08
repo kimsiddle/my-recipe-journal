@@ -267,7 +267,7 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
 
       {/* Photo gallery */}
       {isOwner ? (
-        <RecipePhotoGallery photos={recipe.photos} onAddPhoto={onAddPhoto} onDeletePhoto={onDeletePhoto} onSetAsMain={onSetPhotoAsMain} />
+        <RecipePhotoGallery photos={recipe.photos} onAddPhoto={onAddPhoto} onDeletePhoto={onDeletePhoto} />
       ) : recipe.photos.length > 0 ? (
         <section className="mt-8">
           <h2 className="text-xl font-display mb-3">Photos</h2>

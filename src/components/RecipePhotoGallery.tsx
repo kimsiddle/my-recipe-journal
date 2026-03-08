@@ -2,16 +2,17 @@ import { useRef, useState } from 'react';
 import { RecipePhoto } from '@/types/recipe';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Camera, ChevronLeft, ChevronRight, X, Plus, ImageIcon } from 'lucide-react';
+import { Camera, ChevronLeft, ChevronRight, X, Plus } from 'lucide-react';
 
 interface RecipePhotoGalleryProps {
   photos: RecipePhoto[];
   onAddPhoto: (dataUrl: string) => void;
   onDeletePhoto: (photoId: string) => void;
-  onSetAsMain?: (photoUrl: string, photoId: string) => void;
 }
 
-export function RecipePhotoGallery({ photos, onAddPhoto, onDeletePhoto, onSetAsMain }: RecipePhotoGalleryProps) {
+export function RecipePhotoGallery({ photos, onAddPhoto, onDeletePhoto }: RecipePhotoGalleryProps) {
+
+
   const fileRef = useRef<HTMLInputElement>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
@@ -61,15 +62,6 @@ export function RecipePhotoGallery({ photos, onAddPhoto, onDeletePhoto, onSetAsM
               >
                 <X className="h-3 w-3" />
               </button>
-              {onSetAsMain && (
-                <button
-                  onClick={e => { e.stopPropagation(); onSetAsMain(photo.url, photo.id); }}
-                  className="absolute bottom-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity bg-background/80 rounded-full p-1.5 text-muted-foreground hover:text-primary"
-                  title="Set as main photo"
-                >
-                  <ImageIcon className="h-3.5 w-3.5" />
-                </button>
-              )}
             </div>
           ))}
         </div>
