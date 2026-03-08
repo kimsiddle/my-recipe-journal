@@ -89,6 +89,15 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
     fetchComments();
   };
 
+  const handleDeletePhoto = async (commentId: string) => {
+    const { error } = await supabase
+      .from('recipe_comments')
+      .update({ photo_url: null } as any)
+      .eq('id', commentId);
+    if (error) { toast.error('Failed to remove photo'); return; }
+    fetchComments();
+  };
+
   const formatDate = (d: string) =>
     new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 
@@ -157,12 +166,24 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
               <p className="text-sm font-medium">{c.author_name}</p>
               <p className="text-sm leading-relaxed mt-1 pr-6">{c.text}</p>
               {c.photo_url && (
-                <img
-                  src={c.photo_url}
-                  alt="Comment attachment"
-                  className="mt-2 rounded-md max-h-48 object-cover cursor-pointer border"
-                  onClick={() => window.open(c.photo_url, '_blank')}
-                />
+                <div className="relative inline-block mt-2">
+                  <img
+                    src={c.photo_url}
+                    alt="Comment attachment"
+                    className="rounded-md max-h-48 object-cover cursor-pointer border"
+                    onClick={() => window.open(c.photo_url, '_blank')}
+                  />
+                  {isOwner && (
+                    <button
+                      type="button"
+                      onClick={() => handleDeletePhoto(c.id)}
+                      className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Remove photo"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  )}
+                </div>
               )}
               <p className="text-xs text-muted-foreground mt-2">{formatDate(c.created_at)}</p>
               {isOwner && (
