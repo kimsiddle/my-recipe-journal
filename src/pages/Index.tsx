@@ -14,22 +14,31 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Plus, Search, CookingPot, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 type View = { type: 'list' } | { type: 'detail'; id: string } | { type: 'form'; editId?: string };
+type SortMode = 'recent' | 'rating' | 'rediscover';
 
 const Index = () => {
-  const { recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote, addPhoto, deletePhoto } = useRecipes();
+  const { recipes, addRecipe, updateRecipe, deleteRecipe, getRecipe, addNote, deleteNote, addPhoto, deletePhoto, addCookLog, deleteCookLog } = useRecipes();
   const [view, setView] = useState<View>({ type: 'list' });
   const [search, setSearch] = useState('');
   const [selectedMeal, setSelectedMeal] = useState<MealCategory | null>(null);
   const [selectedProtein, setSelectedProtein] = useState<ProteinTag | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [sortMode, setSortMode] = useState<SortMode>('recent');
 
-  // Filter recipes
+  // Filter & sort recipes
   const filtered = useMemo(() => {
-    return recipes.filter(r => {
+    const list = recipes.filter(r => {
       const q = search.toLowerCase();
       const matchesSearch = !q || r.title.toLowerCase().includes(q) ||
         r.description.toLowerCase().includes(q) ||
@@ -38,7 +47,28 @@ const Index = () => {
       const matchesProtein = !selectedProtein || r.proteinTags.includes(selectedProtein);
       return matchesSearch && matchesMeal && matchesProtein;
     });
-  }, [recipes, search, selectedMeal, selectedProtein]);
+
+    const sorted = [...list];
+    switch (sortMode) {
+      case 'rating':
+        sorted.sort((a, b) => b.rating - a.rating);
+        break;
+      case 'rediscover':
+        // High rating first, then oldest lastCookedAt (never cooked = top priority)
+        sorted.sort((a, b) => {
+          const ratingDiff = b.rating - a.rating;
+          if (Math.abs(ratingDiff) >= 2) return ratingDiff;
+          const aTime = a.lastCookedAt ? new Date(a.lastCookedAt).getTime() : 0;
+          const bTime = b.lastCookedAt ? new Date(b.lastCookedAt).getTime() : 0;
+          if (aTime !== bTime) return aTime - bTime;
+          return ratingDiff;
+        });
+        break;
+      default: // recent
+        sorted.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    }
+    return sorted;
+  }, [recipes, search, selectedMeal, selectedProtein, sortMode]);
 
   const handleAdd = (data: RecipeFormData) => {
     addRecipe(data);
@@ -92,6 +122,14 @@ const Index = () => {
             deletePhoto(recipe.id, photoId);
             toast.success('Photo removed');
           }}
+          onAddCookLog={(entry) => {
+            addCookLog(recipe.id, entry);
+            toast.success('Cook log added!');
+          }}
+          onDeleteCookLog={(logId) => {
+            deleteCookLog(recipe.id, logId);
+            toast.success('Cook log removed');
+          }}
         />
         <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
           <DialogContent>
@@ -113,7 +151,7 @@ const Index = () => {
   if (view.type === 'form') {
     const editing = view.editId ? getRecipe(view.editId) : undefined;
     const initialData = editing
-      ? { title: editing.title, description: editing.description, imageUrl: editing.imageUrl, ingredients: editing.ingredients, instructions: editing.instructions, rating: editing.rating, difficulty: editing.difficulty, cookTime: editing.cookTime, notes: editing.notes, photos: editing.photos, source: editing.source, mealCategory: editing.mealCategory, proteinTags: editing.proteinTags }
+      ? { title: editing.title, description: editing.description, imageUrl: editing.imageUrl, ingredients: editing.ingredients, instructions: editing.instructions, rating: editing.rating, difficulty: editing.difficulty, cookTime: editing.cookTime, notes: editing.notes, photos: editing.photos, source: editing.source, mealCategory: editing.mealCategory, proteinTags: editing.proteinTags, cookLog: editing.cookLog, lastCookedAt: editing.lastCookedAt }
       : undefined;
     return (
       <div className="px-4 py-8">
@@ -141,14 +179,26 @@ const Index = () => {
         </Button>
       </div>
         <main className="max-w-5xl mx-auto px-4 pb-6">
-        <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search recipes or ingredients..."
-            className="pl-9"
-          />
+        <div className="flex gap-3 mb-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search recipes or ingredients..."
+              className="pl-9"
+            />
+          </div>
+          <Select value={sortMode} onValueChange={(v) => setSortMode(v as SortMode)}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="recent">Recent</SelectItem>
+              <SelectItem value="rating">Top Rated</SelectItem>
+              <SelectItem value="rediscover">Rediscover</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Category filters */}

@@ -1,12 +1,15 @@
 import { useState } from 'react';
-import { Recipe, RecipeNote } from '@/types/recipe';
+import { Recipe, RecipeNote, CookLogEntry } from '@/types/recipe';
+import { formatDistanceToNow } from 'date-fns';
 
 import { Badge } from '@/components/ui/badge';
 import { RatingScale } from '@/components/RatingScale';
 import { RecipePhotoGallery } from '@/components/RecipePhotoGallery';
+import { CookLogForm } from '@/components/CookLogForm';
+import { CookLogTimeline } from '@/components/CookLogTimeline';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, Plus, Send, X, MessageSquare, BookOpen, ExternalLink, Clock, Flame } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, Plus, Send, X, MessageSquare, BookOpen, ExternalLink, Clock, Flame, ChefHat } from 'lucide-react';
 
 interface RecipeDetailProps {
   recipe: Recipe;
@@ -18,11 +21,14 @@ interface RecipeDetailProps {
   onRatingChange: (rating: number) => void;
   onAddPhoto: (dataUrl: string) => void;
   onDeletePhoto: (photoId: string) => void;
+  onAddCookLog: (entry: Omit<CookLogEntry, 'id'>) => void;
+  onDeleteCookLog: (logId: string) => void;
 }
 
-export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDeleteNote, onRatingChange, onAddPhoto, onDeletePhoto }: RecipeDetailProps) {
+export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDeleteNote, onRatingChange, onAddPhoto, onDeletePhoto, onAddCookLog, onDeleteCookLog }: RecipeDetailProps) {
   const [noteOpen, setNoteOpen] = useState(false);
   const [noteText, setNoteText] = useState('');
+  const [cookLogOpen, setCookLogOpen] = useState(false);
 
   const submitNote = () => {
     const trimmed = noteText.trim();
@@ -41,6 +47,10 @@ export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDe
     const d = new Date(dateStr);
     return d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
   };
+
+  const lastCookedLabel = recipe.lastCookedAt
+    ? `Last cooked ${formatDistanceToNow(new Date(recipe.lastCookedAt), { addSuffix: true })}`
+    : 'Never cooked';
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -68,6 +78,10 @@ export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDe
           <p className="text-muted-foreground">{recipe.description}</p>
         </div>
         <div className="flex gap-2 shrink-0">
+          <Button onClick={() => setCookLogOpen(true)} size="sm" className="gap-1.5">
+            <ChefHat className="h-4 w-4" />
+            I Made This
+          </Button>
           <Button variant="outline" size="icon" onClick={onEdit}>
             <Pencil className="h-4 w-4" />
           </Button>
@@ -88,6 +102,9 @@ export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDe
         <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
           <Flame className="h-4 w-4" />
           {recipe.difficulty}
+        </span>
+        <span className="text-sm text-muted-foreground">
+          {lastCookedLabel}
         </span>
         {recipe.source && (
           <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -138,6 +155,9 @@ export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDe
       {/* Photo gallery */}
       <RecipePhotoGallery photos={recipe.photos} onAddPhoto={onAddPhoto} onDeletePhoto={onDeletePhoto} />
 
+      {/* Cook Log Timeline */}
+      <CookLogTimeline cookLog={recipe.cookLog} onDelete={onDeleteCookLog} />
+
       {/* Notes as comment thread */}
       <section className="mt-8">
         <div className="flex items-center justify-between mb-4">
@@ -153,7 +173,6 @@ export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDe
           )}
         </div>
 
-        {/* Add note input */}
         {noteOpen && (
           <div className="mb-4 bg-card border rounded-lg p-3">
             <Textarea
@@ -176,7 +195,6 @@ export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDe
           </div>
         )}
 
-        {/* Notes list */}
         {recipe.notes.length > 0 ? (
           <div className="space-y-3">
             {recipe.notes.map((note) => (
@@ -203,6 +221,13 @@ export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDe
         Added {new Date(recipe.createdAt).toLocaleDateString()}
         {recipe.updatedAt !== recipe.createdAt && ` · Updated ${new Date(recipe.updatedAt).toLocaleDateString()}`}
       </p>
+
+      <CookLogForm
+        open={cookLogOpen}
+        onOpenChange={setCookLogOpen}
+        currentRating={recipe.rating}
+        onSubmit={onAddCookLog}
+      />
     </div>
   );
 }

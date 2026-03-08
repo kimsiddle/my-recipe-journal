@@ -10,6 +10,14 @@ export interface RecipeNote {
   createdAt: string;
 }
 
+export interface CookLogEntry {
+  id: string;
+  cookedAt: string;
+  rating?: number;
+  comment?: string;
+  photoUrls?: string[];
+}
+
 export type SourceType = 'book' | 'website';
 
 export interface RecipeSource {
@@ -42,6 +50,8 @@ export interface Recipe {
   source: RecipeSource | null;
   mealCategory: MealCategory;
   proteinTags: ProteinTag[];
+  cookLog: CookLogEntry[];
+  lastCookedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }

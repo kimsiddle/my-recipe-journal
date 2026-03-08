@@ -28,6 +28,8 @@ const emptyForm: RecipeFormData = {
   source: null,
   mealCategory: 'Dinner',
   proteinTags: [],
+  cookLog: [],
+  lastCookedAt: null,
 };
 
 export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
