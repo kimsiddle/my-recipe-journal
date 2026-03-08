@@ -156,14 +156,11 @@ export function RecipeImageImport({ onExtracted, onSkip }: RecipeImageImportProp
             <img src={preview} alt="Recipe preview" className="w-full max-h-64 object-contain bg-muted/30" />
             <button
               type="button"
-              onClick={() => {
-                setPreview(null);
-                setError(null);
-                if (fileRef.current) fileRef.current.value = '';
-              }}
-              className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm rounded-full p-1.5 text-foreground hover:bg-background transition-colors"
+              onClick={() => fileRef.current?.click()}
+              className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm rounded-md px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-background transition-colors flex items-center gap-1.5"
             >
-              ✕
+              <Camera className="h-3.5 w-3.5" />
+              Change photo
             </button>
           </div>
 
