@@ -129,7 +129,7 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onAddN
               <Button variant="outline" size="icon" className="h-9 w-9" onClick={onEdit}>
                 <Pencil className="h-4 w-4" />
               </Button>
-              <Button variant="outline" size="icon" className="h-9 w-9" onClick={onDelete} className="h-9 w-9 hover:bg-destructive hover:text-destructive-foreground">
+              <Button variant="outline" size="icon" onClick={onDelete} className="h-9 w-9 hover:bg-destructive hover:text-destructive-foreground">
                 <Trash2 className="h-4 w-4" />
               </Button>
             </>
