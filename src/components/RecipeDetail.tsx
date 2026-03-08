@@ -17,7 +17,7 @@ interface RecipeDetailProps {
   onRatingChange: (rating: number) => void;
 }
 
-export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDeleteNote }: RecipeDetailProps) {
+export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDeleteNote, onRatingChange }: RecipeDetailProps) {
   const [noteOpen, setNoteOpen] = useState(false);
   const [noteText, setNoteText] = useState('');
 
