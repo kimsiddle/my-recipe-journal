@@ -74,7 +74,17 @@ export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDe
       </div>
 
       <div className="flex items-center gap-4 flex-wrap">
-        <StarRating rating={recipe.rating} />
+        <RatingScale rating={recipe.rating} />
+        {recipe.cookTime && (
+          <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <Clock className="h-4 w-4" />
+            {recipe.cookTime}
+          </span>
+        )}
+        <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          <Flame className="h-4 w-4" />
+          {recipe.difficulty}
+        </span>
         {recipe.source && (
           <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
             {recipe.source.type === 'book' ? (

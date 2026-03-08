@@ -1,8 +1,8 @@
 import { Recipe } from '@/types/recipe';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { StarRating } from '@/components/StarRating';
-import { UtensilsCrossed } from 'lucide-react';
+import { RatingScale } from '@/components/RatingScale';
+import { UtensilsCrossed, Clock, Flame } from 'lucide-react';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -30,19 +30,22 @@ export function RecipeCard({ recipe, onClick }: RecipeCardProps) {
       <CardContent className="p-4">
         <h3 className="font-display text-lg leading-tight mb-1">{recipe.title}</h3>
         <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{recipe.description}</p>
-        <div className="flex items-center justify-between">
-          <StarRating rating={recipe.rating} size="sm" />
+        <RatingScale rating={recipe.rating} size="sm" />
+        <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
           <Badge variant="secondary" className="text-xs font-body">
             {recipe.mealCategory}
           </Badge>
+          {recipe.cookTime && (
+            <span className="flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              {recipe.cookTime}
+            </span>
+          )}
+          <span className="flex items-center gap-1">
+            <Flame className="h-3 w-3" />
+            {recipe.difficulty}
+          </span>
         </div>
-        {recipe.proteinTags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-2">
-            {recipe.proteinTags.map(tag => (
-              <span key={tag} className="text-xs text-muted-foreground">{tag}</span>
-            ))}
-          </div>
-        )}
       </CardContent>
     </Card>
   );
