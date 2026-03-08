@@ -9,7 +9,7 @@ const SAMPLE_RECIPES: Recipe[] = [
     id: '1',
     title: 'Classic Margherita Pizza',
     description: 'Simple, fresh, and bursting with flavor. San Marzano tomatoes, fresh mozzarella, and basil.',
-    imageUrl: null,
+    imageUrl: margheritaImg,
     ingredients: ['pizza dough', 'San Marzano tomatoes', 'fresh mozzarella', 'fresh basil', 'olive oil', 'salt'],
     instructions: '1. Preheat oven to 500°F.\n2. Stretch dough into a round.\n3. Spread crushed tomatoes.\n4. Tear mozzarella over top.\n5. Bake 10-12 minutes.\n6. Top with fresh basil and olive oil.',
     rating: 5,
