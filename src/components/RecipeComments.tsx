@@ -108,7 +108,7 @@ export function RecipeComments({ recipeId, isOwner }: RecipeCommentsProps) {
               <p className="text-xs text-muted-foreground mt-2">{formatDate(c.created_at)}</p>
               {isOwner && (
                 <button
-                  onClick={() => handleDelete(c.id)}
+                  onClick={() => setDeleteId(c.id)}
                   className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
                   title="Delete comment"
                 >
