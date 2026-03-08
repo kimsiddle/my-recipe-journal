@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ExtractedRecipe } from '@/components/RecipeImageImport';
 
 interface RecipeUrlImportProps {
-  onExtracted: (data: ExtractedRecipe) => void;
+  onExtracted: (data: ExtractedRecipe, url: string) => void;
   onBack: () => void;
 }
 

@@ -111,7 +111,7 @@ const RecipeFormPage = () => {
       <div className="px-4 py-8">
         <div className="max-w-lg mx-auto">
           <RecipeUrlImport
-            onExtracted={(data) => handleExtracted(data, sourceUrl || undefined)}
+            onExtracted={(data, url) => handleExtracted(data, url)}
             onBack={() => setImportMode('choose')}
           />
         </div>
