@@ -37,7 +37,7 @@ function mapDbToRecipe(
     title: row.title,
     description: row.description || '',
     imageUrl: row.image_url,
-    ingredients: row.ingredients || [],
+    ingredients: (row.ingredients || []).map((s: string) => parseIngredient(s)),
     instructions: row.instructions || '',
     rating: row.rating || 0,
     difficulty: row.difficulty || 'Medium',
