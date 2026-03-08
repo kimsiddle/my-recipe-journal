@@ -489,8 +489,10 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
         />
       </div>
 
-      {/* Actions */}
-      <div className="flex gap-3 pt-2">
+      </div>
+
+      {/* Sticky Actions */}
+      <div className="sticky bottom-0 border-t border-border bg-background pt-3 pb-1 flex gap-3 mt-3">
         <Button type="submit" className="flex-1">{initial ? 'Save Changes' : 'Add Recipe'}</Button>
         <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
       </div>
