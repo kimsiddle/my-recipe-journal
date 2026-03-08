@@ -81,9 +81,9 @@ const RecipeFormPage = () => {
   // For editing, go straight to form
   if (showForm || editing) {
     return (
-      <div className="px-4 py-8">
+    <div className="px-4 py-4">
         <div className="max-w-lg mx-auto">
-          <h1 className="text-2xl font-display mb-6">{editing ? 'Edit Recipe' : 'New Recipe'}</h1>
+          <h1 className="text-2xl font-display mb-3">{editing ? 'Edit Recipe' : 'New Recipe'}</h1>
           <RecipeForm initial={initialData} onSubmit={handleSubmit} onCancel={handleCancel} />
         </div>
       </div>
