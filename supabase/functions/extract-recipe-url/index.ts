@@ -80,7 +80,7 @@ function normalizeInstructions(raw: any): string {
       return [""];
     })
     .filter(Boolean);
-  return steps.map((s: string, i: number) => `${i + 1}. ${s}`).join("\n");
+  return "<ol>" + steps.map((s: string) => `<li>${s}</li>`).join("") + "</ol>";
 }
 
 function findImage(recipe: any): string {
