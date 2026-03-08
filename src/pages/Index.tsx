@@ -66,7 +66,7 @@ const Index = () => {
     const recipe = getRecipe(view.id);
     if (!recipe) { setView({ type: 'list' }); return null; }
     return (
-      <div className="min-h-screen bg-background px-4 py-8">
+      <div className="px-4 py-8">
         <RecipeDetail
           recipe={recipe}
           onBack={() => setView({ type: 'list' })}
