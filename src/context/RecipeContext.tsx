@@ -98,6 +98,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
   }, [recipes]);
 
   const addRecipe = useCallback(async (data: RecipeFormData) => {
+    if (!user) return;
     const { data: row, error } = await supabase.from('recipes').insert({
       title: data.title,
       description: data.description,
@@ -113,6 +114,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       meal_category: data.mealCategory,
       protein_tags: data.proteinTags,
       last_cooked_at: data.lastCookedAt,
+      user_id: user.id,
     }).select().single();
 
     if (error) { console.error('Error adding recipe:', error); return; }
