@@ -1,0 +1,1 @@
+ALTER TABLE public.recipes ADD COLUMN notes_text text NOT NULL DEFAULT '';
