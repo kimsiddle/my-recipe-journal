@@ -1,0 +1,1 @@
+ALTER TABLE public.recipes ADD COLUMN occasion_tags text[] NOT NULL DEFAULT '{}';

@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecipes } from '@/context/RecipeContext';
 import { RecipeCard } from '@/components/RecipeCard';
-import { MEAL_CATEGORIES, PROTEIN_TAGS, MealCategory, ProteinTag } from '@/types/recipe';
+import { MEAL_CATEGORIES, PROTEIN_TAGS, OCCASION_TAGS, MealCategory, ProteinTag, OccasionTag } from '@/types/recipe';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +23,7 @@ const Index = () => {
   const [search, setSearch] = useState('');
   const [selectedMeal, setSelectedMeal] = useState<MealCategory | null>(null);
   const [selectedProtein, setSelectedProtein] = useState<ProteinTag | null>(null);
+  const [selectedOccasion, setSelectedOccasion] = useState<OccasionTag | null>(null);
   const [sortMode, setSortMode] = useState<SortMode>('recent');
 
   const filtered = useMemo(() => {
@@ -33,7 +34,8 @@ const Index = () => {
         r.ingredients.some(i => i.name.toLowerCase().includes(q));
       const matchesMeal = !selectedMeal || r.mealCategory === selectedMeal;
       const matchesProtein = !selectedProtein || r.proteinTags.includes(selectedProtein);
-      return matchesSearch && matchesMeal && matchesProtein;
+      const matchesOccasion = !selectedOccasion || r.occasionTags.includes(selectedOccasion);
+      return matchesSearch && matchesMeal && matchesProtein && matchesOccasion;
     });
 
     const sorted = [...list];
@@ -55,7 +57,7 @@ const Index = () => {
         sorted.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
     }
     return sorted;
-  }, [recipes, search, selectedMeal, selectedProtein, sortMode]);
+  }, [recipes, search, selectedMeal, selectedProtein, selectedOccasion, sortMode]);
 
   return (
     <div className="flex-1">
@@ -111,6 +113,19 @@ const Index = () => {
                   <Badge variant={selectedProtein === tag ? 'default' : 'secondary'} className="font-body font-normal cursor-pointer">
                     {tag}
                     {selectedProtein === tag && <X className="h-3 w-3 ml-1" />}
+                  </Badge>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Occasion</p>
+            <div className="flex flex-wrap gap-1.5">
+              {OCCASION_TAGS.map(tag => (
+                <button key={tag} onClick={() => setSelectedOccasion(selectedOccasion === tag ? null : tag)}>
+                  <Badge variant={selectedOccasion === tag ? 'default' : 'secondary'} className="font-body font-normal cursor-pointer">
+                    {tag}
+                    {selectedOccasion === tag && <X className="h-3 w-3 ml-1" />}
                   </Badge>
                 </button>
               ))}

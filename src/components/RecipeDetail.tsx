@@ -168,6 +168,17 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
         )}
       </div>
 
+      {/* Occasion Tags */}
+      {recipe.occasionTags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mt-3">
+          {recipe.occasionTags.map(tag => (
+            <Badge key={tag} variant="outline" className="font-body font-normal text-xs">
+              {tag}
+            </Badge>
+          ))}
+        </div>
+      )}
+
       <section className="mt-8">
         <h2 className="text-xl font-display mb-3">Ingredients</h2>
         <ul className="space-y-1.5">
