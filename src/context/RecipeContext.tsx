@@ -111,6 +111,7 @@ export function RecipeProvider({ children }: { children: ReactNode }) {
       source_url: data.source?.url || null,
       meal_category: data.mealCategory,
       protein_tags: data.proteinTags,
+      occasion_tags: data.occasionTags,
       last_cooked_at: data.lastCookedAt,
       user_id: user.id,
       servings: data.servings,
