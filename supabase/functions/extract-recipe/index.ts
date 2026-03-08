@@ -123,6 +123,8 @@ serve(async (req) => {
                     "ingredients",
                     "instructions",
                     "notes",
+                    "cook_time",
+                    "servings",
                     "confidence",
                   ],
                   additionalProperties: false,
