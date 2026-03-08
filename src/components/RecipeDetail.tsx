@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Recipe, RecipeNote, CookLogEntry } from '@/types/recipe';
+import { Recipe, RecipeNote, CookLogEntry, formatIngredient } from '@/types/recipe';
 import { formatDistanceToNow } from 'date-fns';
 
 import { Badge } from '@/components/ui/badge';
