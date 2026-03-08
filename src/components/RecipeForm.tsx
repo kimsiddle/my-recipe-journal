@@ -70,8 +70,29 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => set('imageUrl', reader.result as string);
+      reader.onloadend = () => {
+        setRawImageSrc(reader.result as string);
+        setShowCropper(true);
+      };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCropComplete = (croppedUrl: string) => {
+    set('imageUrl', croppedUrl);
+    setShowCropper(false);
+    setRawImageSrc(null);
+  };
+
+  const handleCropCancel = () => {
+    setShowCropper(false);
+    setRawImageSrc(null);
+  };
+
+  const handleRecrop = () => {
+    if (form.imageUrl) {
+      setRawImageSrc(form.imageUrl);
+      setShowCropper(true);
     }
   };
 
