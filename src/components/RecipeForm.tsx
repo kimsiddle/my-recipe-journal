@@ -42,11 +42,9 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
   const set = <K extends keyof RecipeFormData>(key: K, val: RecipeFormData[K]) =>
     setForm(prev => ({ ...prev, [key]: val }));
 
-  const addIngredient = () => {
-    const trimmed = ingredientInput.trim();
-    if (trimmed && !form.ingredients.includes(trimmed)) {
-      set('ingredients', [...form.ingredients, trimmed]);
-      setIngredientInput('');
+  const addIngredient = (ingredient: string) => {
+    if (!form.ingredients.some(i => i.toLowerCase() === ingredient.toLowerCase())) {
+      set('ingredients', [...form.ingredients, ingredient]);
     }
   };
 
