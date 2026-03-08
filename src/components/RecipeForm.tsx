@@ -144,8 +144,32 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
                 </Button>
                 <Button type="button" variant="outline" size="sm" className="gap-1.5" onClick={() => fileRef.current?.click()}>
                   <Camera className="h-3.5 w-3.5" />
-                  Change Photo
+                  Upload New
                 </Button>
+              </div>
+            )}
+            {form.photos.length > 0 && (
+              <div className="mt-3">
+                <span className="text-xs text-muted-foreground block mb-1.5">Or choose from gallery:</span>
+                <div className="flex flex-wrap gap-2">
+                  {form.photos.map((photo) => (
+                    <button
+                      key={photo.id}
+                      type="button"
+                      onClick={() => {
+                        set('imageUrl', photo.url);
+                        setOriginalImageSrc(photo.url);
+                      }}
+                      className={`w-16 h-16 rounded-md overflow-hidden border-2 transition-all ${
+                        form.imageUrl === photo.url
+                          ? 'border-primary ring-2 ring-primary/30'
+                          : 'border-border hover:border-primary/50'
+                      }`}
+                    >
+                      <img src={photo.url} alt="" className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
           </>
