@@ -346,15 +346,7 @@ export default function Planner() {
   );
 }
 
-function ShoppingListItems({ items }: { items: { ingredient: string; recipes: string[] }[] }) {
-  const [checked, setChecked] = useState<Set<string>>(new Set());
-
-  const toggle = (ing: string) => {
-    const next = new Set(checked);
-    next.has(ing) ? next.delete(ing) : next.add(ing);
-    setChecked(next);
-  };
-
+function ShoppingListItems({ items, checked, onToggle }: { items: { ingredient: string; recipes: string[] }[]; checked: Set<string>; onToggle: (ingredient: string) => void }) {
   return (
     <div className="space-y-1">
       {items.map(item => (
