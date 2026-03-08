@@ -38,7 +38,7 @@ export function RecipePhotoGallery({ photos, onAddPhoto, onDeletePhoto, onSetAsM
           <h2 className="text-xl font-display">Photos</h2>
           <span className="text-sm text-muted-foreground">({photos.length})</span>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => fileRef.current?.click()} className="text-accent hover:text-accent">
+        <Button variant="ghost" size="sm" onClick={() => fileRef.current?.click()} className="text-primary hover:text-primary/80">
           <Plus className="h-4 w-4 mr-1" />
           Add photo
         </Button>
