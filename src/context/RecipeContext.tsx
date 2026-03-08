@@ -82,6 +82,7 @@ const SAMPLE_RECIPES: Recipe[] = [
 
 interface RecipeContextType {
   recipes: Recipe[];
+  allIngredients: string[];
   addRecipe: (data: RecipeFormData) => void;
   updateRecipe: (id: string, data: RecipeFormData) => void;
   deleteRecipe: (id: string) => void;
