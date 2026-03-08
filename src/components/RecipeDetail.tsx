@@ -89,6 +89,37 @@ export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDe
             <ChefHat className="h-4 w-4" />
             I Made This
           </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Share2 className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => {
+                const url = `${window.location.origin}/recipe/${recipe.id}`;
+                navigator.clipboard.writeText(url);
+                toast.success('Link copied to clipboard!');
+              }}>
+                <Copy className="h-4 w-4 mr-2" />
+                Copy Link
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                const url = `${window.location.origin}/recipe/${recipe.id}`;
+                window.open(`mailto:?subject=${encodeURIComponent(`Check out: ${recipe.title}`)}&body=${encodeURIComponent(`${recipe.title}\n\n${url}`)}`);
+              }}>
+                <Mail className="h-4 w-4 mr-2" />
+                Email
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                const url = `${window.location.origin}/recipe/${recipe.id}`;
+                window.open(`sms:?body=${encodeURIComponent(`${recipe.title} — ${url}`)}`);
+              }}>
+                <MessageCircle className="h-4 w-4 mr-2" />
+                Text Message
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button variant="outline" size="icon" onClick={onEdit}>
             <Pencil className="h-4 w-4" />
           </Button>
