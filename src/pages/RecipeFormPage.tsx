@@ -17,9 +17,8 @@ const RecipeFormPage = () => {
 
   const editing = id ? getRecipe(id) : undefined;
   const [importData, setImportData] = useState<RecipeFormData | null>(null);
-  const [importMode, setImportMode] = useState<ImportMode>(editing ? 'choose' : 'choose');
+  const [importMode, setImportMode] = useState<ImportMode>('choose');
   const [showForm, setShowForm] = useState(!!editing);
-  const [sourceUrl, setSourceUrl] = useState<string | null>(null);
 
   const initialData: RecipeFormData | undefined = editing
     ? {
