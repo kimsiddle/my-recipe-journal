@@ -137,3 +137,19 @@
     font-family: var(--font-display);
   }
 }
+
+.food-pattern-bg {
+  position: relative;
+}
+
+.food-pattern-bg::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url('/food-pattern.png');
+  background-repeat: repeat;
+  background-size: 320px 320px;
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 0;
+}
