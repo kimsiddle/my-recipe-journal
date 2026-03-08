@@ -4,7 +4,7 @@ import { StarRating } from '@/components/StarRating';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, Plus, Send, X, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2, UtensilsCrossed, Plus, Send, X, MessageSquare, BookOpen, ExternalLink } from 'lucide-react';
 
 interface RecipeDetailProps {
   recipe: Recipe;
@@ -72,7 +72,27 @@ export function RecipeDetail({ recipe, onBack, onEdit, onDelete, onAddNote, onDe
         </div>
       </div>
 
-      <StarRating rating={recipe.rating} />
+      <div className="flex items-center gap-4 flex-wrap">
+        <StarRating rating={recipe.rating} />
+        {recipe.source && (
+          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <BookOpen className="h-4 w-4 shrink-0" />
+            {recipe.source.url ? (
+              <a
+                href={recipe.source.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-accent transition-colors flex items-center gap-1 underline underline-offset-2"
+              >
+                {recipe.source.name}
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            ) : (
+              <span>{recipe.source.name}</span>
+            )}
+          </div>
+        )}
+      </div>
 
       <section className="mt-8">
         <h2 className="text-xl font-display mb-3">Ingredients</h2>

@@ -4,6 +4,11 @@ export interface RecipeNote {
   createdAt: string;
 }
 
+export interface RecipeSource {
+  name: string;
+  url?: string;
+}
+
 export interface Recipe {
   id: string;
   title: string;
@@ -13,6 +18,7 @@ export interface Recipe {
   instructions: string;
   rating: number;
   notes: RecipeNote[];
+  source: RecipeSource | null;
   createdAt: string;
   updatedAt: string;
 }
