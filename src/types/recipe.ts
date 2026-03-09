@@ -45,7 +45,7 @@ export interface RecipeSource {
   url?: string;
 }
 
-export const MEAL_CATEGORIES = ['Breakfast', 'Lunch', 'Dinner', 'Snack', 'Dessert'] as const;
+export const MEAL_CATEGORIES = ['Appetizer', 'Beverage', 'Breakfast', 'Side Dish', 'Main Dish', 'Snack', 'Dessert'] as const;
 export type MealCategory = string;
 
 export const PROTEIN_TAGS = ['Poultry', 'Fish', 'Beef', 'Pork', 'Seafood', 'Vegetable', 'Pasta', 'Lamb'] as const;
