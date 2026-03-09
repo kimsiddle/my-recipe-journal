@@ -13,6 +13,7 @@ import { useRecipes } from '@/context/RecipeContext';
 import { useDynamicTags } from '@/hooks/useDynamicTags';
 import { ImageCropper } from '@/components/ImageCropper';
 import { RichTextEditor } from '@/components/RichTextEditor';
+import { IngredientSplitter } from '@/components/IngredientSplitter';
 
 interface RecipeFormProps {
   initial?: RecipeFormData;
@@ -57,6 +58,7 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editAmount, setEditAmount] = useState('');
   const [editName, setEditName] = useState('');
+  const [editMode, setEditMode] = useState<'split' | 'manual'>('manual');
   const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
   const [originalImageSrc, setOriginalImageSrc] = useState<string | null>(initial?.imageUrl || null);
   const [showCropper, setShowCropper] = useState(false);
@@ -462,6 +464,21 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
           <div className="space-y-1 mt-2">
             {form.ingredients.map((ing, i) => (
               editingIndex === i ? (
+                editMode === 'split' ? (
+                  <div key={i}>
+                    <IngredientSplitter
+                      text={[editAmount, editName].filter(Boolean).join(' ')}
+                      onSplit={(amount, name) => {
+                        const updated = [...form.ingredients];
+                        updated[i] = { name, amount };
+                        set('ingredients', updated);
+                        setEditingIndex(null);
+                      }}
+                      onCancel={() => setEditingIndex(null)}
+                      onEditManually={() => setEditMode('manual')}
+                    />
+                  </div>
+                ) : (
                 <form
                   key={i}
                   className="flex items-center gap-2 rounded-md bg-muted/50 px-2 py-1.5"
@@ -496,6 +513,7 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
                     <X className="h-3.5 w-3.5" />
                   </Button>
                 </form>
+                )
               ) : (
                 <div
                   key={i}
@@ -504,6 +522,7 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
                     setEditingIndex(i);
                     setEditAmount(ing.amount);
                     setEditName(ing.name);
+                    setEditMode(!ing.amount.trim() && ing.name.trim() ? 'split' : 'manual');
                   }}
                 >
                   {ing.amount && (
