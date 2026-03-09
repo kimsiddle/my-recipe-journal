@@ -52,6 +52,44 @@ export type Database = {
           },
         ]
       }
+      meal_plan: {
+        Row: {
+          created_at: string
+          custom_name: string | null
+          date: string
+          id: string
+          meal_category: string
+          recipe_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          custom_name?: string | null
+          date: string
+          id?: string
+          meal_category: string
+          recipe_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          custom_name?: string | null
+          date?: string
+          id?: string
+          meal_category?: string
+          recipe_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meal_plan_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "recipes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       protein_tag_options: {
         Row: {
           created_at: string
@@ -232,6 +270,24 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      shopping_list_checked: {
+        Row: {
+          id: string
+          ingredient: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          ingredient: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          ingredient?: string
+          user_id?: string
         }
         Relationships: []
       }
