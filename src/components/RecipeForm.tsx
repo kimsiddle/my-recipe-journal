@@ -464,6 +464,21 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
           <div className="space-y-1 mt-2">
             {form.ingredients.map((ing, i) => (
               editingIndex === i ? (
+                editMode === 'split' ? (
+                  <div key={i}>
+                    <IngredientSplitter
+                      text={[editAmount, editName].filter(Boolean).join(' ')}
+                      onSplit={(amount, name) => {
+                        const updated = [...form.ingredients];
+                        updated[i] = { name, amount };
+                        set('ingredients', updated);
+                        setEditingIndex(null);
+                      }}
+                      onCancel={() => setEditingIndex(null)}
+                      onEditManually={() => setEditMode('manual')}
+                    />
+                  </div>
+                ) : (
                 <form
                   key={i}
                   className="flex items-center gap-2 rounded-md bg-muted/50 px-2 py-1.5"
@@ -498,6 +513,7 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
                     <X className="h-3.5 w-3.5" />
                   </Button>
                 </form>
+                )
               ) : (
                 <div
                   key={i}
