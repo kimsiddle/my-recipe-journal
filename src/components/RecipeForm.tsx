@@ -109,8 +109,7 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     if (!form.title.trim()) return;
     onSubmit(form);
   };
@@ -203,7 +202,7 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
   );
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col max-h-[80vh]">
+    <div className="flex flex-col max-h-[80vh]">
       <div className="flex-1 overflow-y-auto space-y-5 pr-1">
       {/* Photo */}
       <div>
@@ -575,9 +574,9 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
 
       {/* Actions */}
       <div className="sticky bottom-0 bg-background border-t pt-4 mt-4 flex gap-2">
-        <Button type="submit" className="flex-1">Save Recipe</Button>
+        <Button type="button" className="flex-1" onClick={handleSubmit}>Save Recipe</Button>
         <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
       </div>
-    </form>
+    </div>
   );
 }
