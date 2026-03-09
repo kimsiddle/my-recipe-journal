@@ -150,7 +150,7 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
                 onClick={async () => {
                   const removed = await onRemoveOption(tag);
                   if (removed) {
-                    onToggle(tag); // deselect if selected
+                    onToggle(tag);
                   }
                 }}
                 className="absolute -top-1.5 -right-1.5 hidden group-hover:flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-destructive-foreground"
@@ -161,34 +161,7 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
             </div>
           );
         })}
-        {showInput ? (
-          <form
-            className="flex items-center gap-1"
-            onSubmit={async (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              const success = await onAddOption(newInput);
-              if (success) {
-                setNewInput('');
-                setShowInput(false);
-              }
-            }}
-          >
-            <Input
-              value={newInput}
-              onChange={e => setNewInput(e.target.value)}
-              placeholder="New tag..."
-              className="h-7 w-28 text-xs"
-              autoFocus
-            />
-            <Button type="submit" size="sm" variant="ghost" className="h-7 w-7 p-0">
-              <Plus className="h-3.5 w-3.5" />
-            </Button>
-            <Button type="button" size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => { setShowInput(false); setNewInput(''); }}>
-              <X className="h-3.5 w-3.5" />
-            </Button>
-          </form>
-        ) : (
+        {!showInput && (
           <button type="button" onClick={() => setShowInput(true)}>
             <Badge variant="outline" className="font-body font-normal cursor-pointer border-dashed">
               <Plus className="h-3 w-3 mr-1" /> Add
@@ -196,6 +169,34 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
           </button>
         )}
       </div>
+      {showInput && (
+        <form
+          className="flex items-center gap-2 mt-2"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const success = await onAddOption(newInput);
+            if (success) {
+              setNewInput('');
+              setShowInput(false);
+            }
+          }}
+        >
+          <Input
+            value={newInput}
+            onChange={e => setNewInput(e.target.value)}
+            placeholder="New tag..."
+            className="h-8 flex-1 text-sm"
+            autoFocus
+          />
+          <Button type="submit" size="sm" variant="ghost" className="h-8 w-8 p-0">
+            <Plus className="h-3.5 w-3.5" />
+          </Button>
+          <Button type="button" size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => { setShowInput(false); setNewInput(''); }}>
+            <X className="h-3.5 w-3.5" />
+          </Button>
+        </form>
+      )}
     </div>
   );
 
