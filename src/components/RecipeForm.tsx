@@ -536,7 +536,7 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
       <div>
         <Label className="font-body font-medium text-sm mb-1.5 block">Notes</Label>
         <RichTextEditor
-          content={form.notesText}
+          value={form.notesText}
           onChange={(val) => set('notesText', val)}
           placeholder="Tips, tricks, substitutions..."
         />
