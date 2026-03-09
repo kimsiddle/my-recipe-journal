@@ -109,8 +109,7 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     if (!form.title.trim()) return;
     onSubmit(form);
   };
