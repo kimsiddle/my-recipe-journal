@@ -27,6 +27,10 @@ export default function Planner() {
 
   const { assignRecipe, assignCustomMeal, removeEntry, getEntries, clearWeek, getPlannedRecipeIds, checkedIngredients, toggleIngredient, clearCheckedIngredients, loading } = usePlanner();
   const { recipes, getRecipe } = useRecipes();
+  const { tags: mealCategoryOptions } = useDynamicTags('meal_category_options');
+  const PLAN_MEALS: MealCategory[] = mealCategoryOptions.length > 0
+    ? mealCategoryOptions.filter(m => ['Breakfast', 'Lunch', 'Dinner'].includes(m))
+    : DEFAULT_PLAN_MEALS;
 
   const weekDays = useMemo(() => {
     return Array.from({ length: 7 }, (_, i) => {
