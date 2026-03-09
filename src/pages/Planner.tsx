@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react';
-import { formatIngredient } from '@/types/recipe';
 import { format, startOfWeek, addDays, addWeeks, subWeeks } from 'date-fns';
-import { usePlanner } from '@/context/PlannerContext';
+import { usePlanner, PlannerEntry } from '@/context/PlannerContext';
 import { useRecipes } from '@/context/RecipeContext';
 import { MEAL_CATEGORIES, MealCategory } from '@/types/recipe';
 import { Button } from '@/components/ui/button';
@@ -14,7 +13,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { ChevronLeft, ChevronRight, X, ShoppingCart, Trash2, CalendarDays, UtensilsCrossed, Check, Copy, Type } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, ShoppingCart, Trash2, CalendarDays, UtensilsCrossed, Check, Copy, Type, Plus, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const PLAN_MEALS: MealCategory[] = ['Breakfast', 'Lunch', 'Dinner'];
@@ -25,7 +24,7 @@ export default function Planner() {
   const [showShoppingList, setShowShoppingList] = useState(false);
   const [quickText, setQuickText] = useState('');
 
-  const { assignRecipe, assignCustomMeal, removeRecipe, getEntry, clearWeek, getPlannedRecipeIds, checkedIngredients, toggleIngredient, clearCheckedIngredients } = usePlanner();
+  const { assignRecipe, assignCustomMeal, removeEntry, getEntries, clearWeek, getPlannedRecipeIds, checkedIngredients, toggleIngredient, clearCheckedIngredients, loading } = usePlanner();
   const { recipes, getRecipe } = useRecipes();
 
   const weekDays = useMemo(() => {
@@ -63,20 +62,17 @@ export default function Planner() {
     toast.success('Shopping list copied!');
   };
 
-  const handleQuickAdd = () => {
+  const handleQuickAdd = async () => {
     const trimmed = quickText.trim();
     if (!trimmed || !pickerOpen) return;
-    assignCustomMeal(pickerOpen.date, pickerOpen.meal, trimmed);
+    await assignCustomMeal(pickerOpen.date, pickerOpen.meal, trimmed);
     setQuickText('');
     setPickerOpen(null);
     toast.success(`"${trimmed}" added`);
   };
 
-  // Helper to render a meal cell's content
-  const renderMealContent = (date: string, meal: MealCategory, compact = false) => {
-    const entry = getEntry(date, meal);
-    if (!entry) return null;
-
+  // Render content for a single entry
+  const renderEntryContent = (entry: PlannerEntry) => {
     if (entry.recipeId) {
       const recipe = getRecipe(entry.recipeId);
       if (!recipe) return null;
@@ -97,6 +93,14 @@ export default function Planner() {
 
     return null;
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-4 sm:py-6">
@@ -144,39 +148,45 @@ export default function Planner() {
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium whitespace-nowrap">{meal}</p>
             </div>
             {weekDays.map(day => {
-              const content = renderMealContent(day.date, meal);
+              const entries = getEntries(day.date, meal);
 
               return (
                 <div
                   key={`${day.date}-${meal}`}
-                  className="min-h-[80px] rounded-lg border bg-card p-2 flex flex-col"
+                  className="min-h-[80px] rounded-lg border bg-card p-2 flex flex-col gap-1"
                 >
-                  {content ? (
-                    <div className="flex-1 flex flex-col">
-                      <div className="flex-1">
-                        {content.imageUrl && (
-                          <img src={content.imageUrl} alt="" className="w-full h-10 object-cover rounded mb-1" />
-                        )}
-                        <p className="text-xs font-medium leading-tight line-clamp-2">
-                          {content.isCustom && <Type className="inline h-3 w-3 mr-0.5 text-muted-foreground" />}
-                          {content.title}
-                        </p>
+                  {entries.map(entry => {
+                    const content = renderEntryContent(entry);
+                    if (!content) return null;
+
+                    return (
+                      <div key={entry.id} className="flex items-start gap-1 group">
+                        <div className="flex-1 min-w-0">
+                          {content.imageUrl && (
+                            <img src={content.imageUrl} alt="" className="w-full h-8 object-cover rounded mb-0.5" />
+                          )}
+                          <p className="text-xs font-medium leading-tight line-clamp-2">
+                            {content.isCustom && <Type className="inline h-3 w-3 mr-0.5 text-muted-foreground" />}
+                            {content.title}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => removeEntry(entry.id)}
+                          className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all shrink-0"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
                       </div>
-                      <button
-                        onClick={() => removeRecipe(day.date, meal)}
-                        className="self-end mt-1 text-muted-foreground hover:text-destructive transition-colors"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => { setPickerOpen({ date: day.date, meal }); setQuickText(''); }}
-                      className="flex-1 flex items-center justify-center text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted/50 rounded transition-colors"
-                    >
-                      <UtensilsCrossed className="h-4 w-4" />
-                    </button>
-                  )}
+                    );
+                  })}
+                  
+                  {/* Always show add button */}
+                  <button
+                    onClick={() => { setPickerOpen({ date: day.date, meal }); setQuickText(''); }}
+                    className="flex-1 min-h-[24px] flex items-center justify-center text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted/50 rounded transition-colors"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </button>
                 </div>
               );
             })}
@@ -196,37 +206,47 @@ export default function Planner() {
             </div>
             <div className="divide-y">
               {PLAN_MEALS.map(meal => {
-                const content = renderMealContent(day.date, meal);
+                const entries = getEntries(day.date, meal);
 
                 return (
-                  <div key={meal} className="flex items-center gap-3 px-3 py-2.5 min-h-[52px]">
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium w-16 shrink-0">
-                      {meal}
-                    </span>
-                    {content ? (
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        {content.imageUrl && (
-                          <img src={content.imageUrl} alt="" className="h-8 w-8 rounded object-cover shrink-0" />
-                        )}
-                        <p className="text-sm font-medium truncate flex-1">
-                          {content.isCustom && <Type className="inline h-3 w-3 mr-1 text-muted-foreground" />}
-                          {content.title}
-                        </p>
-                        <button
-                          onClick={() => removeRecipe(day.date, meal)}
-                          className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ) : (
+                  <div key={meal} className="px-3 py-2.5">
+                    <div className="flex items-center gap-3 mb-1">
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium w-16 shrink-0">
+                        {meal}
+                      </span>
                       <button
                         onClick={() => { setPickerOpen({ date: day.date, meal }); setQuickText(''); }}
-                        className="flex-1 flex items-center gap-2 text-muted-foreground/40 hover:text-muted-foreground transition-colors py-1"
+                        className="text-muted-foreground/40 hover:text-muted-foreground transition-colors"
                       >
-                        <UtensilsCrossed className="h-3.5 w-3.5" />
-                        <span className="text-xs">Add meal</span>
+                        <Plus className="h-4 w-4" />
                       </button>
+                    </div>
+                    
+                    {entries.length > 0 && (
+                      <div className="space-y-1.5 ml-[76px]">
+                        {entries.map(entry => {
+                          const content = renderEntryContent(entry);
+                          if (!content) return null;
+
+                          return (
+                            <div key={entry.id} className="flex items-center gap-2">
+                              {content.imageUrl && (
+                                <img src={content.imageUrl} alt="" className="h-8 w-8 rounded object-cover shrink-0" />
+                              )}
+                              <p className="text-sm font-medium truncate flex-1">
+                                {content.isCustom && <Type className="inline h-3 w-3 mr-1 text-muted-foreground" />}
+                                {content.title}
+                              </p>
+                              <button
+                                onClick={() => removeEntry(entry.id)}
+                                className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
+                              >
+                                <X className="h-4 w-4" />
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
                     )}
                   </div>
                 );
@@ -276,9 +296,9 @@ export default function Planner() {
                 {recipes.map(recipe => (
                   <button
                     key={recipe.id}
-                    onClick={() => {
+                    onClick={async () => {
                       if (pickerOpen) {
-                        assignRecipe(pickerOpen.date, pickerOpen.meal, recipe.id);
+                        await assignRecipe(pickerOpen.date, pickerOpen.meal, recipe.id);
                         setPickerOpen(null);
                         toast.success(`${recipe.title} added`);
                       }
@@ -346,7 +366,7 @@ export default function Planner() {
   );
 }
 
-function ShoppingListItems({ items, checked, onToggle }: { items: { ingredient: string; recipes: string[] }[]; checked: Set<string>; onToggle: (ingredient: string) => void }) {
+function ShoppingListItems({ items, checked, onToggle }: { items: { ingredient: string; recipes: string[] }[]; checked: Set<string>; onToggle: (ingredient: string) => Promise<void> }) {
   return (
     <div className="space-y-1">
       {items.map(item => (

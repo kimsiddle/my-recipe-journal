@@ -1,5 +1,11 @@
 import { MealCategory } from './recipe';
 
+export interface PlannerEntry {
+  id: string;
+  recipeId?: string;
+  customName?: string;
+}
+
 export interface PlannedMeal {
   id: string;
   recipeId: string;
@@ -9,6 +15,6 @@ export interface PlannedMeal {
 
 export interface WeekPlan {
   [dateKey: string]: {
-    [meal in MealCategory]?: string; // recipeId
+    [meal in MealCategory]?: PlannerEntry[];
   };
 }
