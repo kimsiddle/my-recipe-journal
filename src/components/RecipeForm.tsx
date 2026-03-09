@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { RecipeFormData, MEAL_CATEGORIES, OCCASION_TAGS, DIFFICULTY_LEVELS, COOK_TIME_OPTIONS, SERVING_OPTIONS, MealCategory, ProteinTag, OccasionTag, SourceType, Ingredient, formatIngredient } from '@/types/recipe';
+import { RecipeFormData, DIFFICULTY_LEVELS, COOK_TIME_OPTIONS, SERVING_OPTIONS, SourceType, Ingredient, formatIngredient } from '@/types/recipe';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -10,7 +10,7 @@ import { X, Camera, Plus, Trash2, Crop } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { IngredientAutocomplete } from '@/components/IngredientAutocomplete';
 import { useRecipes } from '@/context/RecipeContext';
-import { useProteinTags } from '@/hooks/useProteinTags';
+import { useDynamicTags } from '@/hooks/useDynamicTags';
 import { ImageCropper } from '@/components/ImageCropper';
 import { RichTextEditor } from '@/components/RichTextEditor';
 
@@ -44,9 +44,15 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
   const [form, setForm] = useState<RecipeFormData>(initial || emptyForm);
   const fileRef = useRef<HTMLInputElement>(null);
   const { allIngredients } = useRecipes();
-  const { tags: proteinTagOptions, addTag, removeTag } = useProteinTags();
-  const [newTagInput, setNewTagInput] = useState('');
-  const [showNewTagInput, setShowNewTagInput] = useState(false);
+  const { tags: mealOptions, addTag: addMealTag, removeTag: removeMealTag } = useDynamicTags('meal_category_options');
+  const { tags: proteinTagOptions, addTag: addProteinTag, removeTag: removeProteinTag } = useDynamicTags('protein_tag_options');
+  const { tags: occasionOptions, addTag: addOccasionTag, removeTag: removeOccasionTag } = useDynamicTags('occasion_tag_options');
+  const [newProteinInput, setNewProteinInput] = useState('');
+  const [showNewProteinInput, setShowNewProteinInput] = useState(false);
+  const [newMealInput, setNewMealInput] = useState('');
+  const [showNewMealInput, setShowNewMealInput] = useState(false);
+  const [newOccasionInput, setNewOccasionInput] = useState('');
+  const [showNewOccasionInput, setShowNewOccasionInput] = useState(false);
   const [ingredientAmount, setIngredientAmount] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editAmount, setEditAmount] = useState('');
@@ -106,6 +112,92 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
     if (!form.title.trim()) return;
     onSubmit(form);
   };
+
+  // Reusable tag section with add/remove
+  const renderDynamicTagSection = (
+    label: string,
+    options: string[],
+    selected: string[],
+    onToggle: (tag: string) => void,
+    onRemoveOption: (tag: string) => Promise<boolean>,
+    onAddOption: (name: string) => Promise<boolean>,
+    newInput: string,
+    setNewInput: (v: string) => void,
+    showInput: boolean,
+    setShowInput: (v: boolean) => void,
+  ) => (
+    <div>
+      <Label className="font-body font-medium text-sm mb-1.5 block">{label}</Label>
+      <div className="flex flex-wrap gap-1.5">
+        {options.map(tag => {
+          const isSelected = selected.includes(tag);
+          return (
+            <div key={tag} className="relative group">
+              <button
+                type="button"
+                onClick={() => onToggle(tag)}
+              >
+                <Badge
+                  variant={isSelected ? 'default' : 'secondary'}
+                  className="font-body font-normal cursor-pointer"
+                >
+                  {tag}
+                  {isSelected && <X className="h-3 w-3 ml-1" />}
+                </Badge>
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  const removed = await onRemoveOption(tag);
+                  if (removed) {
+                    onToggle(tag); // deselect if selected
+                  }
+                }}
+                className="absolute -top-1.5 -right-1.5 hidden group-hover:flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-destructive-foreground"
+                title={`Remove "${tag}" option`}
+              >
+                <Trash2 className="h-2.5 w-2.5" />
+              </button>
+            </div>
+          );
+        })}
+        {showInput ? (
+          <form
+            className="flex items-center gap-1"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const success = await onAddOption(newInput);
+              if (success) {
+                setNewInput('');
+                setShowInput(false);
+              }
+            }}
+          >
+            <Input
+              value={newInput}
+              onChange={e => setNewInput(e.target.value)}
+              placeholder="New tag..."
+              className="h-7 w-28 text-xs"
+              autoFocus
+            />
+            <Button type="submit" size="sm" variant="ghost" className="h-7 w-7 p-0">
+              <Plus className="h-3.5 w-3.5" />
+            </Button>
+            <Button type="button" size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => { setShowInput(false); setNewInput(''); }}>
+              <X className="h-3.5 w-3.5" />
+            </Button>
+          </form>
+        ) : (
+          <button type="button" onClick={() => setShowInput(true)}>
+            <Badge variant="outline" className="font-body font-normal cursor-pointer border-dashed">
+              <Plus className="h-3 w-3 mr-1" /> Add
+            </Badge>
+          </button>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col max-h-[80vh]">
@@ -279,126 +371,61 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
         )}
       </div>
 
-      {/* Meal Category */}
-      <div>
-        <Label className="font-body font-medium text-sm mb-1.5 block">Meal</Label>
-        <div className="flex flex-wrap gap-1.5">
-          {MEAL_CATEGORIES.map(cat => (
-            <button key={cat} type="button" onClick={() => set('mealCategory', cat)}>
-              <Badge
-                variant={form.mealCategory === cat ? 'default' : 'secondary'}
-                className="font-body font-normal cursor-pointer"
-              >
-                {cat}
-              </Badge>
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* Meal Category — dynamic */}
+      {renderDynamicTagSection(
+        'Meal',
+        mealOptions,
+        form.mealCategory ? [form.mealCategory] : [],
+        (tag) => set('mealCategory', form.mealCategory === tag ? '' : tag),
+        removeMealTag,
+        addMealTag,
+        newMealInput,
+        setNewMealInput,
+        showNewMealInput,
+        setShowNewMealInput,
+      )}
 
-      {/* Protein / Type Tags */}
-      <div>
-        <Label className="font-body font-medium text-sm mb-1.5 block">Type</Label>
-        <div className="flex flex-wrap gap-1.5">
-          {proteinTagOptions.map(tag => {
-            const selected = form.proteinTags.includes(tag as ProteinTag);
-            return (
-              <div key={tag} className="relative group">
-                <button
-                  type="button"
-                  onClick={() => set('proteinTags', selected
-                    ? form.proteinTags.filter(t => t !== tag)
-                    : [...form.proteinTags, tag as ProteinTag]
-                  )}
-                >
-                  <Badge
-                    variant={selected ? 'default' : 'secondary'}
-                    className="font-body font-normal cursor-pointer"
-                  >
-                    {tag}
-                    {selected && <X className="h-3 w-3 ml-1" />}
-                  </Badge>
-                </button>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const removed = await removeTag(tag);
-                    if (removed) {
-                      set('proteinTags', form.proteinTags.filter(t => t !== tag));
-                    }
-                  }}
-                  className="absolute -top-1.5 -right-1.5 hidden group-hover:flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-destructive-foreground"
-                  title={`Remove "${tag}" option`}
-                >
-                  <Trash2 className="h-2.5 w-2.5" />
-                </button>
-              </div>
-            );
-          })}
-          {showNewTagInput ? (
-            <form
-              className="flex items-center gap-1"
-              onSubmit={async (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const success = await addTag(newTagInput);
-                if (success) {
-                  setNewTagInput('');
-                  setShowNewTagInput(false);
-                }
-              }}
-            >
-              <Input
-                value={newTagInput}
-                onChange={e => setNewTagInput(e.target.value)}
-                placeholder="New tag..."
-                className="h-7 w-28 text-xs"
-                autoFocus
-              />
-              <Button type="submit" size="sm" variant="ghost" className="h-7 w-7 p-0">
-                <Plus className="h-3.5 w-3.5" />
-              </Button>
-              <Button type="button" size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => { setShowNewTagInput(false); setNewTagInput(''); }}>
-                <X className="h-3.5 w-3.5" />
-              </Button>
-            </form>
-          ) : (
-            <button type="button" onClick={() => setShowNewTagInput(true)}>
-              <Badge variant="outline" className="font-body font-normal cursor-pointer border-dashed">
-                <Plus className="h-3 w-3 mr-1" /> Add
-              </Badge>
-            </button>
-          )}
-      </div>
+      {/* Protein / Type Tags — dynamic */}
+      {renderDynamicTagSection(
+        'Type',
+        proteinTagOptions,
+        form.proteinTags,
+        (tag) => set('proteinTags', form.proteinTags.includes(tag)
+          ? form.proteinTags.filter(t => t !== tag)
+          : [...form.proteinTags, tag]
+        ),
+        async (tag) => {
+          const removed = await removeProteinTag(tag);
+          if (removed) set('proteinTags', form.proteinTags.filter(t => t !== tag));
+          return removed;
+        },
+        addProteinTag,
+        newProteinInput,
+        setNewProteinInput,
+        showNewProteinInput,
+        setShowNewProteinInput,
+      )}
 
-      {/* Occasion Tags */}
-      <div>
-        <Label className="font-body font-medium text-sm mb-1.5 block">Occasion</Label>
-        <div className="flex flex-wrap gap-1.5">
-          {OCCASION_TAGS.map(tag => {
-            const selected = form.occasionTags.includes(tag);
-            return (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => set('occasionTags', selected
-                  ? form.occasionTags.filter(t => t !== tag)
-                  : [...form.occasionTags, tag]
-                )}
-              >
-                <Badge
-                  variant={selected ? 'default' : 'secondary'}
-                  className="font-body font-normal cursor-pointer"
-                >
-                  {tag}
-                  {selected && <X className="h-3 w-3 ml-1" />}
-                </Badge>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-      </div>
+      {/* Occasion Tags — dynamic */}
+      {renderDynamicTagSection(
+        'Occasion',
+        occasionOptions,
+        form.occasionTags,
+        (tag) => set('occasionTags', form.occasionTags.includes(tag)
+          ? form.occasionTags.filter(t => t !== tag)
+          : [...form.occasionTags, tag]
+        ),
+        async (tag) => {
+          const removed = await removeOccasionTag(tag);
+          if (removed) set('occasionTags', form.occasionTags.filter(t => t !== tag));
+          return removed;
+        },
+        addOccasionTag,
+        newOccasionInput,
+        setNewOccasionInput,
+        showNewOccasionInput,
+        setShowNewOccasionInput,
+      )}
 
       {/* Description */}
       <div>
@@ -457,12 +484,9 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
                   <Input
                     value={editName}
                     onChange={e => setEditName(e.target.value)}
-                    placeholder="Ingredient"
+                    placeholder="Name"
                     className="h-7 w-28 text-xs"
                     autoFocus
-                    onKeyDown={e => {
-                      if (e.key === 'Escape') setEditingIndex(null);
-                    }}
                   />
                   <Button type="submit" size="sm" variant="ghost" className="h-7 w-7 p-0">
                     <Plus className="h-3.5 w-3.5" />
@@ -472,18 +496,26 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
                   </Button>
                 </form>
               ) : (
-                <Badge key={i} variant="secondary" className="gap-1 font-body font-normal cursor-pointer"
+                <button
+                  key={i}
+                  type="button"
+                  className="group relative"
                   onClick={() => {
                     setEditingIndex(i);
                     setEditAmount(ing.amount);
                     setEditName(ing.name);
                   }}
                 >
-                  {formatIngredient(ing)}
-                  <button type="button" onClick={(e) => { e.stopPropagation(); removeIngredient(i); }}>
+                  <Badge variant="secondary" className="font-body font-normal cursor-pointer pr-6">
+                    {formatIngredient(ing)}
+                  </Badge>
+                  <span
+                    onClick={(e) => { e.stopPropagation(); removeIngredient(i); }}
+                    className="absolute top-1/2 -translate-y-1/2 right-1.5 text-muted-foreground hover:text-destructive"
+                  >
                     <X className="h-3 w-3" />
-                  </button>
-                </Badge>
+                  </span>
+                </button>
               )
             ))}
           </div>
@@ -494,33 +526,32 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
       <div>
         <Label className="font-body font-medium text-sm mb-1.5 block">Instructions</Label>
         <RichTextEditor
-          value={form.instructions}
-          onChange={(html) => set('instructions', html)}
-          placeholder="Step-by-step instructions..."
+          content={form.instructions}
+          onChange={(val) => set('instructions', val)}
+          placeholder="How do you make it?"
         />
-      </div>
-
-      {/* Rating */}
-      <div>
-        <Label className="font-body font-medium text-sm mb-1.5 block">Rating (1-10)</Label>
-        <RatingScale rating={form.rating} onChange={val => set('rating', val)} />
       </div>
 
       {/* Notes */}
       <div>
         <Label className="font-body font-medium text-sm mb-1.5 block">Notes</Label>
         <RichTextEditor
-          value={form.notesText}
-          onChange={val => set('notesText', val)}
-          placeholder="What did you learn? What would you change next time?"
+          content={form.notesText}
+          onChange={(val) => set('notesText', val)}
+          placeholder="Tips, tricks, substitutions..."
         />
       </div>
 
+      {/* Rating */}
+      <div>
+        <Label className="font-body font-medium text-sm mb-1.5 block">Rating</Label>
+        <RatingScale value={form.rating} onChange={(v) => set('rating', v)} />
+      </div>
       </div>
 
-      {/* Sticky Actions */}
-      <div className="sticky bottom-0 border-t border-border bg-background pt-3 pb-1 flex gap-3 mt-3">
-        <Button type="submit" className="flex-1">{initial ? 'Save Changes' : 'Add Recipe'}</Button>
+      {/* Actions */}
+      <div className="sticky bottom-0 bg-background border-t pt-4 mt-4 flex gap-2">
+        <Button type="submit" className="flex-1">Save Recipe</Button>
         <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
       </div>
     </form>
