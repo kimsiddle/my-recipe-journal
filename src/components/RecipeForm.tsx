@@ -545,7 +545,7 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
       {/* Rating */}
       <div>
         <Label className="font-body font-medium text-sm mb-1.5 block">Rating</Label>
-        <RatingScale value={form.rating} onChange={(v) => set('rating', v)} />
+        <RatingScale rating={form.rating} onChange={(v) => set('rating', v)} />
       </div>
       </div>
 
