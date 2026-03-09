@@ -17,7 +17,7 @@ import {
 import { ChevronLeft, ChevronRight, X, ShoppingCart, Trash2, CalendarDays, UtensilsCrossed, Check, Copy, Type, Plus, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
-const PLAN_MEALS: MealCategory[] = ['Breakfast', 'Lunch', 'Dinner'];
+const DEFAULT_PLAN_MEALS: MealCategory[] = ['Breakfast', 'Lunch', 'Dinner'];
 
 export default function Planner() {
   const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
