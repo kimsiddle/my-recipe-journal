@@ -459,12 +459,12 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
           </div>
         </div>
         {form.ingredients.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-2">
+          <div className="space-y-1 mt-2">
             {form.ingredients.map((ing, i) => (
               editingIndex === i ? (
                 <form
                   key={i}
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-2 rounded-md bg-muted/50 px-2 py-1.5"
                   onSubmit={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -480,43 +480,47 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
                     value={editAmount}
                     onChange={e => setEditAmount(e.target.value)}
                     placeholder="Qty"
-                    className="h-7 w-20 text-xs"
+                    className="h-8 w-24 shrink-0 text-sm"
                   />
                   <Input
                     value={editName}
                     onChange={e => setEditName(e.target.value)}
-                    placeholder="Name"
-                    className="h-7 w-28 text-xs"
+                    placeholder="Ingredient name"
+                    className="h-8 flex-1 text-sm"
                     autoFocus
                   />
-                  <Button type="submit" size="sm" variant="ghost" className="h-7 w-7 p-0">
+                  <Button type="submit" size="sm" variant="ghost" className="h-8 w-8 p-0 shrink-0">
                     <Plus className="h-3.5 w-3.5" />
                   </Button>
-                  <Button type="button" size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => setEditingIndex(null)}>
+                  <Button type="button" size="sm" variant="ghost" className="h-8 w-8 p-0 shrink-0" onClick={() => setEditingIndex(null)}>
                     <X className="h-3.5 w-3.5" />
                   </Button>
                 </form>
               ) : (
-                <button
+                <div
                   key={i}
-                  type="button"
-                  className="group relative"
+                  className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-muted/50 cursor-pointer group transition-colors"
                   onClick={() => {
                     setEditingIndex(i);
                     setEditAmount(ing.amount);
                     setEditName(ing.name);
                   }}
                 >
-                  <Badge variant="secondary" className="font-body font-normal cursor-pointer pr-6">
-                    {formatIngredient(ing)}
-                  </Badge>
-                  <span
+                  {ing.amount && (
+                    <>
+                      <span className="text-sm font-medium text-muted-foreground shrink-0">{ing.amount}</span>
+                      <span className="text-muted-foreground/50">·</span>
+                    </>
+                  )}
+                  <span className="text-sm flex-1">{ing.name}</span>
+                  <button
+                    type="button"
                     onClick={(e) => { e.stopPropagation(); removeIngredient(i); }}
-                    className="absolute top-1/2 -translate-y-1/2 right-1.5 text-muted-foreground hover:text-destructive"
+                    className="h-6 w-6 shrink-0 flex items-center justify-center rounded text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-destructive transition-opacity"
                   >
-                    <X className="h-3 w-3" />
-                  </span>
-                </button>
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               )
             ))}
           </div>
