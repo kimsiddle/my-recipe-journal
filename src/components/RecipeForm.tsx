@@ -13,6 +13,7 @@ import { useRecipes } from '@/context/RecipeContext';
 import { useDynamicTags } from '@/hooks/useDynamicTags';
 import { ImageCropper } from '@/components/ImageCropper';
 import { RichTextEditor } from '@/components/RichTextEditor';
+import { IngredientSplitter } from '@/components/IngredientSplitter';
 
 interface RecipeFormProps {
   initial?: RecipeFormData;
