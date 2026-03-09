@@ -58,6 +58,7 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editAmount, setEditAmount] = useState('');
   const [editName, setEditName] = useState('');
+  const [editMode, setEditMode] = useState<'split' | 'manual'>('manual');
   const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
   const [originalImageSrc, setOriginalImageSrc] = useState<string | null>(initial?.imageUrl || null);
   const [showCropper, setShowCropper] = useState(false);
