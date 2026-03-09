@@ -78,12 +78,12 @@ serve(async (req) => {
                           amount: {
                             type: "string",
                             description:
-                              "Quantity and unit, e.g. '2 cups', '1 tbsp'. Empty string if not specified.",
+                              "The quantity and unit of measurement ONLY, e.g. '2 cups', '1 tbsp', '½ tsp', '3 cloves'. Do NOT include the ingredient name here. Empty string if no quantity specified.",
                           },
                           name: {
                             type: "string",
                             description:
-                              "Ingredient name, e.g. 'all-purpose flour', 'olive oil'",
+                              "The ingredient name ONLY, without any quantity or unit. e.g. 'all-purpose flour', 'olive oil', 'garlic'. Do NOT include amounts here.",
                           },
                         },
                         required: ["amount", "name"],
