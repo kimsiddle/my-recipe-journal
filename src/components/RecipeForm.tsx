@@ -522,6 +522,7 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
                     setEditingIndex(i);
                     setEditAmount(ing.amount);
                     setEditName(ing.name);
+                    setEditMode(!ing.amount.trim() && ing.name.trim() ? 'split' : 'manual');
                   }}
                 >
                   {ing.amount && (
