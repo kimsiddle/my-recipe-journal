@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecipes } from '@/context/RecipeContext';
 import { RecipeCard } from '@/components/RecipeCard';
-import { MEAL_CATEGORIES, PROTEIN_TAGS, OCCASION_TAGS, MealCategory, ProteinTag, OccasionTag } from '@/types/recipe';
+import { useDynamicTags } from '@/hooks/useDynamicTags';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -20,10 +20,13 @@ type SortMode = 'recent' | 'rating' | 'rediscover';
 const Index = () => {
   const { recipes, loading } = useRecipes();
   const navigate = useNavigate();
+  const { tags: mealCategories } = useDynamicTags('meal_category_options');
+  const { tags: proteinTags } = useDynamicTags('protein_tag_options');
+  const { tags: occasionTags } = useDynamicTags('occasion_tag_options');
   const [search, setSearch] = useState('');
-  const [selectedMeal, setSelectedMeal] = useState<MealCategory | null>(null);
-  const [selectedProtein, setSelectedProtein] = useState<ProteinTag | null>(null);
-  const [selectedOccasion, setSelectedOccasion] = useState<OccasionTag | null>(null);
+  const [selectedMeal, setSelectedMeal] = useState<string | null>(null);
+  const [selectedProtein, setSelectedProtein] = useState<string | null>(null);
+  const [selectedOccasion, setSelectedOccasion] = useState<string | null>(null);
   const [sortMode, setSortMode] = useState<SortMode>('recent');
 
   const filtered = useMemo(() => {
@@ -95,7 +98,7 @@ const Index = () => {
           <div>
             <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Meal</p>
             <div className="flex flex-wrap gap-1.5">
-              {MEAL_CATEGORIES.map(cat => (
+              {mealCategories.map(cat => (
                 <button key={cat} onClick={() => setSelectedMeal(selectedMeal === cat ? null : cat)}>
                   <Badge variant={selectedMeal === cat ? 'default' : 'secondary'} className="font-body font-normal cursor-pointer">
                     {cat}
@@ -108,7 +111,7 @@ const Index = () => {
           <div>
             <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Type</p>
             <div className="flex flex-wrap gap-1.5">
-              {PROTEIN_TAGS.map(tag => (
+              {proteinTags.map(tag => (
                 <button key={tag} onClick={() => setSelectedProtein(selectedProtein === tag ? null : tag)}>
                   <Badge variant={selectedProtein === tag ? 'default' : 'secondary'} className="font-body font-normal cursor-pointer">
                     {tag}
@@ -121,7 +124,7 @@ const Index = () => {
           <div>
             <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Occasion</p>
             <div className="flex flex-wrap gap-1.5">
-              {OCCASION_TAGS.map(tag => (
+              {occasionTags.map(tag => (
                 <button key={tag} onClick={() => setSelectedOccasion(selectedOccasion === tag ? null : tag)}>
                   <Badge variant={selectedOccasion === tag ? 'default' : 'secondary'} className="font-body font-normal cursor-pointer">
                     {tag}

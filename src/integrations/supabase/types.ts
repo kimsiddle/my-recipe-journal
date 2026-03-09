@@ -52,6 +52,24 @@ export type Database = {
           },
         ]
       }
+      meal_category_options: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       meal_plan: {
         Row: {
           created_at: string
@@ -89,6 +107,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      occasion_tag_options: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
       }
       protein_tag_options: {
         Row: {

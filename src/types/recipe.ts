@@ -46,13 +46,13 @@ export interface RecipeSource {
 }
 
 export const MEAL_CATEGORIES = ['Breakfast', 'Lunch', 'Dinner', 'Snack', 'Dessert'] as const;
-export type MealCategory = typeof MEAL_CATEGORIES[number];
+export type MealCategory = string;
 
 export const PROTEIN_TAGS = ['Poultry', 'Fish', 'Beef', 'Pork', 'Seafood', 'Vegetable', 'Pasta', 'Lamb'] as const;
-export type ProteinTag = typeof PROTEIN_TAGS[number];
+export type ProteinTag = string;
 
 export const OCCASION_TAGS = ['Weekday', 'Weekend', 'Crock Pot', 'Freezer Meal', 'Large Group', 'Quick & Easy', 'Meal Prep', 'Hosting', 'Air Fryer', 'InstaPot'] as const;
-export type OccasionTag = typeof OCCASION_TAGS[number];
+export type OccasionTag = string;
 
 export const COOK_TIME_OPTIONS = [
   '5 min', '10 min', '15 min', '20 min', '25 min', '30 min',

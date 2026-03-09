@@ -2,7 +2,8 @@ import { useState, useMemo } from 'react';
 import { format, startOfWeek, addDays, addWeeks, subWeeks } from 'date-fns';
 import { usePlanner, PlannerEntry } from '@/context/PlannerContext';
 import { useRecipes } from '@/context/RecipeContext';
-import { MEAL_CATEGORIES, MealCategory } from '@/types/recipe';
+import { MealCategory } from '@/types/recipe';
+import { useDynamicTags } from '@/hooks/useDynamicTags';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -16,7 +17,7 @@ import {
 import { ChevronLeft, ChevronRight, X, ShoppingCart, Trash2, CalendarDays, UtensilsCrossed, Check, Copy, Type, Plus, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
-const PLAN_MEALS: MealCategory[] = ['Breakfast', 'Lunch', 'Dinner'];
+const DEFAULT_PLAN_MEALS: MealCategory[] = ['Breakfast', 'Lunch', 'Dinner'];
 
 export default function Planner() {
   const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }));
@@ -26,6 +27,10 @@ export default function Planner() {
 
   const { assignRecipe, assignCustomMeal, removeEntry, getEntries, clearWeek, getPlannedRecipeIds, checkedIngredients, toggleIngredient, clearCheckedIngredients, loading } = usePlanner();
   const { recipes, getRecipe } = useRecipes();
+  const { tags: mealCategoryOptions } = useDynamicTags('meal_category_options');
+  const PLAN_MEALS: MealCategory[] = mealCategoryOptions.length > 0
+    ? mealCategoryOptions.filter(m => ['Breakfast', 'Lunch', 'Dinner'].includes(m))
+    : DEFAULT_PLAN_MEALS;
 
   const weekDays = useMemo(() => {
     return Array.from({ length: 7 }, (_, i) => {
