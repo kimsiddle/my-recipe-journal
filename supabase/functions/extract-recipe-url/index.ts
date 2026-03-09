@@ -57,10 +57,27 @@ function stripHtml(html: string): string {
     .trim();
 }
 
+function parseIngredientString(input: string): { amount: string; name: string } {
+  const trimmed = input.trim();
+  // Match leading quantity (numbers, fractions, unicode fractions, decimals, ranges)
+  // optionally followed by a unit of measurement
+  const regex = /^([\d\s\/\.\-–—½⅓⅔¼¾⅛⅜⅝⅞]+(?:\s*(?:cups?|tablespoons?|tbsps?|teaspoons?|tsps?|ounces?|oz|pounds?|lbs?|grams?|g|kilograms?|kg|millilit(?:er|re)s?|ml|lit(?:er|re)s?|l|pinch(?:es)?|dash(?:es)?|cloves?|cans?|packages?|pkgs?|bunche?s?|heads?|stalks?|slices?|pieces?|sprigs?|handfuls?|quarts?|qts?|pints?|pts?|gallons?|gal|sticks?|large|small|medium|whole)\.?))\s+(.+)$/i;
+  const match = trimmed.match(regex);
+  if (match) {
+    return { amount: match[1].trim(), name: match[2].trim() };
+  }
+  // Check for just a number at the start (e.g. "3 eggs")
+  const numMatch = trimmed.match(/^([\d½⅓⅔¼¾⅛⅜⅝⅞]+(?:\s*[\-–—\/]\s*[\d½⅓⅔¼¾⅛⅜⅝⅞]+)?)\s+(.+)$/);
+  if (numMatch) {
+    return { amount: numMatch[1].trim(), name: numMatch[2].trim() };
+  }
+  return { amount: "", name: trimmed };
+}
+
 function normalizeIngredients(raw: any): { amount: string; name: string }[] {
   if (!Array.isArray(raw)) return [];
   return raw.map((item: any) => {
-    if (typeof item === "string") return { amount: "", name: item };
+    if (typeof item === "string") return parseIngredientString(item);
     return { amount: item.amount || "", name: item.name || String(item) };
   });
 }
