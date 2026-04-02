@@ -45,13 +45,8 @@ export interface RecipeSource {
   url?: string;
 }
 
-export const MEAL_CATEGORIES = ['Appetizer', 'Beverage', 'Breakfast', 'Side Dish', 'Main Dish', 'Snack', 'Dessert'] as const;
 export type MealCategory = string;
-
-export const PROTEIN_TAGS = ['Poultry', 'Fish', 'Beef', 'Pork', 'Seafood', 'Vegetable', 'Pasta', 'Lamb'] as const;
 export type ProteinTag = string;
-
-export const OCCASION_TAGS = ['Weekday', 'Weekend', 'Crock Pot', 'Freezer Meal', 'Large Group', 'Quick & Easy', 'Meal Prep', 'Hosting', 'Air Fryer', 'InstaPot'] as const;
 export type OccasionTag = string;
 
 export const COOK_TIME_OPTIONS = [
