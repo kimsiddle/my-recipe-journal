@@ -60,43 +60,6 @@ function stripHtml(html: string): string {
     .trim();
 }
 
-function parseIngredientString(input: string): { amount: string; name: string } {
-  const trimmed = input.trim();
-  const numMatch = trimmed.match(
-    /^([\d½⅓⅔¼¾⅛⅜⅝⅞]+(?:\s*[\-–—\/]\s*[\d½⅓⅔¼¾⅛⅜⅝⅞]+)?)\s+(.+)$/
-  );
-  if (numMatch) {
-    return { amount: numMatch[1].trim(), name: numMatch[2].trim() };
-  }
-  return { amount: "", name: trimmed };
-}
-
-function normalizeIngredients(raw: any): { amount: string; name: string }[] {
-  if (!Array.isArray(raw)) return [];
-  return raw.map((item: any) => {
-    if (typeof item === "string") return parseIngredientString(item);
-    return { amount: item.amount || "", name: item.name || String(item) };
-  });
-}
-
-function normalizeInstructions(raw: any): string {
-  if (typeof raw === "string") return raw;
-  if (!Array.isArray(raw)) return "";
-  const steps = raw
-    .flatMap((step: any) => {
-      if (typeof step === "string") return [step];
-      if (step.text) return [step.text];
-      if (step["@type"] === "HowToStep") return [step.text || step.name || ""];
-      if (step["@type"] === "HowToSection") {
-        const items = step.itemListElement || [];
-        return items.map((s: any) => s.text || s.name || "");
-      }
-      return [""];
-    })
-    .filter(Boolean);
-  return "<ol>" + steps.map((s: string) => `<li>${s}</li>`).join("") + "</ol>";
-}
-
 function findImage(recipe: any): string {
   if (!recipe.image) return "";
   if (typeof recipe.image === "string") return recipe.image;
@@ -133,7 +96,9 @@ serve(async (req) => {
     }
     const html = await pageRes.text();
 
+    // Extract metadata from JSON-LD if available
     const jsonLd = extractJsonLdRecipe(html);
+    const metadata: Record<string, any> = {};
     if (jsonLd) {
       const totalTime = jsonLd.totalTime || jsonLd.cookTime || jsonLd.prepTime || "";
       const servingsRaw = jsonLd.recipeYield;
@@ -142,22 +107,14 @@ serve(async (req) => {
         const num = Array.isArray(servingsRaw) ? servingsRaw[0] : servingsRaw;
         servings = parseInt(String(num)) || 0;
       }
-      return new Response(
-        JSON.stringify({
-          title: jsonLd.name || "",
-          description: jsonLd.description || "",
-          ingredients: normalizeIngredients(jsonLd.recipeIngredient),
-          instructions: normalizeInstructions(jsonLd.recipeInstructions),
-          notes: "",
-          cook_time: parseIsoDuration(totalTime),
-          servings,
-          confidence: "high",
-          image_url: findImage(jsonLd),
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      metadata.title = jsonLd.name || "";
+      metadata.description = jsonLd.description || "";
+      metadata.cook_time = parseIsoDuration(totalTime);
+      metadata.servings = servings;
+      metadata.image_url = findImage(jsonLd);
     }
 
+    // Always use LLM to extract ingredients with sections
     const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
     if (!ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY is not configured");
 
@@ -256,10 +213,22 @@ serve(async (req) => {
     }
 
     const extracted = toolCall.input;
-    const ogMatch = html.match(
-      /<meta[^>]*property\s*=\s*["']og:image["'][^>]*content\s*=\s*["']([^"']+)["']/i
-    );
-    extracted.image_url = ogMatch?.[1] || "";
+
+    // Prefer JSON-LD metadata over LLM for non-ingredient fields (more reliable)
+    if (metadata.title) extracted.title = metadata.title;
+    if (metadata.description) extracted.description = metadata.description;
+    if (metadata.cook_time) extracted.cook_time = metadata.cook_time;
+    if (metadata.servings) extracted.servings = metadata.servings;
+
+    // Get image from JSON-LD or og:image tag
+    if (metadata.image_url) {
+      extracted.image_url = metadata.image_url;
+    } else {
+      const ogMatch = html.match(
+        /<meta[^>]*property\s*=\s*["']og:image["'][^>]*content\s*=\s*["']([^"']+)["']/i
+      );
+      extracted.image_url = ogMatch?.[1] || "";
+    }
 
     return new Response(JSON.stringify(extracted), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -272,5 +241,3 @@ serve(async (req) => {
     );
   }
 });
-
-
