@@ -449,114 +449,140 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
 
       {/* Ingredients */}
       <div>
-        <Label className="font-body font-medium text-sm mb-1.5 block">Ingredients</Label>
-        <div className="flex gap-2 mb-2">
+        <Label className="font-body font-medium text-sm mb-3 block">Ingredients</Label>
+
+        {/* Grouped ingredient list */}
+        {form.ingredients.length > 0 && (
+          <div className="space-y-4 mb-4">
+            {(() => {
+              const groups: { section: string; indices: number[] }[] = [];
+              form.ingredients.forEach((ing, i) => {
+                const s = ing.section || '';
+                const existing = groups.find(g => g.section === s);
+                if (existing) existing.indices.push(i);
+                else groups.push({ section: s, indices: [i] });
+              });
+              return groups.map((group, gi) => (
+                <div key={gi}>
+                  {group.section && (
+                    <p className="text-sm font-semibold mb-1">{group.section}</p>
+                  )}
+                  <div className="space-y-1">
+                    {group.indices.map(i => {
+                      const ing = form.ingredients[i];
+                      return editingIndex === i ? (
+                        editMode === 'split' ? (
+                          <div key={i}>
+                            <IngredientSplitter
+                              text={[editAmount, editName].filter(Boolean).join(' ')}
+                              onSplit={(amount, name) => {
+                                const updated = [...form.ingredients];
+                                updated[i] = { ...updated[i], name, amount };
+                                set('ingredients', updated);
+                                setEditingIndex(null);
+                              }}
+                              onCancel={() => setEditingIndex(null)}
+                              onEditManually={() => setEditMode('manual')}
+                            />
+                          </div>
+                        ) : (
+                          <form
+                            key={i}
+                            className="flex items-center gap-2 rounded-md bg-muted/50 px-2 py-1.5"
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (editName.trim()) {
+                                const updated = [...form.ingredients];
+                                updated[i] = { ...updated[i], name: editName.trim(), amount: editAmount.trim() };
+                                set('ingredients', updated);
+                              }
+                              setEditingIndex(null);
+                            }}
+                          >
+                            <Input
+                              value={editAmount}
+                              onChange={e => setEditAmount(e.target.value)}
+                              placeholder="Qty"
+                              className="h-8 w-24 shrink-0 text-sm"
+                            />
+                            <Input
+                              value={editName}
+                              onChange={e => setEditName(e.target.value)}
+                              placeholder="Ingredient name"
+                              className="h-8 flex-1 text-sm"
+                              autoFocus
+                            />
+                            <Button type="submit" size="sm" variant="ghost" className="h-8 w-8 p-0 shrink-0">
+                              <Plus className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button type="button" size="sm" variant="ghost" className="h-8 w-8 p-0 shrink-0" onClick={() => setEditingIndex(null)}>
+                              <X className="h-3.5 w-3.5" />
+                            </Button>
+                          </form>
+                        )
+                      ) : (
+                        <div
+                          key={i}
+                          className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-muted/50 cursor-pointer group transition-colors"
+                          onClick={() => {
+                            setEditingIndex(i);
+                            setEditAmount(ing.amount);
+                            setEditName(ing.name);
+                            setEditMode(!ing.amount.trim() && ing.name.trim() ? 'split' : 'manual');
+                          }}
+                        >
+                          {ing.amount && (
+                            <>
+                              <span className="text-sm font-medium text-muted-foreground shrink-0">{ing.amount}</span>
+                              <span className="text-muted-foreground/50">·</span>
+                            </>
+                          )}
+                          <span className="text-sm flex-1">{ing.name}</span>
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); removeIngredient(i); }}
+                            className="h-6 w-6 shrink-0 flex items-center justify-center rounded text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-destructive transition-opacity"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ));
+            })()}
+          </div>
+        )}
+
+        {/* Add ingredient inputs */}
+        <div className="border rounded-lg p-3 space-y-2 bg-muted/20">
           <Input
             value={ingredientSection}
             onChange={e => setIngredientSection(e.target.value)}
-            placeholder="Group (e.g. Sauce)"
-            className="w-36 shrink-0"
+            placeholder="Section (e.g. Dry Rub, Sauce) — optional"
+            className="text-sm"
           />
-        </div>
-        <div className="flex gap-2">
-          <Input
-            value={ingredientAmount}
-            onChange={e => setIngredientAmount(e.target.value)}
-            placeholder="Qty (e.g. 2 cups)"
-            className="w-28 shrink-0"
-          />
-          <div className="flex-1">
-            <IngredientAutocomplete
-              allIngredients={allIngredients}
-              currentIngredients={form.ingredients.map(i => i.name)}
-              onAdd={addIngredient}
+          <div className="flex gap-2">
+            <Input
+              value={ingredientAmount}
+              onChange={e => setIngredientAmount(e.target.value)}
+              placeholder="Qty (e.g. 2 cups)"
+              className="w-28 shrink-0"
             />
+            <div className="flex-1">
+              <IngredientAutocomplete
+                allIngredients={allIngredients}
+                currentIngredients={form.ingredients.map(i => i.name)}
+                onAdd={addIngredient}
+              />
+            </div>
           </div>
+          {ingredientSection && (
+            <p className="text-xs text-muted-foreground">Adding to: <span className="font-medium">{ingredientSection}</span></p>
+          )}
         </div>
-        {form.ingredients.length > 0 && (
-          <div className="space-y-1 mt-2">
-            {form.ingredients.map((ing, i) => (
-              editingIndex === i ? (
-                editMode === 'split' ? (
-                  <div key={i}>
-                    <IngredientSplitter
-                      text={[editAmount, editName].filter(Boolean).join(' ')}
-                      onSplit={(amount, name) => {
-                        const updated = [...form.ingredients];
-                        updated[i] = { name, amount };
-                        set('ingredients', updated);
-                        setEditingIndex(null);
-                      }}
-                      onCancel={() => setEditingIndex(null)}
-                      onEditManually={() => setEditMode('manual')}
-                    />
-                  </div>
-                ) : (
-                <form
-                  key={i}
-                  className="flex items-center gap-2 rounded-md bg-muted/50 px-2 py-1.5"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (editName.trim()) {
-                      const updated = [...form.ingredients];
-                      updated[i] = { name: editName.trim(), amount: editAmount.trim() };
-                      set('ingredients', updated);
-                    }
-                    setEditingIndex(null);
-                  }}
-                >
-                  <Input
-                    value={editAmount}
-                    onChange={e => setEditAmount(e.target.value)}
-                    placeholder="Qty"
-                    className="h-8 w-24 shrink-0 text-sm"
-                  />
-                  <Input
-                    value={editName}
-                    onChange={e => setEditName(e.target.value)}
-                    placeholder="Ingredient name"
-                    className="h-8 flex-1 text-sm"
-                    autoFocus
-                  />
-                  <Button type="submit" size="sm" variant="ghost" className="h-8 w-8 p-0 shrink-0">
-                    <Plus className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button type="button" size="sm" variant="ghost" className="h-8 w-8 p-0 shrink-0" onClick={() => setEditingIndex(null)}>
-                    <X className="h-3.5 w-3.5" />
-                  </Button>
-                </form>
-                )
-              ) : (
-                <div
-                  key={i}
-                  className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-muted/50 cursor-pointer group transition-colors"
-                  onClick={() => {
-                    setEditingIndex(i);
-                    setEditAmount(ing.amount);
-                    setEditName(ing.name);
-                    setEditMode(!ing.amount.trim() && ing.name.trim() ? 'split' : 'manual');
-                  }}
-                >
-                  {ing.amount && (
-                    <>
-                      <span className="text-sm font-medium text-muted-foreground shrink-0">{ing.amount}</span>
-                      <span className="text-muted-foreground/50">·</span>
-                    </>
-                  )}
-                  <span className="text-sm flex-1">{ing.name}</span>
-                  <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); removeIngredient(i); }}
-                    className="h-6 w-6 shrink-0 flex items-center justify-center rounded text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-destructive transition-opacity"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-              )
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Instructions */}
