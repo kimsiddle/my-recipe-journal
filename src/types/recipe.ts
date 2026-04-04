@@ -1,15 +1,18 @@
 export interface Ingredient {
   name: string;
   amount: string;
+  section?: string;
 }
 
 export function parseIngredient(raw: string): Ingredient {
-  const pipeIdx = raw.indexOf('|');
-  if (pipeIdx === -1) return { name: raw, amount: '' };
-  return { amount: raw.substring(0, pipeIdx), name: raw.substring(pipeIdx + 1) };
+  const parts = raw.split('|');
+  if (parts.length === 1) return { name: raw, amount: '' };
+  if (parts.length === 2) return { amount: parts[0], name: parts[1] };
+  return { amount: parts[0], name: parts[1], section: parts[2] || undefined };
 }
 
 export function serializeIngredient(ing: Ingredient): string {
+  if (ing.section) return `${ing.amount}|${ing.name}|${ing.section}`;
   return ing.amount ? `${ing.amount}|${ing.name}` : ing.name;
 }
 
