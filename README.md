@@ -42,12 +42,9 @@ The quick prototype became a series of real architectural decisions, made with t
 - **Photo Gallery** — Attach multiple photos to any recipe
 - **Filtering & Search** — Filter by meal category, protein type, occasion, and more
 - **Share Recipes** — Share via link, email, or text message
-
-### 📓 Cooking Log & Planning
 - **Cook Log** — Log each time you make a recipe with a date, rating, and notes for future adjustments
-- **Meal Planner** — Plan your meals by day of the week
 
-### 📓 Meal Planner & Shopping List 
+### 📅 Meal Planner & Shopping List 
 - **Planner** — Map out your meals for the week — either free-form or linked to saved recipes
 - **Shopping List** — Generate a consolidated shopping list from your plan automatically
 
