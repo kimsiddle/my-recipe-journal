@@ -39,7 +39,7 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
 
   const lastCookedLabel = recipe.lastCookedAt
     ? `Last cooked ${formatDistanceToNow(new Date(recipe.lastCookedAt), { addSuffix: true })}`
-    : 'Never cooked';
+    : null;
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -139,9 +139,11 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
             {recipe.servings} {recipe.servings === 1 ? 'serving' : 'servings'}
           </span>
         )}
-        <span className="text-sm text-muted-foreground">
-          {lastCookedLabel}
-        </span>
+        {lastCookedLabel && (
+          <span className="text-sm text-muted-foreground">
+            {lastCookedLabel}
+          </span>
+        )}
         {recipe.source && (
           <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
             {recipe.source.type === 'book' ? (
