@@ -61,11 +61,8 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
         )}
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
-        <div className="min-w-0">
-          <h1 className="text-2xl sm:text-3xl font-display mb-2">{recipe.title}</h1>
-          <p className="text-muted-foreground">{recipe.description}</p>
-        </div>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-2">
+        <h1 className="text-2xl sm:text-3xl font-display min-w-0">{recipe.title}</h1>
         <div className="flex flex-wrap gap-2 shrink-0">
           {isOwner && (
             <Button onClick={() => setCookLogOpen(true)} size="sm" className="gap-1.5">
@@ -116,6 +113,9 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
           )}
         </div>
       </div>
+      {recipe.description && (
+        <p className="text-muted-foreground mb-4">{recipe.description}</p>
+      )}
 
       <div className="flex items-center gap-4 flex-wrap">
         {isOwner ? (
