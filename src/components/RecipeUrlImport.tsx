@@ -1,4 +1,15 @@
 import { useState, useCallback } from 'react';
+
+function plainTextToHtml(text: string): string {
+  if (!text) return '';
+  if (text.trim().startsWith('<')) return text; // already HTML
+  const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
+  const isNumbered = lines.every(l => /^\d+[\.\)]/.test(l));
+  if (isNumbered) {
+    return '<ol>' + lines.map(l => `<li>${l.replace(/^\d+[\.\)]\s*/, '')}</li>`).join('') + '</ol>';
+  }
+  return '<p>' + lines.join('</p><p>') + '</p>';
+}
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Link2, Loader2, AlertTriangle, ArrowLeft } from 'lucide-react';
@@ -38,9 +49,10 @@ export function RecipeUrlImport({ onExtracted, onBack }: RecipeUrlImportProps) {
             ingredients: (data.ingredients || []).map((i: any) => ({
               name: i.name || '',
               amount: i.amount || '',
+              section: i.section || '',
             })),
-            instructions: data.instructions || '',
-            notes: data.notes || '',
+            instructions: plainTextToHtml(data.instructions || ''),
+            notes: plainTextToHtml(data.notes || ''),
             cookTime: data.cook_time || '',
             servings: data.servings ? Number(data.servings) : null,
             imageUrl: data.image_url || '',
