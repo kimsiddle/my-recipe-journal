@@ -164,20 +164,22 @@ serve(async (req) => {
       );
     }
 
-    // Fallback: AI extraction
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    // Fallback: AI extraction using Claude and Haiku for speed and affordability
+    const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
+    if (!ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY is not configured");
+
 
     const text = stripHtml(html).slice(0, 8000);
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "x-api-key": ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "claude-haiku-4-5",
         messages: [
           {
             role: "system",
@@ -249,14 +251,14 @@ serve(async (req) => {
     }
 
     const result = await response.json();
-    const toolCall = result.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall?.function?.arguments) {
+    const toolCall = result.content?.find((b: any) => b.type === "tool_use");
+    if (!toolCall?.input) {
       return new Response(JSON.stringify({ error: "Could not extract recipe from this page", confidence: "low" }), {
         status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const extracted = JSON.parse(toolCall.function.arguments);
+    const extracted = toolCall.input;
     // Try to find an og:image from the page
     const ogMatch = html.match(/<meta[^>]*property\s*=\s*["']og:image["'][^>]*content\s*=\s*["']([^"']+)["']/i);
     extracted.image_url = ogMatch?.[1] || "";
