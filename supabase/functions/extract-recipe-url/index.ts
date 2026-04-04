@@ -2,8 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 function extractJsonLdRecipe(html: string): any | null {
@@ -33,7 +32,11 @@ function parseIsoDuration(iso: string): string {
   const mins = parseInt(m[2] || "0");
   const total = hours * 60 + mins;
   const options = [5, 10, 15, 20, 25, 30, 45, 60, 90, 120, 150, 180, 240];
-  const labels = ["5 min","10 min","15 min","20 min","25 min","30 min","45 min","1 hour","1.5 hours","2 hours","2.5 hours","3 hours","4+ hours"];
+  const labels = [
+    "5 min", "10 min", "15 min", "20 min", "25 min", "30 min",
+    "45 min", "1 hour", "1.5 hours", "2 hours", "2.5 hours",
+    "3 hours", "4+ hours",
+  ];
   let closest = 0;
   let closestDiff = Infinity;
   for (let i = 0; i < options.length; i++) {
@@ -59,15 +62,9 @@ function stripHtml(html: string): string {
 
 function parseIngredientString(input: string): { amount: string; name: string } {
   const trimmed = input.trim();
-  // Match leading quantity (numbers, fractions, unicode fractions, decimals, ranges)
-  // optionally followed by a unit of measurement
-  const regex = /^([\d\s\/\.\-–—½⅓⅔¼¾⅛⅜⅝⅞]+(?:\s*(?:cups?|tablespoons?|tbsps?|teaspoons?|tsps?|ounces?|oz|pounds?|lbs?|grams?|g|kilograms?|kg|millilit(?:er|re)s?|ml|lit(?:er|re)s?|l|pinch(?:es)?|dash(?:es)?|cloves?|cans?|packages?|pkgs?|bunche?s?|heads?|stalks?|slices?|pieces?|sprigs?|handfuls?|quarts?|qts?|pints?|pts?|gallons?|gal|sticks?|large|small|medium|whole)\.?))\s+(.+)$/i;
-  const match = trimmed.match(regex);
-  if (match) {
-    return { amount: match[1].trim(), name: match[2].trim() };
-  }
-  // Check for just a number at the start (e.g. "3 eggs")
-  const numMatch = trimmed.match(/^([\d½⅓⅔¼¾⅛⅜⅝⅞]+(?:\s*[\-–—\/]\s*[\d½⅓⅔¼¾⅛⅜⅝⅞]+)?)\s+(.+)$/);
+  const numMatch = trimmed.match(
+    /^([\d½⅓⅔¼¾⅛⅜⅝⅞]+(?:\s*[\-–—\/]\s*[\d½⅓⅔¼¾⅛⅜⅝⅞]+)?)\s+(.+)$/
+  );
   if (numMatch) {
     return { amount: numMatch[1].trim(), name: numMatch[2].trim() };
   }
@@ -122,7 +119,6 @@ serve(async (req) => {
       });
     }
 
-    // Fetch page
     const pageRes = await fetch(url, {
       headers: {
         "User-Agent": "Mozilla/5.0 (compatible; RecipeBot/1.0)",
@@ -137,7 +133,6 @@ serve(async (req) => {
     }
     const html = await pageRes.text();
 
-    // Try JSON-LD first
     const jsonLd = extractJsonLdRecipe(html);
     if (jsonLd) {
       const totalTime = jsonLd.totalTime || jsonLd.cookTime || jsonLd.prepTime || "";
@@ -147,7 +142,6 @@ serve(async (req) => {
         const num = Array.isArray(servingsRaw) ? servingsRaw[0] : servingsRaw;
         servings = parseInt(String(num)) || 0;
       }
-
       return new Response(
         JSON.stringify({
           title: jsonLd.name || "",
@@ -164,12 +158,16 @@ serve(async (req) => {
       );
     }
 
-    // Fallback: AI extraction using Claude and Haiku for speed and affordability
     const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
     if (!ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY is not configured");
 
-
     const text = stripHtml(html).slice(0, 8000);
+
+    const cookTimeEnum = [
+      "5 min", "10 min", "15 min", "20 min", "25 min", "30 min",
+      "45 min", "1 hour", "1.5 hours", "2 hours", "2.5 hours",
+      "3 hours", "4+ hours", "",
+    ];
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -195,30 +193,41 @@ serve(async (req) => {
             input_schema: {
               type: "object",
               properties: {
-                title: { type: "string", description: "The recipe title" },
+                title: { type: "string" },
                 ingredients: {
                   type: "array",
                   items: {
                     type: "object",
                     properties: {
-                      amount: { type: "string", description: "The quantity and unit of measurement ONLY, e.g. '2 cups', '1 tbsp', '½ tsp', '3 cloves'. Do NOT include the ingredient name here. Empty string if no quantity specified." },
-                      name: { type: "string", description: "The ingredient name ONLY, without any quantity or unit. e.g. 'all-purpose flour', 'olive oil', 'garlic'. Do NOT include amounts here." },
+                      amount: { type: "string" },
+                      name: { type: "string" },
                     },
                     required: ["amount", "name"],
                     additionalProperties: false,
                   },
                 },
-                instructions: { type: "string", description: "Step-by-step cooking instructions as an HTML ordered list. Use <ol><li>Step one</li><li>Step two</li></ol> format. Each step should be a separate <li> element. Do NOT include step numbers in the text — the <ol> handles numbering automatically." },
-                description: { type: "string", description: "A brief summary or description of the dish — the main introductory text. Empty string if none." },
-                notes: { type: "string", description: "Any specific tips, variations, or additional notes. NOT the main description. Empty string if none." },
+                instructions: { type: "string" },
+                description: { type: "string" },
+                notes: { type: "string" },
                 cook_time: {
                   type: "string",
-                  enum: ["5 min","10 min","15 min","20 min","25 min","30 min","45 min","1 hour","1.5 hours","2 hours","2.5 hours","3 hours","4+ hours",""],
+                  enum: cookTimeEnum,
                 },
                 servings: { type: "integer" },
-                confidence: { type: "string", enum: ["high", "medium", "low"] },
+                confidence: {
+                  type: "string",
+                  enum: ["high", "medium", "low"],
+                },
               },
-              required: ["title", "ingredients", "instructions", "notes", "cook_time", "servings", "confidence"],
+              required: [
+                "title",
+                "ingredients",
+                "instructions",
+                "notes",
+                "cook_time",
+                "servings",
+                "confidence",
+              ],
               additionalProperties: false,
             },
           },
@@ -228,34 +237,27 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
       const t = await response.text();
-      console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "Failed to process page", confidence: "low" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      console.error("Anthropic API error:", response.status, t);
+      return new Response(
+        JSON.stringify({ error: "Failed to process page", confidence: "low" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const result = await response.json();
     const toolCall = result.content?.find((b: any) => b.type === "tool_use");
     if (!toolCall?.input) {
-      return new Response(JSON.stringify({ error: "Could not extract recipe from this page", confidence: "low" }), {
-        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ error: "Could not extract recipe from this page", confidence: "low" }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const extracted = toolCall.input;
-    // Try to find an og:image from the page
-    const ogMatch = html.match(/<meta[^>]*property\s*=\s*["']og:image["'][^>]*content\s*=\s*["']([^"']+)["']/i);
+    const ogMatch = html.match(
+      /<meta[^>]*property\s*=\s*["']og:image["'][^>]*content\s*=\s*["']([^"']+)["']/i
+    );
     extracted.image_url = ogMatch?.[1] || "";
 
     return new Response(JSON.stringify(extracted), {
