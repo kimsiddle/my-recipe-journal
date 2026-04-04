@@ -55,6 +55,7 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
   const [newOccasionInput, setNewOccasionInput] = useState('');
   const [showNewOccasionInput, setShowNewOccasionInput] = useState(false);
   const [ingredientAmount, setIngredientAmount] = useState('');
+  const [ingredientSection, setIngredientSection] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editAmount, setEditAmount] = useState('');
   const [editName, setEditName] = useState('');
@@ -68,7 +69,12 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
 
   const addIngredient = (name: string) => {
     if (!form.ingredients.some(i => i.name.toLowerCase() === name.toLowerCase())) {
-      set('ingredients', [...form.ingredients, { name, amount: ingredientAmount.trim() }]);
+      const ing: { name: string; amount: string; section?: string } = {
+        name,
+        amount: ingredientAmount.trim(),
+      };
+      if (ingredientSection.trim()) ing.section = ingredientSection.trim();
+      set('ingredients', [...form.ingredients, ing]);
       setIngredientAmount('');
     }
   };
@@ -444,6 +450,14 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
       {/* Ingredients */}
       <div>
         <Label className="font-body font-medium text-sm mb-1.5 block">Ingredients</Label>
+        <div className="flex gap-2 mb-2">
+          <Input
+            value={ingredientSection}
+            onChange={e => setIngredientSection(e.target.value)}
+            placeholder="Group (e.g. Sauce)"
+            className="w-36 shrink-0"
+          />
+        </div>
         <div className="flex gap-2">
           <Input
             value={ingredientAmount}

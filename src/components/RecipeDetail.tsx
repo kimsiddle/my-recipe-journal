@@ -182,14 +182,47 @@ export function RecipeDetail({ recipe, isOwner, onBack, onEdit, onDelete, onRati
 
       <section className="mt-8">
         <h2 className="text-xl font-display mb-3">Ingredients</h2>
-        <ul className="space-y-1.5">
-          {recipe.ingredients.map((ing, i) => (
-            <li key={i} className="flex items-baseline gap-2 text-sm">
-              {ing.amount && <span className="text-muted-foreground font-medium shrink-0">{ing.amount}</span>}
-              <span>{ing.name}</span>
-            </li>
-          ))}
-        </ul>
+        {(() => {
+          const hasSections = recipe.ingredients.some(i => i.section);
+          if (!hasSections) {
+            return (
+              <ul className="space-y-1.5">
+                {recipe.ingredients.map((ing, i) => (
+                  <li key={i} className="flex items-baseline gap-2 text-sm">
+                    {ing.amount && <span className="text-muted-foreground font-medium shrink-0">{ing.amount}</span>}
+                    <span>{ing.name}</span>
+                  </li>
+                ))}
+              </ul>
+            );
+          }
+          const groups: { section: string; items: typeof recipe.ingredients }[] = [];
+          for (const ing of recipe.ingredients) {
+            const sectionName = ing.section || '';
+            const existing = groups.find(g => g.section === sectionName);
+            if (existing) existing.items.push(ing);
+            else groups.push({ section: sectionName, items: [ing] });
+          }
+          return (
+            <div className="space-y-4">
+              {groups.map((group, gi) => (
+                <div key={gi}>
+                  {group.section && (
+                    <h3 className="text-sm font-semibold text-foreground mb-1.5">{group.section}</h3>
+                  )}
+                  <ul className="space-y-1.5">
+                    {group.items.map((ing, i) => (
+                      <li key={i} className="flex items-baseline gap-2 text-sm">
+                        {ing.amount && <span className="text-muted-foreground font-medium shrink-0">{ing.amount}</span>}
+                        <span>{ing.name}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
       </section>
 
       <section className="mt-8">
