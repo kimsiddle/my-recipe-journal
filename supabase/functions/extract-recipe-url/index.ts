@@ -136,7 +136,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "claude-haiku-4-5",
         max_tokens: 4096,
-        system: "You are a recipe extraction assistant. Extract structured recipe data from webpage text. Ignore blog intros, ads, and unrelated content. Focus only on the recipe itself. For ingredients, preserve any grouping sections from the original recipe (e.g. 'Dry Rub', 'Sauce', 'For the dough'). Set the section field to the group name, or empty string if there are no groups.",
+        system: "You are a recipe extraction assistant. Extract structured recipe data from webpage text. Ignore blog intros, ads, and unrelated content. Focus only on the recipe itself. For ingredients, preserve any grouping sections from the original recipe (e.g. 'Dry Rub', 'Sauce', 'For the dough'). Set the section field to the group name, or empty string if there are no groups. For instructions, return them as an HTML ordered list using <ol> and <li> tags, one step per <li>.",
         messages: [
           {
             role: "user",
