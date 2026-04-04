@@ -180,11 +180,9 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5",
+        max_tokens: 4096,
+        system: "You are a recipe extraction assistant. Extract structured recipe data from webpage text. Ignore blog intros, ads, and unrelated content. Focus only on the recipe itself.",
         messages: [
-          {
-            role: "system",
-            content: "You are a recipe extraction assistant. Extract structured recipe data from webpage text. Ignore blog intros, ads, and unrelated content. Focus only on the recipe itself.",
-          },
           {
             role: "user",
             content: `Extract the recipe from this webpage text:\n\n${text}`,
@@ -192,43 +190,40 @@ serve(async (req) => {
         ],
         tools: [
           {
-            type: "function",
-            function: {
-              name: "extract_recipe",
-              description: "Extract structured recipe data from webpage text.",
-              parameters: {
-                type: "object",
-                properties: {
-                  title: { type: "string", description: "The recipe title" },
-                  ingredients: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        amount: { type: "string", description: "The quantity and unit of measurement ONLY, e.g. '2 cups', '1 tbsp', '½ tsp', '3 cloves'. Do NOT include the ingredient name here. Empty string if no quantity specified." },
-                        name: { type: "string", description: "The ingredient name ONLY, without any quantity or unit. e.g. 'all-purpose flour', 'olive oil', 'garlic'. Do NOT include amounts here." },
-                      },
-                      required: ["amount", "name"],
-                      additionalProperties: false,
+            name: "extract_recipe",
+            description: "Extract structured recipe data from webpage text.",
+            input_schema: {
+              type: "object",
+              properties: {
+                title: { type: "string", description: "The recipe title" },
+                ingredients: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      amount: { type: "string", description: "The quantity and unit of measurement ONLY, e.g. '2 cups', '1 tbsp', '½ tsp', '3 cloves'. Do NOT include the ingredient name here. Empty string if no quantity specified." },
+                      name: { type: "string", description: "The ingredient name ONLY, without any quantity or unit. e.g. 'all-purpose flour', 'olive oil', 'garlic'. Do NOT include amounts here." },
                     },
+                    required: ["amount", "name"],
+                    additionalProperties: false,
                   },
-                  instructions: { type: "string", description: "Step-by-step cooking instructions as an HTML ordered list. Use <ol><li>Step one</li><li>Step two</li></ol> format. Each step should be a separate <li> element. Do NOT include step numbers in the text — the <ol> handles numbering automatically." },
-                  description: { type: "string", description: "A brief summary or description of the dish — the main introductory text. Empty string if none." },
-                  notes: { type: "string", description: "Any specific tips, variations, or additional notes. NOT the main description. Empty string if none." },
-                  cook_time: {
-                    type: "string",
-                    enum: ["5 min","10 min","15 min","20 min","25 min","30 min","45 min","1 hour","1.5 hours","2 hours","2.5 hours","3 hours","4+ hours",""],
-                  },
-                  servings: { type: "integer" },
-                  confidence: { type: "string", enum: ["high", "medium", "low"] },
                 },
-                required: ["title", "ingredients", "instructions", "notes", "cook_time", "servings", "confidence"],
-                additionalProperties: false,
+                instructions: { type: "string", description: "Step-by-step cooking instructions as an HTML ordered list. Use <ol><li>Step one</li><li>Step two</li></ol> format. Each step should be a separate <li> element. Do NOT include step numbers in the text — the <ol> handles numbering automatically." },
+                description: { type: "string", description: "A brief summary or description of the dish — the main introductory text. Empty string if none." },
+                notes: { type: "string", description: "Any specific tips, variations, or additional notes. NOT the main description. Empty string if none." },
+                cook_time: {
+                  type: "string",
+                  enum: ["5 min","10 min","15 min","20 min","25 min","30 min","45 min","1 hour","1.5 hours","2 hours","2.5 hours","3 hours","4+ hours",""],
+                },
+                servings: { type: "integer" },
+                confidence: { type: "string", enum: ["high", "medium", "low"] },
               },
+              required: ["title", "ingredients", "instructions", "notes", "cook_time", "servings", "confidence"],
+              additionalProperties: false,
             },
           },
         ],
-        tool_choice: { type: "function", function: { name: "extract_recipe" } },
+        tool_choice: { type: "tool", name: "extract_recipe" },
       }),
     });
 
