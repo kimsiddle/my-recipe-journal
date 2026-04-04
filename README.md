@@ -1,73 +1,52 @@
-# Welcome to your Lovable project
+# My Recipe Journal
 
-## Project info
+A personal recipe tracking app to save, organize, and revisit your favorite recipes.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Features
 
-## How can I edit this code?
+- **Import from URL** — Paste any recipe link and the app automatically extracts the title, ingredients (with sections), instructions, cook time, servings, and photo
+- **Import from Photo** — Upload a photo of a recipe card or cookbook page to extract details
+- **Manual Entry** — Add recipes from scratch with a full editing form
+- **Ingredient Sections** — Ingredients are grouped by section (e.g. Dry Rub, Sauce, For the dough) when the recipe calls for it
+- **Cook Log** — Log each time you make a recipe with a date, rating, and notes
+- **Photo Gallery** — Attach multiple photos to a recipe
+- **Meal Planner** — Plan your meals by day of the week
+- **Filtering & Search** — Filter recipes by meal category, protein type, occasion, and more
+- **Share Recipes** — Share a recipe via link, email, or text message
+- **Google Sign-In** — Secure authentication via Google OAuth
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+- **Frontend:** React, TypeScript, Vite, Tailwind CSS, shadcn/ui
+- **Backend:** Supabase (PostgreSQL, Auth, Edge Functions, Storage)
+- **AI:** Anthropic Claude Haiku for recipe extraction from URLs and photos
+- **Deployment:** Vercel (frontend), Supabase (backend)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## How It Works
 
-Changes made via Lovable will be committed automatically to this repo.
+### URL Import
+When you paste a recipe URL, a Supabase Edge Function fetches the page, extracts metadata from structured data (JSON-LD) where available, and uses Claude Haiku to extract ingredients with section groupings and properly formatted instructions.
 
-**Use your preferred IDE**
+### Data Storage
+Recipes are stored in Supabase with row-level security so each user only sees their own recipes. Ingredients are stored in a pipe-delimited format (`amount|name|section`) that supports both simple and grouped ingredient lists.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Development
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Requires the following environment variables:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
+```
 
-**Use GitHub Codespaces**
+The Supabase Edge Function (`extract-recipe-url`) requires an `ANTHROPIC_API_KEY` secret set in Supabase.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Deployment
 
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+- Frontend auto-deploys to Vercel on push to `main`
+- Edge Functions are deployed manually via the Supabase dashboard
