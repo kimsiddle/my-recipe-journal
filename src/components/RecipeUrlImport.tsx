@@ -68,9 +68,10 @@ export function RecipeUrlImport({ onExtracted, onBack }: RecipeUrlImportProps) {
         ingredients: (data.ingredients || []).map((i: any) => ({
           name: i.name || '',
           amount: i.amount || '',
+          section: i.section || '',
         })),
-        instructions: data.instructions || '',
-        notes: data.notes || '',
+        instructions: plainTextToHtml(data.instructions || ''),
+        notes: plainTextToHtml(data.notes || ''),
         cookTime: data.cook_time || '',
         servings: data.servings ? Number(data.servings) : null,
         imageUrl: data.image_url || '',
