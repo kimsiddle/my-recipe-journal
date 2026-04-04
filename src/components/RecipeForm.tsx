@@ -152,19 +152,6 @@ export function RecipeForm({ initial, onSubmit, onCancel }: RecipeFormProps) {
                   {isSelected && <X className="h-3 w-3 ml-1" />}
                 </Badge>
               </button>
-              <button
-                type="button"
-                onClick={async () => {
-                  const removed = await onRemoveOption(tag);
-                  if (removed) {
-                    onToggle(tag);
-                  }
-                }}
-                className="absolute -top-1.5 -right-1.5 hidden group-hover:flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-destructive-foreground"
-                title={`Remove "${tag}" option`}
-              >
-                <Trash2 className="h-2.5 w-2.5" />
-              </button>
             </div>
           );
         })}
