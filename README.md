@@ -14,7 +14,7 @@ Yes, other apps exist. But none of them checked all my boxes the way I wanted. S
 
 ## The Origin Story
 
-This app started on **International Women's Day**, when [Lovable](https://lovable.dev) offered a full day of free usage. I used it to do the heavy lifting of the initial prototype — and what started as a quick test quickly evolved into something I genuinely wanted to keep building.
+This idea had been cooking for a few months, thinking about how I'd want to solve the pain points and researching products available.  But the actual app started on **International Women's Day**, when *Lovable* offered a full day of free usage. I used it to do the heavy lifting of the initial prototype — and what started as a quick test quickly evolved into something I genuinely wanted to keep building.  Ideation on features and design started weeks prior. 
 
 From the start, I wanted to challenge myself beyond just "make an app that works":
 
@@ -22,9 +22,13 @@ From the start, I wanted to challenge myself beyond just "make an app that works
 - **AI-powered import** — OCR from photos and URL extraction so I could quickly capture recipes from anywhere
 - **A real architecture** — not just a prototype locked inside a platform
 
-Once the prototype proved the concept, I made a deliberate decision: **get it off Lovable entirely and own the stack**. I moved the code to GitHub, researched hosting options, and landed on **Vercel + Supabase** for long-term deployment. I used **Claude Code** to guide me through the migration — which involved swapping the backend, configuring edge functions, and revisiting the AI layer entirely.
+Once the prototype proved the concept, I made a deliberate decision: **get it off Lovable entirely and own the stack**. 
 
-The original prototype used **Gemini** for recipe extraction and OCR. As part of the migration, I took the opportunity to evaluate alternatives and landed on **Claude Haiku** — a deliberate upgrade that matched the overall shift to a more intentional, owned stack.  Other models explored included Perplexity Sonar, Open AI and Mistral but in the end Haiku performed the best and would be a cost effective option for token management.
+The first step was connecting the codebase to GitHub — partly to own the code outright, and partly to sidestep paying for a Lovable subscription just to make minor tweaks. I could edit files directly in GitHub and still tap into the limited daily credits when needed. But that only got me so far. Without a formal engineering background, there's a ceiling on how much you can do by poking at files directly.
+
+So a few weeks later, I took it further. I researched hosting options end-to-end and landed on *Vercel + Supabase* as the right foundation for long-term deployment — not just for this app, but as a stack worth learning properly. Moving off Lovable entirely meant swapping the backend, configuring edge functions, and revisiting the AI layer from scratch. I also shifted user authentication to Google Cloud, configuring OAuth on my own as part of the migration. Leveraged *Claude Code* along the way to guide me through the migration, leaning on it to bridge the gap between intent and implementation.
+
+The original prototype used **Gemini** for recipe extraction and OCR. As part of the migration, I took the opportunity to evaluate alternatives and landed on **Claude Haiku** — a deliberate upgrade that matched the overall shift to a more intentional, owned stack.  Other models explored included Perplexity Sonar, Open AI and Mistral but in the end, Haiku performed the best and would be a cost effective option for token management.
 
 The quick prototype became a series of real architectural decisions, made with the same product instincts I bring to my day job. That was the point.
 
@@ -40,9 +44,9 @@ The quick prototype became a series of real architectural decisions, made with t
 ### 🗂️ Recipe Management
 - **Ingredient Sections** — Ingredients are grouped by section (e.g. Dry Rub, Sauce, For the Dough) when the recipe calls for it
 - **Photo Gallery** — Attach multiple photos to any recipe
-- **Filtering & Search** — Filter by meal category, protein type, occasion, and more
 - **Share Recipes** — Share via link, email, or text message
 - **Cook Log** — Log each time you make a recipe with a date, rating, and notes for future adjustments
+- **Filtering & Search** — Filter by meal category, protein type, occasion, and more
 
 ### 📅 Meal Planner & Shopping List 
 - **Planner** — Map out your meals for the week — either free-form or linked to saved recipes
