@@ -6,7 +6,7 @@
 
 ## Why I Built This
 
-MY escape after work is holding a glass of red wine and cooking a meal at home. I have a mix of cookbooks, recipe card, printouts and a phone full of saved links, and a habit of discovering great recipes buried under layers of ads and blog distractions. I wanted a clean, distraction-free digital recipe book — one I actually *owned* — where I could save recipes, log when I made them, leave notes for adjustments, and keep track of favorites I return to again and again.
+My escape after work is holding a glass of red wine and cooking a meal at home. I have a mix of cookbooks, recipe card, printouts and a phone full of saved links, and a habit of discovering great recipes buried under layers of ads and blog distractions. I wanted a clean, distraction-free digital recipe book — one I actually *owned* — where I could save recipes, log when I made them, leave notes for adjustments, and keep track of favorites I return to again and again.
 
 Yes, other apps exist. But none of them checked all my boxes the way I wanted. So I built one.
 
