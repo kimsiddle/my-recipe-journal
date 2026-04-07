@@ -5,7 +5,7 @@ import { RecipeCard } from '@/components/RecipeCard';
 import { useDynamicTags } from '@/hooks/useDynamicTags';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+
 import {
   Select,
   SelectContent,
@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Search, CookingPot, X } from 'lucide-react';
+import { Plus, Search, CookingPot } from 'lucide-react';
 
 type SortMode = 'recent' | 'rating' | 'rediscover';
 
@@ -94,46 +94,40 @@ const Index = () => {
           </Select>
         </div>
 
-        <div className="mb-6 space-y-3">
-          <div>
-            <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Meal</p>
-            <div className="flex flex-wrap gap-1.5">
-              {mealCategories.map(cat => (
-                <button key={cat} onClick={() => setSelectedMeal(selectedMeal === cat ? null : cat)}>
-                  <Badge variant={selectedMeal === cat ? 'default' : 'secondary'} className="font-body font-normal cursor-pointer">
-                    {cat}
-                    {selectedMeal === cat && <X className="h-3 w-3 ml-1" />}
-                  </Badge>
-                </button>
+        <div className="flex flex-wrap gap-3 mb-4">
+          <Select value={selectedMeal ?? '__all__'} onValueChange={(v) => setSelectedMeal(v === '__all__' ? null : v)}>
+            <SelectTrigger className="w-full sm:w-[160px]">
+              <SelectValue placeholder="Meal" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">All Meals</SelectItem>
+              {[...mealCategories].sort((a, b) => a.localeCompare(b)).map(cat => (
+                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
               ))}
-            </div>
-          </div>
-          <div>
-            <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Type</p>
-            <div className="flex flex-wrap gap-1.5">
-              {proteinTags.map(tag => (
-                <button key={tag} onClick={() => setSelectedProtein(selectedProtein === tag ? null : tag)}>
-                  <Badge variant={selectedProtein === tag ? 'default' : 'secondary'} className="font-body font-normal cursor-pointer">
-                    {tag}
-                    {selectedProtein === tag && <X className="h-3 w-3 ml-1" />}
-                  </Badge>
-                </button>
+            </SelectContent>
+          </Select>
+          <Select value={selectedProtein ?? '__all__'} onValueChange={(v) => setSelectedProtein(v === '__all__' ? null : v)}>
+            <SelectTrigger className="w-full sm:w-[160px]">
+              <SelectValue placeholder="Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">All Types</SelectItem>
+              {[...proteinTags].sort((a, b) => a.localeCompare(b)).map(tag => (
+                <SelectItem key={tag} value={tag}>{tag}</SelectItem>
               ))}
-            </div>
-          </div>
-          <div>
-            <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">Occasion</p>
-            <div className="flex flex-wrap gap-1.5">
-              {occasionTags.map(tag => (
-                <button key={tag} onClick={() => setSelectedOccasion(selectedOccasion === tag ? null : tag)}>
-                  <Badge variant={selectedOccasion === tag ? 'default' : 'secondary'} className="font-body font-normal cursor-pointer">
-                    {tag}
-                    {selectedOccasion === tag && <X className="h-3 w-3 ml-1" />}
-                  </Badge>
-                </button>
+            </SelectContent>
+          </Select>
+          <Select value={selectedOccasion ?? '__all__'} onValueChange={(v) => setSelectedOccasion(v === '__all__' ? null : v)}>
+            <SelectTrigger className="w-full sm:w-[160px]">
+              <SelectValue placeholder="Occasion" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">All Occasions</SelectItem>
+              {[...occasionTags].sort((a, b) => a.localeCompare(b)).map(tag => (
+                <SelectItem key={tag} value={tag}>{tag}</SelectItem>
               ))}
-            </div>
-          </div>
+            </SelectContent>
+          </Select>
         </div>
 
         {loading ? (
