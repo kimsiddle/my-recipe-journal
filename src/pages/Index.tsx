@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Search, CookingPot, X } from 'lucide-react';
+import { Plus, Search, CookingPot } from 'lucide-react';
 
 type SortMode = 'recent' | 'rating' | 'rediscover';
 
