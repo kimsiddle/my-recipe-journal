@@ -57,9 +57,11 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
               </span>
             )}
           </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            {lastCooked ? `Cooked ${lastCooked}` : 'Never cooked'}
-          </p>
+          {lastCooked && (
+            <p className="text-xs text-muted-foreground mt-2">
+              Cooked {lastCooked}
+            </p>
+          )}
         </CardContent>
       </Card>
     </Link>
